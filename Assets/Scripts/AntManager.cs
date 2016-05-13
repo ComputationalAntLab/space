@@ -93,11 +93,11 @@ public class AntManager : MonoBehaviour
         this.oldNest = GameObject.Find(Naming.World.InitialNest);
         this.carryPosition = transform.Find(Naming.Ants.CarryPosition);
         this.sensesCol = (Collider)transform.Find(Naming.Ants.SensesArea).GetComponent("Collider");
-        this.move = (AntMovement)transform.GetComponent(Naming.Ants.Movement);
+        this.move = gameObject.AntMovement();
         this.nestThreshold = normalRandom(this.qualityThreshMean, this.qualityThreshNoise);
         this.percievedQuality = float.MinValue;
         this.finishedRecruiting = false;
-        this.History = (SimData)transform.GetComponent(Naming.Simulation.AntData);
+        this.History = gameObject.AntData();
         //make sure the value is within contraints
         if (this.nestThreshold > 1)
             this.nestThreshold = 1;
@@ -142,7 +142,7 @@ public class AntManager : MonoBehaviour
         {
             var c0 = carryPosition.GetChild(0);
             var carriedAnt = this.carryPosition.Find(Naming.Ants.Tag);
-            var carriedAntBehaviour = ((AntManager)carriedAnt.GetComponent(Naming.Ants.Controller));
+            var carriedAntBehaviour = carriedAnt.gameObject.AntManager();
 
             carriedAntBehaviour.Dropped(this.myNest);
 
@@ -245,6 +245,20 @@ public class AntManager : MonoBehaviour
 
     }
 
+    private void AssignParent(GameObject nest, string prefix, Color? colour)
+    {
+        if (nest != null)
+        {
+            prefix += simulation.GetNestID(nest);
+        }
+        if(transform.parent.name != prefix)
+        {
+            transform.parent = GameObject.Find(prefix).transform;
+            if (colour.HasValue)
+                GetComponent<Renderer>().material.color = colour.Value;
+        }
+    }
+
     //makes sure that ants are always under correct parent object
     private void AssignParent()
     {
@@ -252,44 +266,23 @@ public class AntManager : MonoBehaviour
             return;
         else if (this.state == State.Recruiting)
         {
-            int id = simulation.GetNestID(this.myNest);
-            if (transform.parent.name != "R" + id)
-            {
-                transform.parent = GameObject.Find("R" + id).transform;
-                GetComponent<Renderer>().material.color = Color.blue;
-            }
+            AssignParent(myNest, "R", Color.blue);
         }
         else if (this.state == State.Inactive)
-        {
-            int id = simulation.GetNestID(this.myNest);
-            if (transform.parent.name != "P" + id)
-            {
-                transform.parent = GameObject.Find("P" + id).transform;
-                GetComponent<Renderer>().material.color = Color.black;
-            }
+        { 
+            AssignParent(myNest, "P", Color.black);
         }
         else if (this.state == State.Scouting && transform.parent.name != "S")
         {
-            transform.parent = GameObject.Find("S").transform;
-            GetComponent<Renderer>().material.color = Color.white;
+            AssignParent(null, "S", Color.white);
         }
         else if (this.state == State.Assessing)
         {
-            int id = simulation.GetNestID(this.nestToAssess);
-            if (transform.parent.name != "A" + id)
-            {
-                transform.parent = GameObject.Find("A" + id).transform;
-                GetComponent<Renderer>().material.color = Color.red;
-            }
+            AssignParent(nestToAssess, "A", Color.red);
         }
         else if (this.state == State.Reversing)
         {
-            int id = simulation.GetNestID(this.myNest);
-            if (transform.parent.name != "RT" + id)
-            {
-                transform.parent = GameObject.Find("RT" + id).transform;
-                GetComponent<Renderer>().material.color = Color.yellow;
-            }
+            AssignParent(myNest, "RT", Color.yellow);
         }
         /*else 
 		{
@@ -752,7 +745,7 @@ public class AntManager : MonoBehaviour
 
             float area = (2.0f * this.assessmentFirstLengthHistory * this.assessmentSecondLengthHistory) / (3.14159265359f * this.move.intersectionNumber);
             this.currentNestArea = area;
-            
+
             int ID = simulation.nests.IndexOf(this.nestToAssess.transform);
             this.History.assessmentAreaResult.Add("nest_" + ID + "\":'" + area);
 
