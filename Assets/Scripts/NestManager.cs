@@ -11,7 +11,7 @@ public class NestManager : MonoBehaviour
 	void OnTriggerEnter(Collider other) 
 	{
 		//if other isn't an ant or an ants collider has intersected with nest collider in an area that isn't the entrance then ignore
-		if(other.tag != "Ant" || (door != null && Vector3.Distance(other.transform.position, door.transform.position) > 12)) 
+		if(other.tag != Naming.Ants.Tag || (door != null && Vector3.Distance(other.transform.position, door.transform.position) > 12)) 
 			return;
 		
 		//let the ant know it has entered the nest
@@ -23,7 +23,7 @@ public class NestManager : MonoBehaviour
 	void OnTriggerExit(Collider other) 
 	{
 		//if other isn't an ant or an ants collider has intersected with nest collider in an area that isn't the entrance then ignore
-		if(other.tag != "Ant" || (door != null && Vector3.Distance(other.transform.position, door.transform.position) > 12)) 
+		if(other.tag != Naming.Ants.Tag || (door != null && Vector3.Distance(other.transform.position, door.transform.position) > 12)) 
 			return;
 		AntManager ant = (AntManager)other.transform.GetComponent(Naming.Ants.Controller);
 		
@@ -67,7 +67,7 @@ public class NestManager : MonoBehaviour
 	//returns the ID of the nest that is passed in
 	private int GetNestID(GameObject nest)
 	{
-		SimulationManager simManager = (SimulationManager) GameObject.Find(Naming.World.InitialNest).transform.GetComponent(Naming.Simulation.Manager);
+		SimulationManager simManager = (SimulationManager) GameObject.Find(Naming.World.Arena).transform.GetComponent(Naming.Simulation.Manager);
 		return simManager.nests.IndexOf(nest.transform);
 	}
 }

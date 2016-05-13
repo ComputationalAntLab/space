@@ -13,7 +13,7 @@ public class AntSenses : MonoBehaviour
 		if(this.ant == null) 
 			this.ant = (AntManager) transform.parent.GetComponent(Naming.Ants.Controller);
 		
-		if(other.tag != "Ant")
+		if(other.tag != Naming.Ants.Tag)
 		{
 			return;
 		}
@@ -36,7 +36,7 @@ public class AntSenses : MonoBehaviour
 				ant.ReverseLead(otherAnt);
 				return;
 			}
-            */
+			*/
 			
 		}
 		

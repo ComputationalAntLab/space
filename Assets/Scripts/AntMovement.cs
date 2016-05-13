@@ -7,7 +7,7 @@ using Assets.Scripts;
 public class AntMovement : MonoBehaviour
 {
     public AntManager ant;
-    SimulationManager simManager;
+    public SimulationManager simManager;
     CharacterController cont;
 
     float dir;                              //current direction
@@ -64,8 +64,6 @@ public class AntMovement : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        this.simManager = (SimulationManager)GameObject.Find(Naming.World.InitialNest).GetComponent(Naming.Simulation.Manager);
-
         this.ant = (AntManager)transform.GetComponent(Naming.Ants.Controller);
         this.cont = (CharacterController)transform.GetComponent("CharacterController");
         this.lastTurn = transform.position;

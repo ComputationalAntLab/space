@@ -7,6 +7,7 @@ using Assets.Scripts;
 public class AntManager : MonoBehaviour
 {
     //Individuals properties
+    public SimulationManager simulation;
     AntMovement move;                       //controls movement
     Collider sensesCol;                     //the collider used to sense ants and doors
     Transform carryPosition;                //where to carry ant 
@@ -254,7 +255,7 @@ public class AntManager : MonoBehaviour
             return;
         else if (this.state == State.Recruiting)
         {
-            int id = GetNestID(this.myNest);
+            int id = simulation.GetNestID(this.myNest);
             if (transform.parent.name != "R" + id)
             {
                 transform.parent = GameObject.Find("R" + id).transform;
@@ -263,7 +264,7 @@ public class AntManager : MonoBehaviour
         }
         else if (this.state == State.Inactive)
         {
-            int id = GetNestID(this.myNest);
+            int id = simulation.GetNestID(this.myNest);
             if (transform.parent.name != "P" + id)
             {
                 transform.parent = GameObject.Find("P" + id).transform;
@@ -277,7 +278,7 @@ public class AntManager : MonoBehaviour
         }
         else if (this.state == State.Assessing)
         {
-            int id = GetNestID(this.nestToAssess);
+            int id = simulation.GetNestID(this.nestToAssess);
             if (transform.parent.name != "A" + id)
             {
                 transform.parent = GameObject.Find("A" + id).transform;
@@ -286,7 +287,7 @@ public class AntManager : MonoBehaviour
         }
         else if (this.state == State.Reversing)
         {
-            int id = GetNestID(this.myNest);
+            int id = simulation.GetNestID(this.myNest);
             if (transform.parent.name != "RT" + id)
             {
                 transform.parent = GameObject.Find("RT" + id).transform;
@@ -516,7 +517,7 @@ public class AntManager : MonoBehaviour
 
         if (transform.parent.tag == Naming.Ants.CarryPosition)
         {
-            int id = GetNestID(nest);
+            int id = simulation.GetNestID(nest);
             transform.parent = GameObject.Find("P" + id).transform;
         }
 
@@ -532,7 +533,7 @@ public class AntManager : MonoBehaviour
             this.sensesCol.enabled = true;
 
         //Store history
-        int nestID = GetNestID(nest) - 1;
+        int nestID = simulation.GetNestID(nest) - 1;
         if (nestID >= 0)
         {
             this.History.NestDiscoveryType[nestID] = SimData.DiscoveryType.Lead;
@@ -545,7 +546,7 @@ public class AntManager : MonoBehaviour
     {
         if (oldNest == null)
             return false;
-        int id = GetNestID(oldNest);
+        int id = simulation.GetNestID(oldNest);
         if (GameObject.Find("P" + id).transform.childCount == 0 && Vector3.Distance(oldNest.transform.position, transform.position) < 10)
         {
             //oldNest = null;
@@ -569,7 +570,7 @@ public class AntManager : MonoBehaviour
         this.inNest = true;
 
         //Deal with History
-        int nestID = GetNestID(nest) - 1;
+        int nestID = simulation.GetNestID(nest) - 1;
         if (nestID >= 0)
         {
             if (this.History.NestDiscoveryTime[nestID] == 0)
@@ -690,7 +691,7 @@ public class AntManager : MonoBehaviour
         }
         else
         {
-            int id = GetNestID(nest);
+            int id = simulation.GetNestID(nest);
             //if this nest is my old nest and there's nothing to recruit from it then stop coming here
             if (nest == oldNest && GameObject.Find("P" + id).transform.childCount == 0)
                 //oldNest = null;    
@@ -754,9 +755,8 @@ public class AntManager : MonoBehaviour
 
             float area = (2.0f * this.assessmentFirstLengthHistory * this.assessmentSecondLengthHistory) / (3.14159265359f * this.move.intersectionNumber);
             this.currentNestArea = area;
-
-            SimulationManager simManager = (SimulationManager)GameObject.Find(Naming.World.InitialNest).transform.GetComponent(Naming.Simulation.Manager);
-            int ID = simManager.nests.IndexOf(this.nestToAssess.transform);
+            
+            int ID = simulation.nests.IndexOf(this.nestToAssess.transform);
             this.History.assessmentAreaResult.Add("nest_" + ID + "\":'" + area);
 
         }
@@ -777,7 +777,7 @@ public class AntManager : MonoBehaviour
         move.usePheromones = false;
 
         //make assessment of this nest's quality
-        int nestID = GetNestID(nest) - 1;
+        int nestID = simulation.GetNestID(nest) - 1;
         if (nestID >= 0 && nest != this.myNest)
         {
             this.History.numAssessments[nestID]++;
@@ -886,13 +886,6 @@ public class AntManager : MonoBehaviour
         return this.percievedQourum >= this.quorumThreshold;
     }
 
-    //returns the ID of the nest that is passed in
-    public int GetNestID(GameObject nest)
-    {
-        SimulationManager simManager = (SimulationManager)GameObject.Find(Naming.World.InitialNest).transform.GetComponent(Naming.Simulation.Manager);
-        return simManager.nests.IndexOf(nest.transform);
-    }
-
     //called whenever an ant leaves a nest
     public void LeftNest()
     {
@@ -978,7 +971,7 @@ public class AntManager : MonoBehaviour
     //switches ants allegiance to this nest and sends them back to their old one to recruit some more
     private void RecruitToNest(GameObject nest)
     {
-        int nestID = GetNestID(nest) - 1;
+        int nestID = simulation.GetNestID(nest) - 1;
         if (nestID >= 0)
         {
             if (this.History.NestRecruitTime[nestID] == 0)
