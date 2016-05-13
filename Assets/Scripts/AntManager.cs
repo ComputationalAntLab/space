@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts;
 
 public class AntManager : MonoBehaviour 
 {
@@ -92,7 +93,7 @@ public class AntManager : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		this.oldNest = GameObject.Find("OldNest");
+		this.oldNest = GameObject.Find(Naming.World.InitialNest);
 		this.carryPosition = transform.Find("CarryPosition");
 		this.sensesCol = (Collider) transform.Find("Senses").GetComponent("Collider");
 		this.move = (AntMovement) transform.GetComponent("AntMovement");
