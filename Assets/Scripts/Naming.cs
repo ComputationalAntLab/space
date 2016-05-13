@@ -26,13 +26,15 @@ namespace Assets.Scripts
 
         public static class Ants
         {
-            public const string Behaviour = "AntManager";
+            public const string Controller = "AntManager";
             public const string Movement= "AntMovement";
             public const string SensesArea = "Senses";
             public const string SensesScript = "AntSenses";
 
             public const string CarryPosition = "CarryPosition";
             public const string CarryAnt = "Ant";
+
+            public const string Pheromone = "Pheromone";
         }
 
         public static class ObjectGroups

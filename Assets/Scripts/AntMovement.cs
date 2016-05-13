@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts;
 
 public class AntMovement : MonoBehaviour
 {
@@ -63,15 +64,15 @@ public class AntMovement : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
-		this.simManager = (SimulationManager)GameObject.Find("OldNest").GetComponent("SimulationManager");
+		this.simManager = (SimulationManager)GameObject.Find(Naming.World.InitialNest).GetComponent(Naming.Simulation.Manager);
 
-		this.ant = (AntManager)transform.GetComponent("AntManager");
+		this.ant = (AntManager)transform.GetComponent(Naming.Ants.Controller);
 		this.cont = (CharacterController)transform.GetComponent("CharacterController");
 		this.lastTurn = transform.position;
 		this.dir = Random.Range(0, 360);
 		this.nextDirChange_time = Time.timeSinceLevelLoad + maxDirChange_time;
 		this.rg = new RandomGenerator();
-		this.pheromoneParent = GameObject.Find("Pheromones").transform;
+		this.pheromoneParent = GameObject.Find(Naming.ObjectGroups.Pheromones).transform;
 		this.nextPheromoneCheck = Time.timeSinceLevelLoad;
 		//passive ants laying in centre of nests makes ants gravitate towards nest centers to much
 
@@ -604,7 +605,7 @@ public class AntMovement : MonoBehaviour
 			}
 			else
 			{
-				NestManager nest = (NestManager)this.ant.nestToAssess.GetComponent("NestManager");
+				NestManager nest = (NestManager)this.ant.nestToAssess.GetComponent(Naming.World.Nest);
 				return nest.door;
 			}
 		}
@@ -624,7 +625,7 @@ public class AntMovement : MonoBehaviour
 				else
 				{
 					//Head for exit
-					NestManager my = (NestManager)this.ant.myNest.GetComponent("NestManager");
+					NestManager my = (NestManager)this.ant.myNest.GetComponent(Naming.World.Nest);
 					if (my.door != null)
 						return my.door;
 					else
@@ -636,7 +637,7 @@ public class AntMovement : MonoBehaviour
 				//Go to old nest
 				if (!this.ant.inNest)
 				{
-					NestManager old = (NestManager)this.ant.oldNest.GetComponent("NestManager");
+					NestManager old = (NestManager)this.ant.oldNest.GetComponent(Naming.World.Nest);
 					if (old.door != null)
 						return old.door;
 					else
@@ -655,7 +656,7 @@ public class AntMovement : MonoBehaviour
 			//if in the nest they are recruiting FROM but want to leave then return the position of the nest's door (if this has been marked)
 			if (nearerOld)
 			{
-				NestManager old = (NestManager)this.ant.oldNest.GetComponent("NestManager");
+				NestManager old = (NestManager)this.ant.oldNest.GetComponent(Naming.World.Nest);
 				if (old.door != null)
 					return old.door;
 				else
@@ -671,7 +672,7 @@ public class AntMovement : MonoBehaviour
 			//in nest that they recruit TO but trying to leave then return the position of the nest's door (if this has been marked)
 			if (!nearerOld)
 			{
-				NestManager my = (NestManager)this.ant.myNest.GetComponent("NestManager");
+				NestManager my = (NestManager)this.ant.myNest.GetComponent(Naming.World.Nest);
 				if (my.door != null)
 					return my.door;
 				else
@@ -684,7 +685,7 @@ public class AntMovement : MonoBehaviour
 		//if not in a nest and heading to nest that they recruit TO then return position of door to that nest (if possible)
 		else if (!this.ant.newToOld)
 		{
-			NestManager my = (NestManager)this.ant.myNest.GetComponent("NestManager");
+			NestManager my = (NestManager)this.ant.myNest.GetComponent(Naming.World.Nest);
 			if (my.door != null)
 				return my.door;
 			else
@@ -693,7 +694,7 @@ public class AntMovement : MonoBehaviour
 		//if not in a nest and heading towards nest that they recruit FROM then return position of that nest's door (if possible)
 		else
 		{
-			NestManager old = (NestManager)this.ant.oldNest.GetComponent("NestManager");
+			NestManager old = (NestManager)this.ant.oldNest.GetComponent(Naming.World.Nest);
 			if (old.door != null)
 				return old.door;
 			else
@@ -975,7 +976,7 @@ public class AntMovement : MonoBehaviour
 		pheromone.transform.parent = this.pheromoneParent;
 		if (this.ant.state == AntManager.State.Scouting)
 		{
-			((Pheromone)pheromone.transform.GetComponent("Pheromone")).LayScouting(this);
+			((Pheromone)pheromone.transform.GetComponent(Naming.Ants.Pheromone)).LayScouting(this);
 		}
 	}
 
@@ -989,7 +990,7 @@ public class AntMovement : MonoBehaviour
 		pheromone.transform.parent = this.pheromoneParent;
 		if (this.ant.state == AntManager.State.Reversing || this.ant.state == AntManager.State.Leading || this.ant.state == AntManager.State.Recruiting)
 		{
-			((Pheromone)pheromone.transform.GetComponent("Pheromone")).LayTandem(this);
+			((Pheromone)pheromone.transform.GetComponent(Naming.Ants.Pheromone)).LayTandem(this);
 		}
 	}
 
@@ -1003,7 +1004,7 @@ public class AntMovement : MonoBehaviour
 		pheromone.transform.parent = this.pheromoneParent;
 		if (this.ant.state == AntManager.State.Reversing || this.ant.state == AntManager.State.Leading || this.ant.state == AntManager.State.Recruiting)
 		{
-			((Pheromone)pheromone.transform.GetComponent("Pheromone")).LayTandem(this);
+			((Pheromone)pheromone.transform.GetComponent(Naming.Ants.Pheromone)).LayTandem(this);
 		}
 	}
 
@@ -1023,7 +1024,7 @@ public class AntMovement : MonoBehaviour
 		{
 			if (this.ant.nestToAssess != this.ant.oldNest)
 			{
-				((Pheromone)pheromone.transform.GetComponent("Pheromone")).LayAssessing(this);
+				((Pheromone)pheromone.transform.GetComponent(Naming.Ants.Pheromone)).LayAssessing(this);
 			}
 		}
 	}
@@ -1037,8 +1038,8 @@ public class AntMovement : MonoBehaviour
 		ArrayList pher = new ArrayList();
 		for (int i = 0; i < cols.Length; i++)
 		{
-			if (cols[i].tag == "Pheromone")
-				pher.Add(cols[i].transform.GetComponent("Pheromone"));
+			if (cols[i].tag == Naming.Ants.Pheromone)
+				pher.Add(cols[i].transform.GetComponent(Naming.Ants.Pheromone));
 		}
 		return pher;
 	}
@@ -1049,8 +1050,8 @@ public class AntMovement : MonoBehaviour
 		ArrayList pher = new ArrayList();
 		for (int i = 0; i < cols.Length; i++)
 		{
-			if (cols[i].tag == "Pheromone")
-				pher.Add(cols[i].transform.GetComponent("Pheromone"));
+			if (cols[i].tag == Naming.Ants.Pheromone)
+				pher.Add(cols[i].transform.GetComponent(Naming.Ants.Pheromone));
 		}
 		return pher;
 	}

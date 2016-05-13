@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts;
 
 public class NestManager : MonoBehaviour 
 {
@@ -14,7 +15,7 @@ public class NestManager : MonoBehaviour
 			return;
 		
 		//let the ant know it has entered the nest
-		AntManager ant = (AntManager)other.transform.GetComponent("AntManager");
+		AntManager ant = (AntManager)other.transform.GetComponent(Naming.Ants.Controller);
 		ant.EnteredNest(gameObject);
 	}
 	
@@ -24,7 +25,7 @@ public class NestManager : MonoBehaviour
 		//if other isn't an ant or an ants collider has intersected with nest collider in an area that isn't the entrance then ignore
 		if(other.tag != "Ant" || (door != null && Vector3.Distance(other.transform.position, door.transform.position) > 12)) 
 			return;
-		AntManager ant = (AntManager)other.transform.GetComponent("AntManager");
+		AntManager ant = (AntManager)other.transform.GetComponent(Naming.Ants.Controller);
 		
 		//if ant is passive and somehow reaches edge of nest then turn around, otherwise let the ant know it has left the nest
 		if(ant.state == AntManager.State.Inactive) 
@@ -41,7 +42,7 @@ public class NestManager : MonoBehaviour
 
 		for (int i = 0; i < a.childCount; i++)
 		{
-			AntManager antM = (AntManager) a.GetChild(i).GetComponent("AntManager");
+			AntManager antM = (AntManager) a.GetChild(i).GetComponent(Naming.Ants.Controller);
 			if (antM.inNest && !antM.NearerOld())
 				total += 1;
 		}
@@ -49,7 +50,7 @@ public class NestManager : MonoBehaviour
 		Transform r = GameObject.Find("R" + id).transform;
 		for(int i = 0; i < r.childCount; i++)
 		{
-			AntManager antM = (AntManager) r.GetChild(i).GetComponent("AntManager");
+			AntManager antM = (AntManager) r.GetChild(i).GetComponent(Naming.Ants.Controller);
 			//if ant recruiting ant is in a nest and it is nearer its new nest than old then it is counted as part of the qourum
 			if(antM.inNest && !antM.NearerOld())
 				total += 1;
@@ -66,7 +67,7 @@ public class NestManager : MonoBehaviour
 	//returns the ID of the nest that is passed in
 	private int GetNestID(GameObject nest)
 	{
-		SimulationManager simManager = (SimulationManager) GameObject.Find("OldNest").transform.GetComponent("SimulationManager");
+		SimulationManager simManager = (SimulationManager) GameObject.Find(Naming.World.InitialNest).transform.GetComponent(Naming.Simulation.Manager);
 		return simManager.nests.IndexOf(nest.transform);
 	}
 }

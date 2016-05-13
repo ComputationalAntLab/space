@@ -145,7 +145,7 @@ public class AntManager : MonoBehaviour
 		{
             var c0 = carryPosition.GetChild(0);
             var carriedAnt = this.carryPosition.Find(Naming.Ants.CarryAnt);
-            var carriedAntBehaviour = ((AntManager)carriedAnt.GetComponent(Naming.Ants.Behaviour));
+            var carriedAntBehaviour = ((AntManager)carriedAnt.GetComponent(Naming.Ants.Controller));
 
             carriedAntBehaviour.Dropped(this.myNest);
 			
@@ -317,7 +317,7 @@ public class AntManager : MonoBehaviour
 	
 	private GameObject leadersNest()
 	{
-		return ((AntManager) this.leader.GetComponent(Naming.Ants.Behaviour)).myNest;
+		return ((AntManager) this.leader.GetComponent(Naming.Ants.Controller)).myNest;
 	}
 	
 	//tell this ant to lead 'follower' to preffered nest
@@ -592,7 +592,7 @@ public class AntManager : MonoBehaviour
 		{
 			if(this.leader.state == State.Recruiting && nest != this.leader.oldNest)
 			{
-				((AntManager) leader.transform.GetComponent(Naming.Ants.Behaviour)).StopLeading();
+				((AntManager) leader.transform.GetComponent(Naming.Ants.Controller)).StopLeading();
 				StopFollowing();
 				if(this.passive)
 				{
@@ -608,7 +608,7 @@ public class AntManager : MonoBehaviour
 			}
 			else if(this.leader.state == State.Reversing && nest == this.leader.oldNest)
 			{
-				AntManager leader = (AntManager) this.leader.transform.GetComponent(Naming.Ants.Behaviour);
+				AntManager leader = (AntManager) this.leader.transform.GetComponent(Naming.Ants.Controller);
 				this.myNest = leader.myNest;
 				this.oldNest = leader.oldNest;
 				leader.StopLeading();
@@ -1052,7 +1052,7 @@ public class AntManager : MonoBehaviour
 		if(this.state == State.Following && this.leader != null) {
 			if(this.leader.state == State.Recruiting || this.leader.state == State.Reversing) {
 				// failed tandem leader behaviour
-				((AntManager)leader.transform.GetComponent(Naming.Ants.Behaviour)).failedTandemLeaderBehvaiour();
+				((AntManager)leader.transform.GetComponent(Naming.Ants.Controller)).failedTandemLeaderBehvaiour();
 				// failed tandem follower behaviour
 				failedTandemFollowerBehaviour();
 			}

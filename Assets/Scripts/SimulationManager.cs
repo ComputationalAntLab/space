@@ -106,7 +106,7 @@ public class SimulationManager : MonoBehaviour
                 newAnt.name = CreateAntId(colonySize, spawnedAnts);
                 if ((float)spawnedAnts < (float)colonySize * this.proportionActive)
                 {
-                    AntManager newAM = (AntManager)newAnt.transform.GetComponent(Naming.Ants.Behaviour);
+                    AntManager newAM = (AntManager)newAnt.transform.GetComponent(Naming.Ants.Controller);
                     newAM.state = AntManager.State.Inactive;
                     newAM.passive = false;
                     newAM.myNest = GameObject.Find(Naming.World.InitialNest);
@@ -133,7 +133,7 @@ public class SimulationManager : MonoBehaviour
                 else
                 {
                     newAnt.transform.parent = passive;
-                    AntManager newAM = (AntManager)newAnt.transform.GetComponent(Naming.Ants.Behaviour);
+                    AntManager newAM = (AntManager)newAnt.transform.GetComponent(Naming.Ants.Controller);
                     newAM.myNest = GameObject.Find(Naming.World.InitialNest);
                     newAM.oldNest = GameObject.Find(Naming.World.InitialNest);
                     newAnt.GetComponent<Renderer>().material.color = Color.black;
