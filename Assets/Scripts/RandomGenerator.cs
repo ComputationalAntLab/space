@@ -69,5 +69,10 @@ public class RandomGenerator
     {
         return _random.NextDouble();
     }
+
+    internal float Range(float v1, float v2)
+    {
+        throw new NotImplementedException();
+    }
 }
 

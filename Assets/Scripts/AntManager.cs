@@ -1,5 +1,6 @@
 using UnityEngine;
 using Assets.Scripts;
+using System;
 
 public class AntManager : MonoBehaviour
 {
@@ -134,7 +135,7 @@ public class AntManager : MonoBehaviour
         if (!this.passive && this.state == State.Inactive && this.nextAssesment > 0 && Time.timeSinceLevelLoad >= this.nextAssesment)
         {
             AssessNest(this.myNest);
-            this.nextAssesment = Time.timeSinceLevelLoad + Random.Range(0.5f, 1f) * this.maxAssessmentWait;
+            this.nextAssesment = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0.5f, 1f) * this.maxAssessmentWait;
         }
 
         //if an ant is carrying another and is within x distance of their nest's centre then drop the ant
@@ -251,7 +252,7 @@ public class AntManager : MonoBehaviour
         {
             prefix += simulation.GetNestID(nest);
         }
-        if(transform.parent.name != prefix)
+        if (transform.parent.name != prefix)
         {
             transform.parent = GameObject.Find(prefix).transform;
             if (colour.HasValue)
@@ -269,7 +270,7 @@ public class AntManager : MonoBehaviour
             AssignParent(myNest, "R", Color.blue);
         }
         else if (this.state == State.Inactive)
-        { 
+        {
             AssignParent(myNest, "P", Color.black);
         }
         else if (this.state == State.Scouting && transform.parent.name != "S")
@@ -310,22 +311,20 @@ public class AntManager : MonoBehaviour
 
     private GameObject leadersNest()
     {
-        return ((AntManager)this.leader.GetComponent(Naming.Ants.Controller)).myNest;
+        return leader.gameObject.AntManager().myNest;
     }
 
     //tell this ant to lead 'follower' to preffered nest
     public void Lead(AntManager follower)
     {
-
         if (this.failedTandemLeader == true && this.state == State.Recruiting)
         {
             this.failedTandemLeader = false;
             this.History.failedLeaderFoundFollowerAdd();
         }
 
-        System.DateTime CurrentDate = new System.DateTime();
-        CurrentDate = System.DateTime.Now;
-        startTandemRunSeconds = (CurrentDate.Hour * 3600) + (CurrentDate.Minute * 60) + (CurrentDate.Second);
+        var date = DateTime.Now;
+        startTandemRunSeconds = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
 
         // set start of forward tandem run (log start position and timestep)
         forwardTandemRun = true;
@@ -355,9 +354,8 @@ public class AntManager : MonoBehaviour
 
     public void ReverseLead(AntManager follower)
     {
-        System.DateTime CurrentDate = new System.DateTime();
-        CurrentDate = System.DateTime.Now;
-        startTandemRunSeconds = (CurrentDate.Hour * 3600) + (CurrentDate.Minute * 60) + (CurrentDate.Second);
+        var date = System.DateTime.Now;
+        startTandemRunSeconds = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
 
         // set start of reverse tandem run (log start position and timestep)
         reverseTandemRun = true;
@@ -439,9 +437,8 @@ public class AntManager : MonoBehaviour
     //follow the leader ant 
     public void Follow(AntManager leader)
     {
-        System.DateTime CurrentDate = new System.DateTime();
-        CurrentDate = System.DateTime.Now;
-        startTandemRunSeconds = (CurrentDate.Hour * 3600) + (CurrentDate.Minute * 60) + (CurrentDate.Second);
+        var date = System.DateTime.Now;
+        startTandemRunSeconds = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
 
         //start following leader towards nest
         ChangeState(State.Following);
@@ -550,7 +547,6 @@ public class AntManager : MonoBehaviour
     //this is called whenever an ant enters a nest
     public void EnteredNest(GameObject nest)
     {
-
         if (this.failedTandemLeader == true && this.state == State.Recruiting && nest != this.oldNest)
         {
             this.failedTandemLeader = false;
@@ -590,7 +586,7 @@ public class AntManager : MonoBehaviour
         {
             if (this.leader.state == State.Recruiting && nest != this.leader.oldNest)
             {
-                ((AntManager)leader.transform.GetComponent(Naming.Ants.Controller)).StopLeading();
+                leader.StopLeading();
                 StopFollowing();
                 if (this.passive)
                 {
@@ -606,7 +602,6 @@ public class AntManager : MonoBehaviour
             }
             else if (this.leader.state == State.Reversing && nest == this.leader.oldNest)
             {
-                AntManager leader = (AntManager)this.leader.transform.GetComponent(Naming.Ants.Controller);
                 this.myNest = leader.myNest;
                 this.oldNest = leader.oldNest;
                 leader.StopLeading();
@@ -627,7 +622,7 @@ public class AntManager : MonoBehaviour
             }
             else
             {
-                if (this.follower == null && Random.Range(0f, 1f) < this.pRecAssessNew && !this.IsQuorumReached())
+                if (this.follower == null && RandomGenerator.Instance.Range(0f, 1f) < this.pRecAssessNew && !this.IsQuorumReached())
                 {
                     this.nestToAssess = nest;
                     ChangeState(State.Assessing);
@@ -641,7 +636,7 @@ public class AntManager : MonoBehaviour
 
         if (this.state == State.Recruiting && nest == this.oldNest)
         {
-            NestManager nestM = (NestManager)nest.transform.GetComponent(Naming.World.Nest);
+            NestManager nestM = nest.Nest();
 
             //if no passive ants left in old nest then turn around and return home
             if (this.finishedRecruiting || nestM.GetPassive() == 0)
@@ -651,7 +646,7 @@ public class AntManager : MonoBehaviour
                 return;
             }
             //if recruiting and this is old nest then assess with probability pRecAssessOld
-            else if (Random.Range(0f, 1f) < this.pRecAssessOld)
+            else if (RandomGenerator.Instance.Range(0f, 1f) < this.pRecAssessOld)
             {
                 this.nestToAssess = nest;
                 ChangeState(State.Assessing);
@@ -661,7 +656,7 @@ public class AntManager : MonoBehaviour
 
         if (this.state == State.Reversing && nest == this.oldNest)
         {
-            NestManager nestM = (NestManager)nest.transform.GetComponent(Naming.World.Nest);
+            NestManager nestM = nest.Nest();
 
             if (nestM.GetPassive() == 0)
             {
@@ -791,7 +786,7 @@ public class AntManager : MonoBehaviour
 		 * Old nest quality measurement
 		 *
 		 */
-        NestManager nestM = (NestManager)nest.transform.GetComponent(Naming.World.Nest);
+        NestManager nestM = nest.Nest();
         float q = normalRandom(nestM.quality, this.assessmentNoise);
         if (q < 0f)
             q = 0f;
@@ -971,7 +966,7 @@ public class AntManager : MonoBehaviour
         }
         this.newToOld = true;
         this.myNest = nest;
-        NestManager nestM = (NestManager)nest.transform.GetComponent(Naming.World.Nest);
+        NestManager nestM = nest.Nest();
         //check the qourum of this nest until quorum is met once.
         if (IsQuorumReached())
         {
@@ -1013,9 +1008,8 @@ public class AntManager : MonoBehaviour
             return;
         }
         // log the time that the tandem run was lost
-        System.DateTime CurrentDate = new System.DateTime();
-        CurrentDate = System.DateTime.Now;
-        int currentTime = (CurrentDate.Hour * 3600) + (CurrentDate.Minute * 60) + (CurrentDate.Second);
+        var date = System.DateTime.Now;
+        int currentTime = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
         this.timeWhenTandemLostContact = currentTime;
         // calculate the Leader Give-Up Time (LGUT)
         calculateLGUT(currentTime);
@@ -1041,14 +1035,12 @@ public class AntManager : MonoBehaviour
     {
         if (this.LGUT == 0.0 || this.timeWhenTandemLostContact == 0) { return false; }
 
-        System.DateTime CurrentDate = new System.DateTime();
-        CurrentDate = System.DateTime.Now;
-        int currentTime = (CurrentDate.Hour * 3600) + (CurrentDate.Minute * 60) + (CurrentDate.Second);
+        var date = System.DateTime.Now;
+        int currentTime = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
         int durationLostContact = (currentTime - timeWhenTandemLostContact) * (int)Time.timeScale; ;
 
         // if duration since lost contact is longer than LGUT then tandem run has failed  
-        if (durationLostContact > this.LGUT) { return true; }
-        else { return false; }
+        return durationLostContact > this.LGUT;
     }
 
     // if duration of lost contact is greater than LGUT fail tandem run
@@ -1059,7 +1051,7 @@ public class AntManager : MonoBehaviour
             if (this.leader.state == State.Recruiting || this.leader.state == State.Reversing)
             {
                 // failed tandem leader behaviour
-                ((AntManager)leader.transform.GetComponent(Naming.Ants.Controller)).failedTandemLeaderBehvaiour();
+                leader.failedTandemLeaderBehvaiour();
                 // failed tandem follower behaviour
                 failedTandemFollowerBehaviour();
             }
