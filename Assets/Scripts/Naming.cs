@@ -43,7 +43,8 @@ namespace Assets.Scripts
 
         public static class Entities
         {
-            public const string AntPrefix = "Ant_";
+            // Can't change the ant prefix because each ant needs to be called "Ant"
+            public const string AntPrefix = "";
         }
     }
 }

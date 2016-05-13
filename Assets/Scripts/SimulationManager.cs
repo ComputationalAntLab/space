@@ -150,7 +150,8 @@ public class SimulationManager : MonoBehaviour
 
     private string CreateAntId(int colonySize, int antNumber)
     {
-        return string.Format("{0}{1}", Naming.Entities.AntPrefix, antNumber);
+        return Naming.Ants.CarryAnt;
+        //return string.Format("{0}{1}", Naming.Entities.AntPrefix, antNumber);
     }
 
     GameObject MakeObject(string name, Transform parent)

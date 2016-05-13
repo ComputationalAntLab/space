@@ -143,7 +143,11 @@ public class AntManager : MonoBehaviour
 		//if an ant is carrying another and is within x distance of their nest's centre then drop the ant
 		if(this.carryPosition.childCount > 0 && Vector3.Distance(this.myNest.transform.position, transform.position) < this.myNest.transform.localScale.x/4f)
 		{
-			((AntManager) this.carryPosition.Find(Naming.Ants.CarryAnt).GetComponent(Naming.Ants.Behaviour)).Dropped(this.myNest);
+            var c0 = carryPosition.GetChild(0);
+            var carriedAnt = this.carryPosition.Find(Naming.Ants.CarryAnt);
+            var carriedAntBehaviour = ((AntManager)carriedAnt.GetComponent(Naming.Ants.Behaviour));
+
+            carriedAntBehaviour.Dropped(this.myNest);
 			
 			// drop social carry "follower" calculate total timesteps for social carry
 			if (socialCarrying == true) {
