@@ -91,19 +91,19 @@ public class AntManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        this.oldNest = GameObject.Find(Naming.World.InitialNest);
-        this.carryPosition = transform.Find(Naming.Ants.CarryPosition);
-        this.sensesCol = (Collider)transform.Find(Naming.Ants.SensesArea).GetComponent("Collider");
-        this.move = gameObject.AntMovement();
-        this.nestThreshold = normalRandom(this.qualityThreshMean, this.qualityThreshNoise);
-        this.percievedQuality = float.MinValue;
-        this.finishedRecruiting = false;
-        this.History = gameObject.AntData();
+        oldNest = GameObject.Find(Naming.World.InitialNest);
+        carryPosition = transform.Find(Naming.Ants.CarryPosition);
+        sensesCol = (Collider)transform.Find(Naming.Ants.SensesArea).GetComponent("Collider");
+        move = gameObject.AntMovement();
+        nestThreshold = normalRandom(qualityThreshMean, qualityThreshNoise);
+        percievedQuality = float.MinValue;
+        finishedRecruiting = false;
+        History = gameObject.AntData();
         //make sure the value is within contraints
-        if (this.nestThreshold > 1)
-            this.nestThreshold = 1;
-        else if (this.nestThreshold < 0)
-            this.nestThreshold = 0;
+        if (nestThreshold > 1)
+            nestThreshold = 1;
+        else if (nestThreshold < 0)
+            nestThreshold = 0;
 
 
         //!passive ants assess nest as a soon as simulation begins
@@ -123,53 +123,53 @@ public class AntManager : MonoBehaviour
     {
 
         //BUGFIX: sometimes assessors leave nest without triggering OnExit in NestManager
-        if (this.state == State.Assessing && Vector3.Distance(this.nestToAssess.transform.position, transform.position) >
-           Mathf.Sqrt(Mathf.Pow(this.nestToAssess.transform.localScale.x, 2) + Mathf.Pow(this.nestToAssess.transform.localScale.z, 2)))
+        if (state == State.Assessing && Vector3.Distance(nestToAssess.transform.position, transform.position) >
+           Mathf.Sqrt(Mathf.Pow(nestToAssess.transform.localScale.x, 2) + Mathf.Pow(nestToAssess.transform.localScale.z, 2)))
             LeftNest();
 
         //BUGFIX: occasionly when followers enter a nest there enterednest function doesn't get called, this forces that
-        if (this.state == State.Following && Vector3.Distance(leadersNest().transform.position, transform.position) < leadersNest().transform.localScale.x / 2f)
+        if (state == State.Following && Vector3.Distance(leadersNest().transform.position, transform.position) < leadersNest().transform.localScale.x / 2f)
             EnteredNest(leadersNest());
 
         //makes Inactive and !passive ants assess nest that they are in every so often
-        if (!this.passive && this.state == State.Inactive && this.nextAssesment > 0 && Time.timeSinceLevelLoad >= this.nextAssesment)
+        if (!passive && state == State.Inactive && nextAssesment > 0 && Time.timeSinceLevelLoad >= nextAssesment)
         {
-            AssessNest(this.myNest);
-            this.nextAssesment = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0.5f, 1f) * this.maxAssessmentWait;
+            AssessNest(myNest);
+            nextAssesment = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0.5f, 1f) * maxAssessmentWait;
         }
 
         //if an ant is carrying another and is within x distance of their nest's centre then drop the ant
-        if (this.carryPosition.childCount > 0 && Vector3.Distance(this.myNest.transform.position, transform.position) < this.myNest.transform.localScale.x / 4f)
+        if (carryPosition.childCount > 0 && Vector3.Distance(myNest.transform.position, transform.position) < myNest.transform.localScale.x / 4f)
         {
             var c0 = carryPosition.GetChild(0);
-            var carriedAnt = this.carryPosition.Find(Naming.Ants.Tag);
+            var carriedAnt = carryPosition.Find(Naming.Ants.Tag);
             var carriedAntBehaviour = carriedAnt.gameObject.AntManager();
 
-            carriedAntBehaviour.Dropped(this.myNest);
+            carriedAntBehaviour.Dropped(myNest);
 
             // drop social carry "follower" calculate total timesteps for social carry
             if (socialCarrying == true)
             {
-                carryingTimeSteps = -1 * (carryingTimeSteps - this.timeStep);
+                carryingTimeSteps = -1 * (carryingTimeSteps - timeStep);
             }
             // get end position of social carry
             endPos = transform.position;
             // calculate total distance and speed of social carry
             float TRDistance = Vector3.Distance(endPos, startPos);
-            float TRSpeed = TRDistance / (float)carryingTimeSteps;
+            float TRSpeed = TRDistance / carryingTimeSteps;
             // update history with social carry and social carry speed
             if (socialCarrying == true)
             {
-                this.History.carryingTimeSteps.Add(TRSpeed);
+                History.carryingTimeSteps.Add(TRSpeed);
                 socialCarrying = false;
             }
-            Reverse(this.myNest);
+            Reverse(myNest);
         }
 
         //BUGFIX: Sometimes new to old is incorrectly set for recruiters - unclear why as of yet.
-        if (this.state == State.Recruiting && this.follower != null && this.inNest && this.NearerOld())
+        if (state == State.Recruiting && follower != null && inNest && NearerOld())
         {
-            this.newToOld = false;
+            newToOld = false;
         }
 
     }
@@ -177,30 +177,30 @@ public class AntManager : MonoBehaviour
     private void DecrementCounters()
     {
         //Only try reverse tandem runs for a certain amount of time
-        if (this.state == State.Reversing && this.inNest && !NearerOld() && this.follower == null)
+        if (state == State.Reversing && inNest && !NearerOld() && follower == null)
         {
-            if (this.revTime < 1)
+            if (revTime < 1)
             {
-                RecruitToNest(this.myNest);
+                RecruitToNest(myNest);
             }
             else
             {
-                this.revTime -= 1;
+                revTime -= 1;
             }
         }
 
-        if (this.droppedRecently > 0)
+        if (droppedRecently > 0)
         {
-            this.droppedRecently -= 1;
+            droppedRecently -= 1;
         }
 
-        if (this.state == State.Assessing && this.assessTime > 0)
+        if (state == State.Assessing && assessTime > 0)
         {
-            this.assessTime -= 1;
+            assessTime -= 1;
         }
-        else if (this.state == State.Assessing)
+        else if (state == State.Assessing)
         {
-            if (this.assessmentStage == 0)
+            if (assessmentStage == 0)
             {
                 nestAssessmentVisit();
             }
@@ -211,37 +211,37 @@ public class AntManager : MonoBehaviour
     private void WriteHistory()
     {
         //Update timestep
-        this.timeStep++;
-        if (this.state == State.Recruiting)
+        timeStep++;
+        if (state == State.Recruiting)
         {
-            if (this.isTransporting())
+            if (isTransporting())
             {
-                this.History.StateHistory.Add(AntManager.State.Carrying);
+                History.StateHistory.Add(AntManager.State.Carrying);
             }
-            else if (this.isTandemRunning())
+            else if (isTandemRunning())
             {
-                this.History.StateHistory.Add(AntManager.State.Leading);
+                History.StateHistory.Add(AntManager.State.Leading);
             }
             else
             {
-                this.History.StateHistory.Add(AntManager.State.Recruiting);
+                History.StateHistory.Add(AntManager.State.Recruiting);
             }
         }
-        else if (this.state == State.Reversing)
+        else if (state == State.Reversing)
         {
-            if (this.isTandemRunning())
+            if (isTandemRunning())
             {
-                this.History.StateHistory.Add(AntManager.State.ReversingLeading);
+                History.StateHistory.Add(AntManager.State.ReversingLeading);
                 //				this.History.StateHistory.Add(AntManager.State.Reversing);
             }
             else
             {
-                this.History.StateHistory.Add(AntManager.State.Reversing);
+                History.StateHistory.Add(AntManager.State.Reversing);
             }
         }
         else
         {
-            this.History.StateHistory.Add(this.state);
+            History.StateHistory.Add(state);
         }
 
     }
@@ -265,23 +265,23 @@ public class AntManager : MonoBehaviour
     {
         if (transform.parent.tag == Naming.Ants.CarryPosition)
             return;
-        else if (this.state == State.Recruiting)
+        else if (state == State.Recruiting)
         {
             AssignParent(myNest, "R", Color.blue);
         }
-        else if (this.state == State.Inactive)
+        else if (state == State.Inactive)
         {
             AssignParent(myNest, "P", Color.black);
         }
-        else if (this.state == State.Scouting && transform.parent.name != "S")
+        else if (state == State.Scouting && transform.parent.name != "S")
         {
             AssignParent(null, "S", Color.white);
         }
-        else if (this.state == State.Assessing)
+        else if (state == State.Assessing)
         {
             AssignParent(nestToAssess, "A", Color.red);
         }
-        else if (this.state == State.Reversing)
+        else if (state == State.Reversing)
         {
             AssignParent(myNest, "RT", Color.yellow);
         }
@@ -294,7 +294,7 @@ public class AntManager : MonoBehaviour
     //returns true if this ant is carrying another
     public bool isTransporting()
     {
-        if (transform.parent.tag == Naming.Ants.CarryPosition || this.carryPosition.childCount > 0)
+        if (transform.parent.tag == Naming.Ants.CarryPosition || carryPosition.childCount > 0)
             return true;
         else
             return false;
@@ -303,7 +303,7 @@ public class AntManager : MonoBehaviour
     //returns true if this ant is leading or being led
     public bool isTandemRunning()
     {
-        if (this.follower != null || this.leader != null)
+        if (follower != null || leader != null)
             return true;
         else
             return false;
@@ -317,10 +317,10 @@ public class AntManager : MonoBehaviour
     //tell this ant to lead 'follower' to preffered nest
     public void Lead(AntManager follower)
     {
-        if (this.failedTandemLeader == true && this.state == State.Recruiting)
+        if (failedTandemLeader == true && state == State.Recruiting)
         {
-            this.failedTandemLeader = false;
-            this.History.failedLeaderFoundFollowerAdd();
+            failedTandemLeader = false;
+            History.failedLeaderFoundFollowerAdd();
         }
 
         var date = DateTime.Now;
@@ -329,9 +329,9 @@ public class AntManager : MonoBehaviour
         // set start of forward tandem run (log start position and timestep)
         forwardTandemRun = true;
         startPos = transform.position;
-        tandemTimeSteps = this.timeStep;
+        tandemTimeSteps = timeStep;
 
-        this.leaderPositionContact = transform.position;
+        leaderPositionContact = transform.position;
 
         // allow FTR leader to lay pheromones at rate 1.85 per sec (Basari, Trail Laying During Tandem Running)
         move.usePheromones = true;
@@ -339,17 +339,17 @@ public class AntManager : MonoBehaviour
         //let following ant know that you're leading it
         this.follower = follower;
         this.follower.Follow(this);
-        this.newToOld = false;
+        newToOld = false;
 
         //turn this ant around to face towards chosen nest
-        transform.LookAt(this.myNest.transform);
+        transform.LookAt(myNest.transform);
 
         //Update History
-        if (this.History.firstTandem == 0)
+        if (History.firstTandem == 0)
         {
-            this.History.firstTandem = this.timeStep;
+            History.firstTandem = timeStep;
         }
-        this.History.numTandem++;
+        History.numTandem++;
     }
 
     public void ReverseLead(AntManager follower)
@@ -360,55 +360,55 @@ public class AntManager : MonoBehaviour
         // set start of reverse tandem run (log start position and timestep)
         reverseTandemRun = true;
         startPos = transform.position;
-        tandemTimeSteps = this.timeStep;
+        tandemTimeSteps = timeStep;
 
         move.usePheromones = true;
-        this.leaderPositionContact = transform.position;
+        leaderPositionContact = transform.position;
 
         //let following ant know that you're leading it
         this.follower = follower;
         this.follower.Follow(this);
-        this.newToOld = true;
+        newToOld = true;
 
         //turn this ant around to face towards chosen nest
-        transform.LookAt(this.oldNest.transform);
+        transform.LookAt(oldNest.transform);
 
         //Update History
-        if (this.History.firstRev == 0)
+        if (History.firstRev == 0)
         {
-            this.History.firstRev = this.timeStep;
+            History.firstRev = timeStep;
         }
-        this.History.numRev++;
+        History.numRev++;
 
     }
 
     public void StopLeading()
     {
-        this.startTandemRunSeconds = 0;
-        this.followerWait = true;
-        this.leaderWaits = false;
+        startTandemRunSeconds = 0;
+        followerWait = true;
+        leaderWaits = false;
 
         // get total time steps taken for tandem run
-        this.tandemTimeSteps = -1 * (this.tandemTimeSteps - this.timeStep);
+        tandemTimeSteps = -1 * (tandemTimeSteps - timeStep);
 
         // get end poistion of tandem run
-        this.endPos = transform.position;
+        endPos = transform.position;
         // calculate distance covered for tandem run
-        float TRDistance = Vector3.Distance(this.endPos, this.startPos);
+        float TRDistance = Vector3.Distance(endPos, startPos);
         // calculate the speed of tandem run (Unity Distance / Unity timesteps) 
-        float TRSpeed = TRDistance / (float)tandemTimeSteps;
+        float TRSpeed = TRDistance / tandemTimeSteps;
 
         // update forward / reverse tandem run speed and successful tandem run
         if (forwardTandemRun == true)
         {
-            this.History.forwardTandemTimeSteps.Add(TRSpeed);
-            this.History.completeFTR();
+            History.forwardTandemTimeSteps.Add(TRSpeed);
+            History.completeFTR();
             forwardTandemRun = false;
         }
         else if (reverseTandemRun == true)
         {
-            this.History.reverseTandemTimeSteps.Add(TRSpeed);
-            this.History.completeRTR();
+            History.reverseTandemTimeSteps.Add(TRSpeed);
+            History.completeRTR();
             reverseTandemRun = false;
         }
 
@@ -416,15 +416,15 @@ public class AntManager : MonoBehaviour
         // (Basari, Trail Laying During Tandem Running)
         move.usePheromones = false;
 
-        this.follower = null;
-        RecruitToNest(this.myNest);
+        follower = null;
+        RecruitToNest(myNest);
     }
 
     //returns true if there is a line of sight between this ant and the given object
     public bool LineOfSight(GameObject obj)
     {
         float distance = 20f;
-        if (this.leader != null) { distance = 4.5f; }
+        if (leader != null) { distance = 4.5f; }
         RaycastHit hit;
         if (Physics.Raycast(transform.position, obj.transform.position - transform.position, out hit, distance))
         {
@@ -442,22 +442,22 @@ public class AntManager : MonoBehaviour
 
         //start following leader towards nest
         ChangeState(State.Following);
-        this.newToOld = false;
+        newToOld = false;
         this.leader = leader;
 
         //we want to turn to follow the leader now
         move.ChangeDirection();
 
-        this.followerWait = true;
+        followerWait = true;
     }
 
     public void StopFollowing()
     {
-        this.followerWait = true;
-        this.leaderWaits = false;
-        this.startTandemRunSeconds = 0;
-        this.estimateNewLeaderPos = new Vector3(0, 0, 0);
-        this.leader = null;
+        followerWait = true;
+        leaderWaits = false;
+        startTandemRunSeconds = 0;
+        estimateNewLeaderPos = new Vector3(0, 0, 0);
+        leader = null;
     }
 
     //makes this ant pick up 'otherAnt' and carry them back to preffered nest
@@ -465,24 +465,24 @@ public class AntManager : MonoBehaviour
     {
         socialCarrying = true;
         startPos = transform.position;
-        carryingTimeSteps = this.timeStep;
+        carryingTimeSteps = timeStep;
 
         otherAnt.PickedUp(transform);
-        this.newToOld = false;
-        transform.LookAt(this.myNest.transform);
+        newToOld = false;
+        transform.LookAt(myNest.transform);
 
-        if (this.History.firstCarry == 0)
+        if (History.firstCarry == 0)
         {
-            this.History.firstCarry = this.timeStep;
+            History.firstCarry = timeStep;
         }
-        this.History.numCarry++;
+        History.numCarry++;
     }
 
     //lets this ant know that it has been picked up by carrier
     public void PickedUp(Transform carrier)
     {
         //stop moving
-        this.move.Disable();
+        move.Disable();
 
         //get into position
         Transform carryPosition = carrier.Find(Naming.Ants.CarryPosition);
@@ -491,7 +491,7 @@ public class AntManager : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, 0, 90);
 
         //turn off senses
-        this.sensesCol.enabled = false;
+        sensesCol.enabled = false;
     }
 
     //lets this ant know that it has been put down, sets it upright and turns senses back on 
@@ -500,7 +500,7 @@ public class AntManager : MonoBehaviour
         //turn the right way up 
         transform.rotation = Quaternion.identity;
         transform.position = new Vector3(transform.position.x + 1, 1.08f, transform.position.z);
-        this.move.Enable();
+        move.Enable();
 
         if (transform.parent.tag == Naming.Ants.CarryPosition)
         {
@@ -509,22 +509,22 @@ public class AntManager : MonoBehaviour
         }
 
         //make ant inactive in this nest
-        this.oldNest = nest;
-        this.myNest = nest;
-        this.droppedRecently = this.droppedWait;
+        oldNest = nest;
+        myNest = nest;
+        droppedRecently = droppedWait;
         //this.nextAssesment = Time.timeSinceLevelLoad + Random.Range(0.5f, 1f) * this.maxAssessmentWait;
         ChangeState(State.Inactive);
 
         //turns senses on if non passive ant
-        if (!this.passive)
-            this.sensesCol.enabled = true;
+        if (!passive)
+            sensesCol.enabled = true;
 
         //Store history
         int nestID = simulation.GetNestID(nest) - 1;
         if (nestID >= 0)
         {
-            this.History.NestDiscoveryType[nestID] = SimData.DiscoveryType.Lead;
-            this.History.NestDiscoveryTime[nestID] = this.timeStep;
+            History.NestDiscoveryType[nestID] = SimData.DiscoveryType.Lead;
+            History.NestDiscoveryTime[nestID] = timeStep;
         }
     }
 
@@ -547,84 +547,84 @@ public class AntManager : MonoBehaviour
     //this is called whenever an ant enters a nest
     public void EnteredNest(GameObject nest)
     {
-        if (this.failedTandemLeader == true && this.state == State.Recruiting && nest != this.oldNest)
+        if (failedTandemLeader == true && state == State.Recruiting && nest != oldNest)
         {
-            this.failedTandemLeader = false;
-            this.History.failedLeaderNewNestAdd();
+            failedTandemLeader = false;
+            History.failedLeaderNewNestAdd();
         }
 
-        this.inNest = true;
+        inNest = true;
 
         //Deal with History
         int nestID = simulation.GetNestID(nest) - 1;
         if (nestID >= 0)
         {
-            if (this.History.NestDiscoveryTime[nestID] == 0)
+            if (History.NestDiscoveryTime[nestID] == 0)
             {
-                this.History.NestDiscoveryTime[nestID] = this.timeStep;
-                if (this.state == State.Following)
+                History.NestDiscoveryTime[nestID] = timeStep;
+                if (state == State.Following)
                 {
-                    this.History.NestDiscoveryType[nestID] = SimData.DiscoveryType.Lead;
+                    History.NestDiscoveryType[nestID] = SimData.DiscoveryType.Lead;
                 }
                 else
                 {
-                    this.History.NestDiscoveryType[nestID] = SimData.DiscoveryType.Found;
+                    History.NestDiscoveryType[nestID] = SimData.DiscoveryType.Found;
                 }
             }
         }
 
         //ignore ants that have just been dropped here
-        if (nest == this.myNest && this.state == State.Inactive)
+        if (nest == myNest && state == State.Inactive)
             return;
 
         //ignore ants that are carrying or are being carried
-        if (this.carryPosition.childCount > 0 || transform.parent.tag == Naming.Ants.CarryPosition)
+        if (carryPosition.childCount > 0 || transform.parent.tag == Naming.Ants.CarryPosition)
             return;
 
         //if this ant has been lead to this nest then tell leader that it's done its job
-        if (this.state == State.Following && this.leader != null)
+        if (state == State.Following && leader != null)
         {
-            if (this.leader.state == State.Recruiting && nest != this.leader.oldNest)
+            if (leader.state == State.Recruiting && nest != leader.oldNest)
             {
                 leader.StopLeading();
                 StopFollowing();
-                if (this.passive)
+                if (passive)
                 {
-                    this.myNest = nest;
+                    myNest = nest;
                     ChangeState(State.Inactive);
                     return;
                 }
                 else
                 {
-                    this.nestToAssess = nest;
+                    nestToAssess = nest;
                     ChangeState(State.Assessing);
                 }
             }
-            else if (this.leader.state == State.Reversing && nest == this.leader.oldNest)
+            else if (leader.state == State.Reversing && nest == leader.oldNest)
             {
-                this.myNest = leader.myNest;
-                this.oldNest = leader.oldNest;
+                myNest = leader.myNest;
+                oldNest = leader.oldNest;
                 leader.StopLeading();
                 StopFollowing();
-                RecruitToNest(this.myNest);
+                RecruitToNest(myNest);
             }
         }
 
         //if entering own nest and finished recruiting then become inactive
-        if (this.state == State.Recruiting && nest == this.myNest)
+        if (state == State.Recruiting && nest == myNest)
         {
 
-            if (this.finishedRecruiting == true)
+            if (finishedRecruiting == true)
             {
                 ChangeState(State.Inactive);
-                this.finishedRecruiting = false;
+                finishedRecruiting = false;
                 return;
             }
             else
             {
-                if (this.follower == null && RandomGenerator.Instance.Range(0f, 1f) < this.pRecAssessNew && !this.IsQuorumReached())
+                if (follower == null && RandomGenerator.Instance.Range(0f, 1f) < pRecAssessNew && !IsQuorumReached())
                 {
-                    this.nestToAssess = nest;
+                    nestToAssess = nest;
                     ChangeState(State.Assessing);
                 }
                 else
@@ -634,44 +634,44 @@ public class AntManager : MonoBehaviour
             }
         }
 
-        if (this.state == State.Recruiting && nest == this.oldNest)
+        if (state == State.Recruiting && nest == oldNest)
         {
             NestManager nestM = nest.Nest();
 
             //if no passive ants left in old nest then turn around and return home
-            if (this.finishedRecruiting || nestM.GetPassive() == 0)
+            if (finishedRecruiting || nestM.GetPassive() == 0)
             {
-                this.newToOld = false;
-                this.finishedRecruiting = true;
+                newToOld = false;
+                finishedRecruiting = true;
                 return;
             }
             //if recruiting and this is old nest then assess with probability pRecAssessOld
-            else if (RandomGenerator.Instance.Range(0f, 1f) < this.pRecAssessOld)
+            else if (RandomGenerator.Instance.Range(0f, 1f) < pRecAssessOld)
             {
-                this.nestToAssess = nest;
+                nestToAssess = nest;
                 ChangeState(State.Assessing);
                 return;
             }
         }
 
-        if (this.state == State.Reversing && nest == this.oldNest)
+        if (state == State.Reversing && nest == oldNest)
         {
             NestManager nestM = nest.Nest();
 
             if (nestM.GetPassive() == 0)
             {
-                this.newToOld = false;
+                newToOld = false;
                 ChangeState(State.Recruiting);
-                this.finishedRecruiting = true;
+                finishedRecruiting = true;
                 return;
             }
         }
 
 
         //if either ant is following or this isn't one of the ants known nests then assess it
-        if (((this.state == State.Scouting || this.state == State.Recruiting) && nest != oldNest && nest != myNest) || this.state == State.Following && this.leader.state != State.Reversing && nest != this.leader.oldNest)
+        if (((state == State.Scouting || state == State.Recruiting) && nest != oldNest && nest != myNest) || state == State.Following && leader.state != State.Reversing && nest != leader.oldNest)
         {
-            this.nestToAssess = nest;
+            nestToAssess = nest;
             ChangeState(State.Assessing);
         }
         else
@@ -682,8 +682,8 @@ public class AntManager : MonoBehaviour
                 //oldNest = null;    
 
                 //if recruiting and this is your nest then go back to looking around for ants to recruit 
-                if (this.state == State.Recruiting && nest == this.myNest && this.follower == null)
-                    RecruitToNest(this.myNest);
+                if (state == State.Recruiting && nest == myNest && follower == null)
+                    RecruitToNest(myNest);
         }
     }
 
@@ -693,30 +693,30 @@ public class AntManager : MonoBehaviour
     private void nestAssessmentVisit()
     {
 
-        if (this.nestAssessmentVisitNumber == 1)
+        if (nestAssessmentVisitNumber == 1)
         {
             // store lenght of first visit and reset length to zero
-            this.assessmentFirstLengthHistory = this.move.assessingDistance;
-            this.move.assessingDistance = 0f;
-            this.assessmentStage = 1;
+            assessmentFirstLengthHistory = move.assessingDistance;
+            move.assessingDistance = 0f;
+            assessmentStage = 1;
             print("finished assessment");
             return;
         }
-        this.assessmentSecondLengthHistory = this.move.assessingDistance;
-        this.move.assessingDistance = 0f;
+        assessmentSecondLengthHistory = move.assessingDistance;
+        move.assessingDistance = 0f;
 
         // store buffon needle assessment values and reset (once assessment has finishe)
         storeAssessmentHistory();
 
-        AssessNest(this.nestToAssess);
+        AssessNest(nestToAssess);
     }
 
     public void nestAssessmentSeconfVisit()
     {
         GetComponent<Renderer>().material.color = Color.grey;
-        this.assessmentStage = 0;
-        this.nestAssessmentVisitNumber = 2;
-        this.assessTime = getAssessTime();
+        assessmentStage = 0;
+        nestAssessmentVisitNumber = 2;
+        assessTime = getAssessTime();
         move.usePheromones = false;
     }
 
@@ -724,35 +724,35 @@ public class AntManager : MonoBehaviour
 
     private void storeAssessmentHistory()
     {
-        if (this.nestAssessmentVisitNumber != 2)
+        if (nestAssessmentVisitNumber != 2)
         {
             return;
         }
 
         // store history once assessment finished
-        this.History.assessmentFirstLength.Add(this.assessmentFirstLengthHistory);
-        this.History.assessmentSecondLength.Add(this.assessmentSecondLengthHistory);
-        this.History.assessmentFirstTime.Add(this.assessmentFirstTimeHistory);
-        this.History.assessmentSecondTime.Add(this.assessmentSecondTimeHistory);
+        History.assessmentFirstLength.Add(assessmentFirstLengthHistory);
+        History.assessmentSecondLength.Add(assessmentSecondLengthHistory);
+        History.assessmentFirstTime.Add(assessmentFirstTimeHistory);
+        History.assessmentSecondTime.Add(assessmentSecondTimeHistory);
 
-        if (this.move.intersectionNumber != 0f)
+        if (move.intersectionNumber != 0f)
         {
 
-            float area = (2.0f * this.assessmentFirstLengthHistory * this.assessmentSecondLengthHistory) / (3.14159265359f * this.move.intersectionNumber);
-            this.currentNestArea = area;
+            float area = (2.0f * assessmentFirstLengthHistory * assessmentSecondLengthHistory) / (3.14159265359f * move.intersectionNumber);
+            currentNestArea = area;
 
-            int ID = simulation.nests.IndexOf(this.nestToAssess.transform);
-            this.History.assessmentAreaResult.Add("nest_" + ID + "\":'" + area);
+            int ID = simulation.nests.IndexOf(nestToAssess.transform);
+            History.assessmentAreaResult.Add("nest_" + ID + "\":'" + area);
 
         }
 
         // reset values
-        this.assessmentFirstLengthHistory = 0;
-        this.assessmentSecondLengthHistory = 0;
-        this.assessmentFirstTimeHistory = 0;
-        this.assessmentSecondTimeHistory = 0;
-        this.nestAssessmentVisitNumber = 0;
-        this.move.intersectionNumber = 0f;
+        assessmentFirstLengthHistory = 0;
+        assessmentSecondLengthHistory = 0;
+        assessmentFirstTimeHistory = 0;
+        assessmentSecondTimeHistory = 0;
+        nestAssessmentVisitNumber = 0;
+        move.intersectionNumber = 0f;
     }
     //
 
@@ -763,9 +763,9 @@ public class AntManager : MonoBehaviour
 
         //make assessment of this nest's quality
         int nestID = simulation.GetNestID(nest) - 1;
-        if (nestID >= 0 && nest != this.myNest)
+        if (nestID >= 0 && nest != myNest)
         {
-            this.History.numAssessments[nestID]++;
+            History.numAssessments[nestID]++;
         }
 
         //greg edit 
@@ -780,14 +780,14 @@ public class AntManager : MonoBehaviour
         */
 
         //reset current nest area
-        this.currentNestArea = 0f;
+        currentNestArea = 0f;
 
         /*
 		 * Old nest quality measurement
 		 *
 		 */
         NestManager nestM = nest.Nest();
-        float q = normalRandom(nestM.quality, this.assessmentNoise);
+        float q = normalRandom(nestM.quality, assessmentNoise);
         if (q < 0f)
             q = 0f;
         else if (q > 1f)
@@ -795,72 +795,72 @@ public class AntManager : MonoBehaviour
 
 
         //if an !passive ant decides that his current isn't good enough then go look for another
-        if (this.state == State.Inactive && nest == this.myNest)
+        if (state == State.Inactive && nest == myNest)
         {
-            this.percievedQuality = q;
-            if (q < this.nestThreshold)
+            percievedQuality = q;
+            if (q < nestThreshold)
             {
-                this.oldNest = this.myNest;
+                oldNest = myNest;
                 ChangeState(State.Scouting);
             }
         }
         else
         {
             //if not using comparison then check if this nest is as good or better than threshold
-            if (!this.comparisonAssess && q >= this.nestThreshold)
+            if (!comparisonAssess && q >= nestThreshold)
             {
-                if (nest != this.myNest)
+                if (nest != myNest)
                 {
-                    this.oldNest = this.myNest;
+                    oldNest = myNest;
                 }
-                if (this.follower != null)
+                if (follower != null)
                 {
-                    this.follower.myNest = nest;
+                    follower.myNest = nest;
                     StopLeading();
                 }
-                this.percievedQuality = q;
+                percievedQuality = q;
                 RecruitToNest(nest);
                 if (nestID >= 0)
                 {
-                    this.History.numAcceptance[nestID]++;
+                    History.numAcceptance[nestID]++;
                 }
-                if (this.myNest != null)
+                if (myNest != null)
                 {
-                    this.History.numSwitch++;
+                    History.numSwitch++;
                 }
             }
             //if not using comparison then check if this reaches threshold and is better than previous nest
-            else if (this.comparisonAssess && q >= this.nestThreshold && (this.myNest == null || q > this.percievedQuality))
+            else if (comparisonAssess && q >= nestThreshold && (myNest == null || q > percievedQuality))
             {
-                if (nest != this.myNest)
+                if (nest != myNest)
                 {
-                    this.oldNest = this.myNest;
+                    oldNest = myNest;
                     if (nestID >= 0)
                     {
-                        this.History.numAcceptance[nestID]++;
+                        History.numAcceptance[nestID]++;
                     }
 
-                    if (this.myNest != null)
+                    if (myNest != null)
                     {
-                        this.History.numSwitch++;
+                        History.numSwitch++;
                     }
                 }
 
-                if (this.follower != null)
+                if (follower != null)
                 {
-                    this.follower.myNest = nest;
+                    follower.myNest = nest;
                     StopLeading();
                 }
-                this.percievedQuality = q;
+                percievedQuality = q;
                 RecruitToNest(nest);
 
             }
             else
             {
-                if (this.previousState == State.Scouting)
+                if (previousState == State.Scouting)
                     ChangeState(State.Scouting);
-                else if (this.previousState == State.Recruiting)
-                    RecruitToNest(this.myNest);
+                else if (previousState == State.Recruiting)
+                    RecruitToNest(myNest);
             }
         }
     }
@@ -868,18 +868,18 @@ public class AntManager : MonoBehaviour
     //returns true if quorum has been reached in this.myNest 
     public bool IsQuorumReached()
     {
-        return this.percievedQourum >= this.quorumThreshold;
+        return percievedQourum >= quorumThreshold;
     }
 
     //called whenever an ant leaves a nest
     public void LeftNest()
     {
-        this.inNest = false;
+        inNest = false;
 
         //when an assessor leaves the nest then make decision about wether to recruit TO that nest
-        if (this.state == State.Assessing && this.assessTime == 0)
+        if (state == State.Assessing && assessTime == 0)
         {
-            if (this.assessmentStage == 0)
+            if (assessmentStage == 0)
             {
                 nestAssessmentVisit();
             }
@@ -887,9 +887,9 @@ public class AntManager : MonoBehaviour
         }
 
         //Update Emigration History Data
-        if (this.History.LeftOld == 0)
+        if (History.LeftOld == 0)
         {
-            this.History.LeftOld = this.timeStep;
+            History.LeftOld = timeStep;
         }
     }
 
@@ -902,7 +902,7 @@ public class AntManager : MonoBehaviour
         }
         if (this.state != State.Following && this.state != State.Assessing)
         {
-            this.previousState = this.state;
+            previousState = this.state;
         }
         this.state = state;
         AssignParent();
@@ -912,10 +912,10 @@ public class AntManager : MonoBehaviour
     {
 
         // make this nest assessment their first visit
-        this.nestAssessmentVisitNumber = 1;
-        this.assessTime = getAssessTime();
+        nestAssessmentVisitNumber = 1;
+        assessTime = getAssessTime();
         // get start position of assessor ant
-        this.move.lastPosition = this.move.transform.position;
+        move.lastPosition = move.transform.position;
         move.usePheromones = true;
     }
 
@@ -929,7 +929,7 @@ public class AntManager : MonoBehaviour
         //greg edit		float halfInterquartileRangeAssessTime = 40f;
         float halfInterquartileRangeAssessTime = 7f;
         int averageAssessTime;
-        if (this.nestAssessmentVisitNumber == 1)
+        if (nestAssessmentVisitNumber == 1)
         {
             //greg edit			averageAssessTime = 142;
             averageAssessTime = 28;
@@ -942,12 +942,12 @@ public class AntManager : MonoBehaviour
         float deviate = (float)RandomGenerator.Instance.UniformDeviate(-1, 1);
         int duration = (averageAssessTime + (int)(halfInterquartileRangeAssessTime * deviate));
 
-        if (this.nestAssessmentVisitNumber == 1)
+        if (nestAssessmentVisitNumber == 1)
         {
-            this.assessmentFirstTimeHistory = duration;
+            assessmentFirstTimeHistory = duration;
         }
         else {
-            this.assessmentSecondTimeHistory = duration;
+            assessmentSecondTimeHistory = duration;
         }
         return duration;
     }
@@ -959,32 +959,32 @@ public class AntManager : MonoBehaviour
         int nestID = simulation.GetNestID(nest) - 1;
         if (nestID >= 0)
         {
-            if (this.History.NestRecruitTime[nestID] == 0)
+            if (History.NestRecruitTime[nestID] == 0)
             {
-                this.History.NestRecruitTime[nestID] = this.timeStep;
+                History.NestRecruitTime[nestID] = timeStep;
             }
         }
-        this.newToOld = true;
-        this.myNest = nest;
+        newToOld = true;
+        myNest = nest;
         NestManager nestM = nest.Nest();
         //check the qourum of this nest until quorum is met once.
         if (IsQuorumReached())
         {
-            this.percievedQourum = this.quorumThreshold;
+            percievedQourum = quorumThreshold;
         }
         else
         {
-            this.percievedQourum = Mathf.Round(normalRandom(nestM.GetQuorum(), this.qourumAssessNoise));
+            percievedQourum = Mathf.Round(normalRandom(nestM.GetQuorum(), qourumAssessNoise));
         }
 
-        this.recTime = this.recTryTime;
+        recTime = recTryTime;
         ChangeState(State.Recruiting);
     }
 
     private void Reverse(GameObject nest)
     {
         ChangeState(State.Reversing);
-        this.revTime = this.revTryTime;
+        revTime = revTryTime;
     }
 
     //returns true if this ant is nearer it's old nest than new
@@ -1010,7 +1010,7 @@ public class AntManager : MonoBehaviour
         // log the time that the tandem run was lost
         var date = System.DateTime.Now;
         int currentTime = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
-        this.timeWhenTandemLostContact = currentTime;
+        timeWhenTandemLostContact = currentTime;
         // calculate the Leader Give-Up Time (LGUT)
         calculateLGUT(currentTime);
     }
@@ -1020,35 +1020,35 @@ public class AntManager : MonoBehaviour
     {
         int tandemDuration = (currentTime - startTandemRunSeconds) * (int)Time.timeScale; ;
         double exponent = 0.9651 + 0.3895 * Mathf.Log10(tandemDuration);
-        this.LGUT = Mathf.Pow(10, (float)exponent);
+        LGUT = Mathf.Pow(10, (float)exponent);
     }
 
     // called once a follower has re-connected with the tandem leader (re-sets values)
     public void tandemContactRegained()
     {
-        this.LGUT = 0.0f;
-        this.timeWhenTandemLostContact = 0;
+        LGUT = 0.0f;
+        timeWhenTandemLostContact = 0;
     }
 
     // every time step this function is called from a searching follower
     public bool hasLGUTExpired()
     {
-        if (this.LGUT == 0.0 || this.timeWhenTandemLostContact == 0) { return false; }
+        if (LGUT == 0.0 || timeWhenTandemLostContact == 0) { return false; }
 
         var date = System.DateTime.Now;
         int currentTime = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
         int durationLostContact = (currentTime - timeWhenTandemLostContact) * (int)Time.timeScale; ;
 
         // if duration since lost contact is longer than LGUT then tandem run has failed  
-        return durationLostContact > this.LGUT;
+        return durationLostContact > LGUT;
     }
 
     // if duration of lost contact is greater than LGUT fail tandem run
     public void failedTandemRun()
     {
-        if (this.state == State.Following && this.leader != null)
+        if (state == State.Following && leader != null)
         {
-            if (this.leader.state == State.Recruiting || this.leader.state == State.Reversing)
+            if (leader.state == State.Recruiting || leader.state == State.Reversing)
             {
                 // failed tandem leader behaviour
                 leader.failedTandemLeaderBehvaiour();
@@ -1061,36 +1061,36 @@ public class AntManager : MonoBehaviour
     // failed tandem leader behaviour
     private void failedTandemLeaderBehvaiour()
     {
-        this.startTandemRunSeconds = 0;
+        startTandemRunSeconds = 0;
 
         // log failed tandem run in history
         if (forwardTandemRun == true)
         {
-            this.History.failedFTR();
+            History.failedFTR();
             forwardTandemRun = false;
         }
         else if (reverseTandemRun == true)
         {
-            this.History.failedRTR();
+            History.failedRTR();
             reverseTandemRun = false;
         }
         // reset tandem variables
-        this.leaderWaits = false;
-        this.followerWait = true;
+        leaderWaits = false;
+        followerWait = true;
         // turn off pheromones
         move.usePheromones = false;
-        this.follower = null;
+        follower = null;
 
         // behaviour after failed tandem run
         ChangeState(State.Recruiting);
-        this.failedTandemLeader = true;
+        failedTandemLeader = true;
 
-        if (this.previousState == State.Reversing)
+        if (previousState == State.Reversing)
         {
-            this.newToOld = true;
+            newToOld = true;
         }
         else {
-            this.newToOld = false;
+            newToOld = false;
         }
     }
 
@@ -1101,7 +1101,7 @@ public class AntManager : MonoBehaviour
 
         // greg edit
         //TODO need to make accurate behaviour after
-        if (this.myNest == this.oldNest)
+        if (myNest == oldNest)
         {
             ChangeState(State.Scouting);
         }

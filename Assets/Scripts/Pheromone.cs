@@ -16,14 +16,14 @@ public class Pheromone : MonoBehaviour
 		myCollider.radius = 2f;
 		
 		this.owner = owner;
-		this.strength = -1.0f;
-		this.assessingPheromone = false;
+        strength = -1.0f;
+        assessingPheromone = false;
 		
 //		InvokeRepeating("WeakenScouting", 1, 1);
 	}
 	//greg edit
 	private void WeakenScouting() {
-		this.strength += (0.5f/duration);
+        strength += (0.5f/duration);
 		if(strength >= 0)
 			Destroy(gameObject);
 	}
@@ -37,17 +37,17 @@ public class Pheromone : MonoBehaviour
 		this.owner = owner;
 		
 		if (this.owner.ant.state == AntManager.State.Recruiting) {
-			this.strength = 1.05f;
+            strength = 1.05f;
 		} else {
-			this.strength = 1.0f;
+            strength = 1.0f;
 		}
-		
-		this.assessingPheromone = false;		
+
+        assessingPheromone = false;		
 		InvokeRepeating("Weaken", 1, 1);
 	}
 	
 	private void Weaken() {
-		this.strength -= (0.5f/duration);
+        strength -= (0.5f/duration);
 		if(strength <= 0)
 			Destroy(gameObject);
 	}
@@ -58,9 +58,9 @@ public class Pheromone : MonoBehaviour
 		myCollider.radius = 0.125f; 
 		
 		this.owner = owner;
-		this.strength = 0.0f;
-		this.assessingPheromone = true;
-		this.assessingPheromoneCounted = false;
+        strength = 0.0f;
+        assessingPheromone = true;
+        assessingPheromoneCounted = false;
 		
 		// when the owner is no longer assessing the nest remove the pheromones
 		InvokeRepeating("Remove", 1, 1);
@@ -74,9 +74,9 @@ public class Pheromone : MonoBehaviour
 	}
 	
 	private void ResetPheromoneCount() {
-		if (this.assessingPheromoneCounted == true) {
-			if (Vector3.Distance (transform.position, this.owner.transform.position) > (this.owner.assessmentPheromoneRange * 1.1f) ) {
-				this.assessingPheromoneCounted = false;
+		if (assessingPheromoneCounted == true) {
+			if (Vector3.Distance (transform.position, owner.transform.position) > (owner.assessmentPheromoneRange * 1.1f) ) {
+                assessingPheromoneCounted = false;
 			}
 		}
 	}

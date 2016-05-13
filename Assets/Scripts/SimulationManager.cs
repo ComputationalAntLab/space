@@ -86,10 +86,10 @@ public class SimulationManager : MonoBehaviour
             int column = 0;
             while ((column == 0 || spawnedAnts % sqrt != 0) && spawnedAnts < Settings.ColonySize)
             {
-                float row = Mathf.Floor((float)spawnedAnts / sqrt);
+                float row = Mathf.Floor(spawnedAnts / sqrt);
                 Vector3 pos = initialNest.transform.position;
 
-                GameObject newAnt = (GameObject)Instantiate(this.antPrefab, new Vector3(pos.x + row, 1.08f, pos.z + column), Quaternion.identity);
+                GameObject newAnt = (GameObject)Instantiate(antPrefab, new Vector3(pos.x + row, 1.08f, pos.z + column), Quaternion.identity);
                 newAnt.name = CreateAntId(Settings.ColonySize, spawnedAnts);
                 newAnt.AntMovement().simManager = this;
 
@@ -102,7 +102,7 @@ public class SimulationManager : MonoBehaviour
                 newAM.quorumThreshold = Settings.QuorumThreshold;
                 newAnt.transform.parent = passive;
 
-                if ((float)spawnedAnts < (float)Settings.ColonySize * Settings.ProportionActive)
+                if (spawnedAnts < Settings.ColonySize * Settings.ProportionActive)
                 {
                     newAM.state = AntManager.State.Inactive;
                     newAM.passive = false;
@@ -112,7 +112,7 @@ public class SimulationManager : MonoBehaviour
                     ((SphereCollider)senses.GetComponent("SphereCollider")).radius = ((AntSenses)senses.GetComponent(Naming.Ants.SensesScript)).range;
                     ((AntSenses)senses.GetComponent(Naming.Ants.SensesScript)).enabled = true;
 
-                    if ((float)spawnedAntScounts < InitialScouts)
+                    if (spawnedAntScounts < InitialScouts)
                     {
                         newAM.nextAssesment = 1;
                         spawnedAntScounts++;

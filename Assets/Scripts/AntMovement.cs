@@ -63,23 +63,23 @@ public class AntMovement : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        this.ant = (AntManager)transform.GetComponent(Naming.Ants.Controller);
-        this.cont = (CharacterController)transform.GetComponent("CharacterController");
-        this.lastTurn = transform.position;
-        this.dir = Random.Range(0, 360);
-        this.nextDirChange_time = Time.timeSinceLevelLoad + maxDirChange_time;
+        ant = (AntManager)transform.GetComponent(Naming.Ants.Controller);
+        cont = (CharacterController)transform.GetComponent("CharacterController");
+        lastTurn = transform.position;
+        dir = Random.Range(0, 360);
+        nextDirChange_time = Time.timeSinceLevelLoad + maxDirChange_time;
 
-        this.pheromoneParent = GameObject.Find(Naming.ObjectGroups.Pheromones).transform;
-        this.nextPheromoneCheck = Time.timeSinceLevelLoad;
+        pheromoneParent = GameObject.Find(Naming.ObjectGroups.Pheromones).transform;
+        nextPheromoneCheck = Time.timeSinceLevelLoad;
         //passive ants laying in centre of nests makes ants gravitate towards nest centers to much
 
         // set the speeds
-        this.scoutSpeed = 50f;                          // 7.2mm/s
-        this.tandemSpeed = 50f;                         // 1.8mm/s (slower due to stop and start)
-        this.carrySpeed = 37.5f;                        // 5.4mm/s
-        this.inactiveSpeed = 5f;
-        this.assessingSpeedFirstVisit = 26.595f;        // 5.107mm/s
-        this.assessingSpeedSecondVisit = 32.175f;       // 6.179mm/
+        scoutSpeed = 50f;                          // 7.2mm/s
+        tandemSpeed = 50f;                         // 1.8mm/s (slower due to stop and start)
+        carrySpeed = 37.5f;                        // 5.4mm/s
+        inactiveSpeed = 5f;
+        assessingSpeedFirstVisit = 26.595f;        // 5.107mm/s
+        assessingSpeedSecondVisit = 32.175f;       // 6.179mm/
 
         //greg edit
         gasterHeadDistance = 0f;
@@ -96,7 +96,7 @@ public class AntMovement : MonoBehaviour
         // all active ants call the LayPheromone function reapeatedly (but only lay is usePheromones true)
         usePheromones = false; // all pheromones are false (turned off if FTR or RTR leader)
                                //greg edit
-        if (this.ant.state == AntManager.State.Scouting)
+        if (ant.state == AntManager.State.Scouting)
         {
             usePheromones = false;
         }
@@ -123,14 +123,14 @@ public class AntMovement : MonoBehaviour
         //This statements makes assessors in the nest change direction more frequently than those outside the nest.
 
 
-        if (this.ant.state == AntManager.State.Assessing && !this.ant.inNest && this.ant.assessmentStage == 0)
+        if (ant.state == AntManager.State.Assessing && !ant.inNest && ant.assessmentStage == 0)
         {
             ChangeDirection();
         }
-        else if (this.ant.state == AntManager.State.Assessing && this.ant.inNest && this.ant.assessmentStage == 0)
+        else if (ant.state == AntManager.State.Assessing && ant.inNest && ant.assessmentStage == 0)
         {
-            this.frameNumber++;
-            if ((this.frameNumber) % assessorChangeDirectionPerFrame == 0)
+            frameNumber++;
+            if ((frameNumber) % assessorChangeDirectionPerFrame == 0)
             {
                 ChangeDirection();
             }
@@ -143,10 +143,10 @@ public class AntMovement : MonoBehaviour
 		*/
 
         // if tandem follower is waiting return and do not update movement
-        if (this.ant.leader != null)
+        if (ant.leader != null)
         {
-            this.tandemSpeed = 45f;
-            if (Vector3.Distance(transform.position, this.ant.estimateNewLeaderPos) > 9.5f)
+            tandemSpeed = 45f;
+            if (Vector3.Distance(transform.position, ant.estimateNewLeaderPos) > 9.5f)
             {
                 ChangeDirection();
             }
@@ -157,9 +157,9 @@ public class AntMovement : MonoBehaviour
         }
 
         // if tandem leader is waiting return and do not update movement
-        if (this.ant.follower != null)
+        if (ant.follower != null)
         {
-            this.tandemSpeed = 50f;
+            tandemSpeed = 50f;
             if (shouldTandemLeaderWait())
             {
                 return;
@@ -170,20 +170,20 @@ public class AntMovement : MonoBehaviour
         Move();
 
         //TODO: try pheromone and doorcheck in here
-        if (!this.ant.inNest)
+        if (!ant.inNest)
         {
-            if (this.ant.state == AntManager.State.Scouting || this.ant.state == AntManager.State.Inactive)
+            if (ant.state == AntManager.State.Scouting || ant.state == AntManager.State.Inactive)
             {
                 GameObject door = DoorCheck();
                 if (door != null)
                     FaceObject(door);
                 else
-                    Turn(this.dir);
+                    Turn(dir);
             }
         }
 
         //wait for specified time until direction change
-        if (Time.timeSinceLevelLoad < this.nextDirChange_time)
+        if (Time.timeSinceLevelLoad < nextDirChange_time)
             return;
 
         //change direction calculate when next direction change occurs 
@@ -205,8 +205,8 @@ public class AntMovement : MonoBehaviour
                 {
                     // intersection speed
                     // non-intersection 4.06 mm/s, intersection 2.72mm/s => intersection speed reduced to 2.72mm/s
-                    this.assessingSpeedSecondVisit = 16.05f;
-                    this.intersectionNumber += 1.0f;
+                    assessingSpeedSecondVisit = 16.05f;
+                    intersectionNumber += 1.0f;
                     for (int j = 0; j < pheromones.Count; j++)
                     {
                         pp = (Pheromone)pheromones[j];
@@ -218,7 +218,7 @@ public class AntMovement : MonoBehaviour
                     return;
                 }
                 else {
-                    this.assessingSpeedSecondVisit = 32.175f;
+                    assessingSpeedSecondVisit = 32.175f;
                 }
             }
         }
@@ -229,25 +229,25 @@ public class AntMovement : MonoBehaviour
     private bool hasFollowerTouchedLeader()
     {
         // if follower is waiting for leader to move -> return true (follower waits)
-        if (this.ant.followerWait == true)
+        if (ant.followerWait == true)
         {
             // if follower has lost tactile contact with leader -> begin to move (wait == false) 
-            if (Vector3.Distance(transform.position, this.ant.leader.transform.position) > (averageAntennaReach))
+            if (Vector3.Distance(transform.position, ant.leader.transform.position) > (averageAntennaReach))
             {
-                this.ant.followerWait = false;
+                ant.followerWait = false;
             }
             return true;
         }
         // if follower is searching for their leader check if LGUT has expired
-        if (this.ant.hasLGUTExpired())
+        if (ant.hasLGUTExpired())
         {
             // fail tandem run if LGUT has expired
-            this.ant.failedTandemRun();
+            ant.failedTandemRun();
             return false;
         }
         // follower has made contact with leader -> reset tandem variables
-        if (Vector3.Distance(transform.position, this.ant.leader.transform.position) < averageAntennaReach &&
-            this.ant.LineOfSight(this.ant.leader.gameObject))
+        if (Vector3.Distance(transform.position, ant.leader.transform.position) < averageAntennaReach &&
+            ant.LineOfSight(ant.leader.gameObject))
         {
             tandemRegainedContact();
             return true;
@@ -261,40 +261,40 @@ public class AntMovement : MonoBehaviour
     private void tandemRegainedContact()
     {
         // follower waits for leader to move 
-        this.ant.followerWait = true;
+        ant.followerWait = true;
         // leader stop waiting and continues
-        this.ant.leader.leaderWaits = false;
+        ant.leader.leaderWaits = false;
         // re-set LGUT and duration of lost contact variables (for both leader and follower)
-        this.ant.tandemContactRegained();
-        this.ant.leader.tandemContactRegained();
+        ant.tandemContactRegained();
+        ant.leader.tandemContactRegained();
         // estimate where the leader will move to while the follower waits
         estimateNextLocationOfLeader();
 
-        this.ant.leader.leaderPositionContact = this.ant.leader.transform.position;
+        ant.leader.leaderPositionContact = ant.leader.transform.position;
     }
 
     // calculates the position of where the follower expects next to find the leader
     private void estimateNextLocationOfLeader()
     {
-        Vector3 leaderPos = this.ant.leader.transform.position;
+        Vector3 leaderPos = ant.leader.transform.position;
         float angleToLeader = GetAngleBetweenPositions(transform.position, leaderPos);
         Vector3 directionToLeader = new Vector3(0, Mathf.Sin(angleToLeader), Mathf.Cos(angleToLeader));
-        this.ant.estimateNewLeaderPos = leaderPos + (directionToLeader.normalized * this.leaderStopDistance);
+        ant.estimateNewLeaderPos = leaderPos + (directionToLeader.normalized * leaderStopDistance);
     }
 
     // checks what movement the tandem leader should take
     private bool shouldTandemLeaderWait()
     {
         // if leader is waiting for follower ensure follower is allowed to move
-        if (this.ant.leaderWaits == true)
+        if (ant.leaderWaits == true)
         {
-            this.ant.follower.followerWait = false;
+            ant.follower.followerWait = false;
             return true;
         }
 
         // if leader is > 2mm away from follower she stops and waits
         // Richardson & Franks, Teaching in Tandem Running
-        if (Vector3.Distance(this.ant.follower.transform.position, transform.position) < (2 * this.leaderStopDistance))
+        if (Vector3.Distance(ant.follower.transform.position, transform.position) < (2 * leaderStopDistance))
         {
             return false;
         }
@@ -307,7 +307,7 @@ public class AntMovement : MonoBehaviour
 
     private void distanceBetweenLeaderAndFollower()
     {
-        gasterHeadDistance += Vector3.Distance(this.ant.follower.transform.position, transform.position);
+        gasterHeadDistance += Vector3.Distance(ant.follower.transform.position, transform.position);
         gasterHeadDistanceCount += 1f;
     }
 
@@ -315,11 +315,11 @@ public class AntMovement : MonoBehaviour
     private void tandemLostContact()
     {
         // leader waits for follower
-        this.ant.leaderWaits = true;
+        ant.leaderWaits = true;
 
         // set the tandem lost contact variables (LGUT, time of lost contact)
-        this.ant.tandemContactLost();
-        this.ant.follower.tandemContactLost();
+        ant.tandemContactLost();
+        ant.follower.tandemContactLost();
     }
 
 
@@ -337,37 +337,37 @@ public class AntMovement : MonoBehaviour
         ObstructionCheck();
 
         //move ant at appropriate speed
-        if (this.ant.state == AntManager.State.Inactive)
+        if (ant.state == AntManager.State.Inactive)
         {
-            this.cont.SimpleMove(this.inactiveSpeed * transform.forward);
+            cont.SimpleMove(inactiveSpeed * transform.forward);
         }
-        else if (this.ant.state == AntManager.State.Reversing)
+        else if (ant.state == AntManager.State.Reversing)
         {
-            this.cont.SimpleMove(this.tandemSpeed * transform.forward);
+            cont.SimpleMove(tandemSpeed * transform.forward);
         }
-        else if (this.ant.isTransporting())
+        else if (ant.isTransporting())
         {
-            this.cont.SimpleMove(this.carrySpeed * transform.forward);
+            cont.SimpleMove(carrySpeed * transform.forward);
         }
-        else if (this.ant.isTandemRunning())
+        else if (ant.isTandemRunning())
         {
-            this.cont.SimpleMove(this.tandemSpeed * transform.forward);
+            cont.SimpleMove(tandemSpeed * transform.forward);
         }
-        else if (this.ant.state == AntManager.State.Assessing)
+        else if (ant.state == AntManager.State.Assessing)
         {
 
-            if (this.ant.nestAssessmentVisitNumber == 1)
+            if (ant.nestAssessmentVisitNumber == 1)
             {
-                this.cont.SimpleMove(this.assessingSpeedFirstVisit * transform.forward);
+                cont.SimpleMove(assessingSpeedFirstVisit * transform.forward);
             }
             else {
                 // if this.ant.nestAssessmentVisitNumber == 2 -> second visit
-                this.cont.SimpleMove(this.assessingSpeedSecondVisit * transform.forward);
+                cont.SimpleMove(assessingSpeedSecondVisit * transform.forward);
             }
 
         }
         else {
-            this.cont.SimpleMove(this.scoutSpeed * transform.forward);
+            cont.SimpleMove(scoutSpeed * transform.forward);
         }
     }
 
@@ -376,29 +376,29 @@ public class AntMovement : MonoBehaviour
     {
         // the maxVar is 40f unless the ant is following a tandem run where it is 20f 
         // Franks et al. Ant Search Strategy After Interrupted Tandem Runs
-        if (this.ant.state == AntManager.State.Scouting)
+        if (ant.state == AntManager.State.Scouting)
         {
-            this.maxVar = 40f;
+            maxVar = 40f;
             ScoutingDirectionChange();
         }
-        else if (this.ant.state == AntManager.State.Following)
+        else if (ant.state == AntManager.State.Following)
         {
-            this.maxVar = 20f;
+            maxVar = 20f;
             FollowingDirectionChange();
         }
-        else if (this.ant.state == AntManager.State.Inactive)
+        else if (ant.state == AntManager.State.Inactive)
         {
-            this.maxVar = 40f;
+            maxVar = 40f;
             InactiveDirectionChange();
         }
-        else if (this.ant.state == AntManager.State.Recruiting)
+        else if (ant.state == AntManager.State.Recruiting)
         {
-            this.maxVar = 40f;
+            maxVar = 40f;
             RecruitingDirectionChange();
         }
-        else if (this.ant.state == AntManager.State.Reversing)
+        else if (ant.state == AntManager.State.Reversing)
         {
-            this.maxVar = 40f;
+            maxVar = 40f;
             ReversingDirectionChange();
         }
         else {
@@ -420,30 +420,30 @@ public class AntMovement : MonoBehaviour
     private void FollowingDirectionChange()
     {
         //if not following an ant then walk towards center of nest
-        if (this.ant.leader == null)
+        if (ant.leader == null)
         {
-            transform.LookAt(this.ant.myNest.transform);
+            transform.LookAt(ant.myNest.transform);
             // BUGFIX: if ant in the new nest and follower a RTR leader -> always LookAt(leader)
             //		} else if (this.ant.inNest && this.ant.leader.state == AntManager.State.Reversing) {
             //			transform.LookAt(this.ant.leader.transform);
             // if follower can't see the leader -> walk towards where the follower predicts the leader is
         }
-        else if (!this.ant.LineOfSight(this.ant.leader.gameObject))
+        else if (!ant.LineOfSight(ant.leader.gameObject))
         {
             // first time follower moves "estimateNextLocationOfLeader()" not called 
             // therefore move ant to leader on first move
             Debug.Log("Got here");
-            if (this.ant.estimateNewLeaderPos == new Vector3(0, 0, 0))
+            if (ant.estimateNewLeaderPos == new Vector3(0, 0, 0))
             {
-                this.ant.estimateNewLeaderPos = this.ant.leader.transform.position;
+                ant.estimateNewLeaderPos = ant.leader.transform.position;
             }
-            float predictedLeaderAngle = GetAngleBetweenPositions(transform.position, this.ant.estimateNewLeaderPos);
-            float newDir = normalRandom(predictedLeaderAngle, this.maxVar);
+            float predictedLeaderAngle = GetAngleBetweenPositions(transform.position, ant.estimateNewLeaderPos);
+            float newDir = normalRandom(predictedLeaderAngle, maxVar);
             Turn(newDir);
         }
         else {
             // if the follower can see the leader then turn towards them
-            transform.LookAt(this.ant.leader.transform);
+            transform.LookAt(ant.leader.transform);
         }
 
         /* OLD SPACE MODLE (Martin) FollowingDirectionChange() function
@@ -469,10 +469,10 @@ public class AntMovement : MonoBehaviour
     private void RecruitingDirectionChange()
     {
         //if going back to old nest
-        if (this.ant.newToOld && this.ant.OldNestOccupied())
+        if (ant.newToOld && ant.OldNestOccupied())
             WalkToGameObject(NextWaypoint());
         //if no ants in old nest then walk randomly
-        else if (this.ant.newToOld)
+        else if (ant.newToOld)
             RandomWalk();
         else
             WalkToGameObject(NextWaypoint());
@@ -480,10 +480,10 @@ public class AntMovement : MonoBehaviour
 
     private void ReversingDirectionChange()
     {
-        if (this.ant.newToOld && this.ant.OldNestOccupied())
+        if (ant.newToOld && ant.OldNestOccupied())
             WalkToGameObject(NextWaypoint());
         //if no ants in old nest then walk randomly
-        else if (this.ant.newToOld)
+        else if (ant.newToOld)
             RandomWalk();
         else
             WalkToGameObject(NextWaypoint());
@@ -493,48 +493,48 @@ public class AntMovement : MonoBehaviour
     //
     private void AssessingDirectionChange()
     {
-        if (this.ant.assessmentStage == 1)
+        if (ant.assessmentStage == 1)
         {
-            WalkToGameObject(this.ant.oldNest);
-            if (Vector3.Distance(transform.position, this.ant.oldNest.transform.position) < 20f)
+            WalkToGameObject(ant.oldNest);
+            if (Vector3.Distance(transform.position, ant.oldNest.transform.position) < 20f)
             {
-                this.ant.assessmentStage = 2;
+                ant.assessmentStage = 2;
             }
             return;
         }
-        else if (this.ant.assessmentStage == 2)
+        else if (ant.assessmentStage == 2)
         {
-            WalkToGameObject(this.ant.nestToAssess);
-            if (Vector3.Distance(transform.position, this.ant.nestToAssess.transform.position) < 40f)
+            WalkToGameObject(ant.nestToAssess);
+            if (Vector3.Distance(transform.position, ant.nestToAssess.transform.position) < 40f)
             {
-                if (this.ant.inNest)
+                if (ant.inNest)
                 {
-                    this.ant.nestAssessmentSeconfVisit();
+                    ant.nestAssessmentSeconfVisit();
                 }
             }
             return;
         }
 
-        if (this.ant.nestAssessmentVisitNumber == 1)
+        if (ant.nestAssessmentVisitNumber == 1)
         {
-            this.assessingDistance += Vector3.Distance(transform.position, this.lastPosition);
-            this.lastPosition = transform.position;
+            assessingDistance += Vector3.Distance(transform.position, lastPosition);
+            lastPosition = transform.position;
         }
-        else if (this.ant.nestAssessmentVisitNumber == 2)
+        else if (ant.nestAssessmentVisitNumber == 2)
         {
-            this.assessingDistance += Vector3.Distance(transform.position, this.lastPosition);
-            this.lastPosition = transform.position;
+            assessingDistance += Vector3.Distance(transform.position, lastPosition);
+            lastPosition = transform.position;
         }
 
-        if (this.ant.assessTime > 0)
+        if (ant.assessTime > 0)
         {
-            if (this.ant.inNest)
+            if (ant.inNest)
             {
                 RandomWalk();
             }
             else {
                 //WalkToGameObject(NextWaypoint());
-                WalkToGameObject(this.ant.nestToAssess);
+                WalkToGameObject(ant.nestToAssess);
             }
         }
         else {
@@ -571,13 +571,13 @@ public class AntMovement : MonoBehaviour
 
         //this that new direction doesn't make ant try to walk through a wall and adjusts if neccessary 
         if (r && newDir < 180)
-            return this.dir;
+            return dir;
         else if (l && newDir > 180)
-            return this.dir;
+            return dir;
         else if (f && (newDir > 270 || newDir < 90))
-            return this.dir;
+            return dir;
         else if (b && (newDir < 270 && newDir > 90))
-            return this.dir;
+            return dir;
         else
             return newDir;
     }
@@ -587,125 +587,125 @@ public class AntMovement : MonoBehaviour
     {
         //determine if nearer old or new nest
         bool nearerOld = true;
-        if (this.ant.oldNest == null || Vector3.Distance(transform.position, this.ant.myNest.transform.position) < Vector3.Distance(transform.position, this.ant.oldNest.transform.position))
+        if (ant.oldNest == null || Vector3.Distance(transform.position, ant.myNest.transform.position) < Vector3.Distance(transform.position, ant.oldNest.transform.position))
             nearerOld = false;
 
         //if this is a passive ant then always direct them towards center of their nest (because they are either carried or lead between)
-        if (this.ant.passive || this.ant.state == AntManager.State.Inactive)
-            return this.ant.myNest;
+        if (ant.passive || ant.state == AntManager.State.Inactive)
+            return ant.myNest;
 
-        if (this.ant.state == AntManager.State.Assessing)
+        if (ant.state == AntManager.State.Assessing)
         {
-            if (this.ant.assessTime > 0)
+            if (ant.assessTime > 0)
             {
-                return this.ant.nestToAssess;
+                return ant.nestToAssess;
             }
             else
             {
-                NestManager nest = (NestManager)this.ant.nestToAssess.GetComponent(Naming.World.Nest);
+                NestManager nest = (NestManager)ant.nestToAssess.GetComponent(Naming.World.Nest);
                 return nest.door;
             }
         }
 
         //if reversing
-        if (this.ant.state == AntManager.State.Reversing)
+        if (ant.state == AntManager.State.Reversing)
         {
             //If in new nest
-            if (this.ant.inNest && !nearerOld)
+            if (ant.inNest && !nearerOld)
             {
                 //If not carrying
-                if (!this.ant.isTandemRunning())
+                if (!ant.isTandemRunning())
                 {
                     //Find an ant to carry
-                    return this.ant.myNest;
+                    return ant.myNest;
                 }
                 else
                 {
                     //Head for exit
-                    NestManager my = (NestManager)this.ant.myNest.GetComponent(Naming.World.Nest);
+                    NestManager my = (NestManager)ant.myNest.GetComponent(Naming.World.Nest);
                     if (my.door != null)
                         return my.door;
                     else
-                        return this.ant.myNest;
+                        return ant.myNest;
                 }
             }
             else
             {
                 //Go to old nest
-                if (!this.ant.inNest)
+                if (!ant.inNest)
                 {
-                    NestManager old = (NestManager)this.ant.oldNest.GetComponent(Naming.World.Nest);
+                    NestManager old = (NestManager)ant.oldNest.GetComponent(Naming.World.Nest);
                     if (old.door != null)
                         return old.door;
                     else
-                        return this.ant.oldNest;
+                        return ant.oldNest;
                 }
                 else
                 {
-                    return this.ant.oldNest;
+                    return ant.oldNest;
                 }
             }
         }
 
         //if this ant is in a nest and is going towards their chosen nest
-        if (this.ant.inNest && !this.ant.newToOld)
+        if (ant.inNest && !ant.newToOld)
         {
             //if in the nest they are recruiting FROM but want to leave then return the position of the nest's door (if this has been marked)
             if (nearerOld)
             {
-                NestManager old = (NestManager)this.ant.oldNest.GetComponent(Naming.World.Nest);
+                NestManager old = (NestManager)ant.oldNest.GetComponent(Naming.World.Nest);
                 if (old.door != null)
                     return old.door;
                 else
-                    return this.ant.myNest;
+                    return ant.myNest;
             }
             //if in the nest that they are recruiting TO and don't want to leave returns the position of it's center 
             else
-                return this.ant.myNest;
+                return ant.myNest;
         }
         //if in nest and going to towards nest that they are recruiting FROM
-        else if (this.ant.inNest)
+        else if (ant.inNest)
         {
             //in nest that they recruit TO but trying to leave then return the position of the nest's door (if this has been marked)
             if (!nearerOld)
             {
-                NestManager my = (NestManager)this.ant.myNest.GetComponent(Naming.World.Nest);
+                NestManager my = (NestManager)ant.myNest.GetComponent(Naming.World.Nest);
                 if (my.door != null)
                     return my.door;
                 else
-                    return this.ant.oldNest;
+                    return ant.oldNest;
             }
             //if in nest that recruiting FROM and are looking for ant to recruit then head towards center
             else
-                return this.ant.oldNest;
+                return ant.oldNest;
         }
         //if not in a nest and heading to nest that they recruit TO then return position of door to that nest (if possible)
-        else if (!this.ant.newToOld)
+        else if (!ant.newToOld)
         {
-            NestManager my = (NestManager)this.ant.myNest.GetComponent(Naming.World.Nest);
+            NestManager my = (NestManager)ant.myNest.GetComponent(Naming.World.Nest);
             if (my.door != null)
                 return my.door;
             else
-                return this.ant.myNest;
+                return ant.myNest;
         }
         //if not in a nest and heading towards nest that they recruit FROM then return position of that nest's door (if possible)
         else
         {
-            NestManager old = (NestManager)this.ant.oldNest.GetComponent(Naming.World.Nest);
+            NestManager old = (NestManager)ant.oldNest.GetComponent(Naming.World.Nest);
             if (old.door != null)
                 return old.door;
             else
-                return this.ant.oldNest;
+                return ant.oldNest;
         }
     }
 
     private GameObject DoorCheck()
     {
-        foreach (GameObject door in this.simManager.doors)
+        foreach (GameObject door in simManager.doors)
         {
-            if (Vector3.Distance(door.transform.position, transform.position) < this.doorSenseRange && transform.InverseTransformPoint(door.transform.position).z >= 0)
+            if (Vector3.Distance(door.transform.position, transform.position) < doorSenseRange && transform.InverseTransformPoint(door.transform.position).z >= 0)
             {
-                if (!this.ant.inNest)
+                if (!ant.inNest)
                     return door.transform.parent.gameObject;
                 else
                     return door;
@@ -718,31 +718,31 @@ public class AntMovement : MonoBehaviour
     private void Turned()
     {
         //if stuck then wait less time till next change as it may take a few random rotations to get unstuck
-        if (Vector3.Distance(transform.position, this.lastTurn) > 0)
+        if (Vector3.Distance(transform.position, lastTurn) > 0)
         {
-            if (this.ant.state == AntManager.State.Assessing)
-                this.nextDirChange_time = Time.timeSinceLevelLoad + Random.Range(0, 1f) * this.maxDirChange_time * 2f;
+            if (ant.state == AntManager.State.Assessing)
+                nextDirChange_time = Time.timeSinceLevelLoad + Random.Range(0, 1f) * maxDirChange_time * 2f;
             else
-                this.nextDirChange_time = Time.timeSinceLevelLoad + Random.Range(0, 1f) * this.maxDirChange_time;
+                nextDirChange_time = Time.timeSinceLevelLoad + Random.Range(0, 1f) * maxDirChange_time;
         }
         else
-            this.nextDirChange_time = Time.timeSinceLevelLoad + (Random.Range(0, 1f) * this.maxDirChange_time) / 10f;
-        this.lastTurn = transform.position;
+            nextDirChange_time = Time.timeSinceLevelLoad + (Random.Range(0, 1f) * maxDirChange_time) / 10f;
+        lastTurn = transform.position;
     }
 
     public void Enable()
     {
-        this.cont.enabled = true;
+        cont.enabled = true;
     }
 
     public void Disable()
     {
-        this.cont.enabled = false;
+        cont.enabled = false;
     }
 
     public bool isEnabled()
     {
-        return this.cont.enabled;
+        return cont.enabled;
     }
 
     private float normalRandom(float mean, float std)
@@ -764,29 +764,29 @@ public class AntMovement : MonoBehaviour
         if (Mathf.Abs(goalAngle - currentAngle) > 180)
             currentAngle -= 360;
 
-        float newDir = normalRandom((((goalAngle + currentAngle) / 2f) % 360f), this.maxVar);
+        float newDir = normalRandom((((goalAngle + currentAngle) / 2f) % 360f), maxVar);
         Turn(newDir);
     }
 
     private void RandomWalk()
     {
         float maxVar = this.maxVar;
-        if (this.ant.state == AntManager.State.Assessing)
+        if (ant.state == AntManager.State.Assessing)
         {
             maxVar = 10f;
         }
-        if (Vector3.Distance(transform.position, this.lastTurn) == 0)
+        if (Vector3.Distance(transform.position, lastTurn) == 0)
             maxVar = 180;
         float theta = normalRandom(0, maxVar);
-        float newDir = (this.dir + theta) % 360;
+        float newDir = (dir + theta) % 360;
         Turn(newDir);
     }
 
     //turn ant to this face this direction (around y axis)
     private void Turn(float newDir)
     {
-        this.dir = NewDirectionCheck(PheromoneDirection(newDir));
-        transform.rotation = Quaternion.Euler(0, this.dir, 0);
+        dir = NewDirectionCheck(PheromoneDirection(newDir));
+        transform.rotation = Quaternion.Euler(0, dir, 0);
     }
 
     //gets angle from v1 to v2
@@ -805,12 +805,12 @@ public class AntMovement : MonoBehaviour
         if (direction < 0)
             direction += 360;
 
-        if (Time.timeSinceLevelLoad < this.nextPheromoneCheck)
+        if (Time.timeSinceLevelLoad < nextPheromoneCheck)
             return direction;
 
         //if not using pheromones then just use given direction
         // only followers that are not in a nest uses phereomones
-        if (this.ant.inNest || (this.ant.state != AntManager.State.Following && this.ant.state != AntManager.State.Scouting))
+        if (ant.inNest || (ant.state != AntManager.State.Following && ant.state != AntManager.State.Scouting))
             return direction;
 
         //get pheromones in range
@@ -835,7 +835,7 @@ public class AntMovement : MonoBehaviour
             p_a = GetAngleBetweenPositions(transform.position, p_t.position);
 
             //get strength of this pheromone (using equation from antbox)
-            strength = p.strength * Mathf.Exp(-0.5f * (square(2 * Mathf.Abs(p_a - direction) / this.maxVar)));
+            strength = p.strength * Mathf.Exp(-0.5f * (square(2 * Mathf.Abs(p_a - direction) / maxVar)));
 
             //add this to the total vector
             d = p_t.position - transform.position;
@@ -846,12 +846,12 @@ public class AntMovement : MonoBehaviour
         //this stops long snake-like chains of ants following the same path over and over again
         if (Random.Range(0f, 1f) < 0.02f)
         {
-            this.nextPheromoneCheck = Time.timeSinceLevelLoad + Random.Range(0, 1) * this.maxDirChange_time;
-            return normalRandom(this.dir, maxVar);
+            nextPheromoneCheck = Time.timeSinceLevelLoad + Random.Range(0, 1) * maxDirChange_time;
+            return normalRandom(dir, maxVar);
         }
 
         //get angle and add noise
-        return GetAngleBetweenPositions(transform.position, transform.position + v) + Mathf.Exp(-0.5f * (square(2 * Random.Range(-180, 180) / this.maxVar)));
+        return GetAngleBetweenPositions(transform.position, transform.position + v) + Mathf.Exp(-0.5f * (square(2 * Random.Range(-180, 180) / maxVar)));
 
     }
 
@@ -864,7 +864,7 @@ public class AntMovement : MonoBehaviour
     private void RandomRotate()
     {
         float maxVar = this.maxVar;
-        if (Vector3.Distance(transform.position, this.lastTurn) == 0)
+        if (Vector3.Distance(transform.position, lastTurn) == 0)
             maxVar = 180;
         float newDir = normalRandom(0, maxVar);
         Turn(newDir);
@@ -880,7 +880,7 @@ public class AntMovement : MonoBehaviour
             if (hit.collider.transform.tag == Naming.Ants.Tag)
             {
                 // follower ant wants to have tactile contact with leader ant
-                if (this.ant.state != AntManager.State.Following)
+                if (ant.state != AntManager.State.Following)
                 {
                     RandomRotate();
                 }
@@ -949,8 +949,8 @@ public class AntMovement : MonoBehaviour
             else
                 total += vals[i];
         }
-        this.dir = 90f * (float)index;
-        transform.rotation = Quaternion.Euler(0, this.dir, 0);
+        dir = 90f * index;
+        transform.rotation = Quaternion.Euler(0, dir, 0);
     }
 
 
@@ -963,8 +963,8 @@ public class AntMovement : MonoBehaviour
         //			return;
         //		}
         GameObject pheromone = (GameObject)Instantiate(pheromonePrefab, transform.position, Quaternion.identity);
-        pheromone.transform.parent = this.pheromoneParent;
-        if (this.ant.state == AntManager.State.Scouting)
+        pheromone.transform.parent = pheromoneParent;
+        if (ant.state == AntManager.State.Scouting)
         {
             ((Pheromone)pheromone.transform.GetComponent(Naming.Ants.Pheromone)).LayScouting(this);
         }
@@ -972,13 +972,13 @@ public class AntMovement : MonoBehaviour
 
     private void LayPheromoneFTR()
     {
-        if (!(this.ant.state == AntManager.State.Leading || this.ant.state == AntManager.State.Recruiting) || this.usePheromones == false || this.ant.inNest)
+        if (!(ant.state == AntManager.State.Leading || ant.state == AntManager.State.Recruiting) || usePheromones == false || ant.inNest)
         {
             return;
         }
         GameObject pheromone = (GameObject)Instantiate(pheromonePrefab, transform.position, Quaternion.identity);
-        pheromone.transform.parent = this.pheromoneParent;
-        if (this.ant.state == AntManager.State.Reversing || this.ant.state == AntManager.State.Leading || this.ant.state == AntManager.State.Recruiting)
+        pheromone.transform.parent = pheromoneParent;
+        if (ant.state == AntManager.State.Reversing || ant.state == AntManager.State.Leading || ant.state == AntManager.State.Recruiting)
         {
             ((Pheromone)pheromone.transform.GetComponent(Naming.Ants.Pheromone)).LayTandem(this);
         }
@@ -986,13 +986,13 @@ public class AntMovement : MonoBehaviour
 
     private void LayPheromoneRTR()
     {
-        if (!(this.ant.state == AntManager.State.Reversing) || this.usePheromones == false || this.ant.inNest)
+        if (!(ant.state == AntManager.State.Reversing) || usePheromones == false || ant.inNest)
         {
             return;
         }
         GameObject pheromone = (GameObject)Instantiate(pheromonePrefab, transform.position, Quaternion.identity);
-        pheromone.transform.parent = this.pheromoneParent;
-        if (this.ant.state == AntManager.State.Reversing || this.ant.state == AntManager.State.Leading || this.ant.state == AntManager.State.Recruiting)
+        pheromone.transform.parent = pheromoneParent;
+        if (ant.state == AntManager.State.Reversing || ant.state == AntManager.State.Leading || ant.state == AntManager.State.Recruiting)
         {
             ((Pheromone)pheromone.transform.GetComponent(Naming.Ants.Pheromone)).LayTandem(this);
         }
@@ -1000,19 +1000,19 @@ public class AntMovement : MonoBehaviour
 
     private void LayPheromoneAssessing()
     {
-        if (this.ant.state != AntManager.State.Assessing || this.usePheromones == false || !this.ant.inNest)
+        if (ant.state != AntManager.State.Assessing || usePheromones == false || !ant.inNest)
         {
             return;
         }
-        if (this.ant.nestToAssess == this.ant.oldNest)
+        if (ant.nestToAssess == ant.oldNest)
         {
             return;
         }
         GameObject pheromone = (GameObject)Instantiate(pheromonePrefab, transform.position, Quaternion.identity);
-        pheromone.transform.parent = this.pheromoneParent;
-        if (this.ant.state == AntManager.State.Assessing)
+        pheromone.transform.parent = pheromoneParent;
+        if (ant.state == AntManager.State.Assessing)
         {
-            if (this.ant.nestToAssess != this.ant.oldNest)
+            if (ant.nestToAssess != ant.oldNest)
             {
                 ((Pheromone)pheromone.transform.GetComponent(Naming.Ants.Pheromone)).LayAssessing(this);
             }
@@ -1024,7 +1024,7 @@ public class AntMovement : MonoBehaviour
 
     private ArrayList PheromonesInRange()
     {
-        Collider[] cols = Physics.OverlapSphere(transform.position, this.pheromoneRange);
+        Collider[] cols = Physics.OverlapSphere(transform.position, pheromoneRange);
         ArrayList pher = new ArrayList();
         for (int i = 0; i < cols.Length; i++)
         {
@@ -1036,7 +1036,7 @@ public class AntMovement : MonoBehaviour
 
     private ArrayList AssessmentPheromonesInRange()
     {
-        Collider[] cols = Physics.OverlapSphere(transform.position, this.assessmentPheromoneRange);
+        Collider[] cols = Physics.OverlapSphere(transform.position, assessmentPheromoneRange);
         ArrayList pher = new ArrayList();
         for (int i = 0; i < cols.Length; i++)
         {

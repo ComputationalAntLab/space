@@ -55,11 +55,11 @@ public class SimData : MonoBehaviour {
 		GameObject[] newNests = GameObject.FindGameObjectsWithTag("NewNest");
 		for(int i = 1; i <= newNests.Length; i++)
 		{
-			this.NestDiscoveryTime.Add(0);
-			this.NestRecruitTime.Add(0);
-			this.NestDiscoveryType.Add(DiscoveryType.Unfound);
-			this.numAssessments.Add(0);
-			this.numAcceptance.Add(0);
+            NestDiscoveryTime.Add(0);
+            NestRecruitTime.Add(0);
+            NestDiscoveryType.Add(DiscoveryType.Unfound);
+            numAssessments.Add(0);
+            numAcceptance.Add(0);
 			
 		}
 	}
