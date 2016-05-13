@@ -100,7 +100,7 @@ public class AntManager : MonoBehaviour
 		this.nestThreshold = normalRandom(this.qualityThreshMean, this.qualityThreshNoise);
 		this.percievedQuality = float.MinValue;
 		this.finishedRecruiting = false;
-		this.History = (SimData) transform.GetComponent(Naming.Simulation.SimData);
+		this.History = (SimData) transform.GetComponent(Naming.Simulation.AntData);
 		//make sure the value is within contraints
 		if(this.nestThreshold > 1)
 			this.nestThreshold = 1;
@@ -144,7 +144,7 @@ public class AntManager : MonoBehaviour
 		if(this.carryPosition.childCount > 0 && Vector3.Distance(this.myNest.transform.position, transform.position) < this.myNest.transform.localScale.x/4f)
 		{
             var c0 = carryPosition.GetChild(0);
-            var carriedAnt = this.carryPosition.Find(Naming.Ants.CarryAnt);
+            var carriedAnt = this.carryPosition.Find(Naming.Ants.Tag);
             var carriedAntBehaviour = ((AntManager)carriedAnt.GetComponent(Naming.Ants.Controller));
 
             carriedAntBehaviour.Dropped(this.myNest);

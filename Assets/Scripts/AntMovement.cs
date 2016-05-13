@@ -560,16 +560,16 @@ public class AntMovement : MonoBehaviour
 
 		//checks forwards, backwards and both sides to see if there is a wall there
 		if (Physics.Raycast(transform.position, Vector3.forward, out hit, 1))
-			if (hit.collider.tag != "Ant")
+			if (hit.collider.tag != Naming.Ants.Tag)
 				f = true;
 		if (Physics.Raycast(transform.position, -Vector3.forward, out hit, 1))
-			if (hit.collider.tag != "Ant")
+			if (hit.collider.tag != Naming.Ants.Tag)
 				b = true;
 		if (Physics.Raycast(transform.position, Vector3.right, out hit, 1))
-			if (hit.collider.tag != "Ant")
+			if (hit.collider.tag != Naming.Ants.Tag)
 				r = true;
 		if (Physics.Raycast(transform.position, -Vector3.right, out hit, 1))
-			if (hit.collider.tag != "Ant")
+			if (hit.collider.tag != Naming.Ants.Tag)
 				l = true;
 
 		//this that new direction doesn't make ant try to walk through a wall and adjusts if neccessary 
@@ -887,7 +887,7 @@ public class AntMovement : MonoBehaviour
 		if (Physics.Raycast(transform.position, transform.forward, out hit, 1))
 		{
 			//if there is an ant directly in front of this ant then randomly turn otherwise must be a wall so follow it
-			if (hit.collider.transform.tag == "Ant")
+			if (hit.collider.transform.tag == Naming.Ants.Tag)
 			{
 				// follower ant wants to have tactile contact with leader ant
 				if (this.ant.state != AntManager.State.Following)

@@ -21,7 +21,7 @@ namespace Assets.Scripts
             public const string Manager = "SimulationManager";
             public const string BatchRunner = "BatchRunner";
             public const string Output = "Output";
-            public const string SimData = "SimData";
+            public const string AntData = "SimData";
         }
 
         public static class Ants
@@ -32,7 +32,7 @@ namespace Assets.Scripts
             public const string SensesScript = "AntSenses";
 
             public const string CarryPosition = "CarryPosition";
-            public const string CarryAnt = "Ant";
+            public const string Tag = "Ant";
 
             public const string Pheromone = "Pheromone";
         }

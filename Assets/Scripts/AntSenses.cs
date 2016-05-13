@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Assets.Scripts;
 
 public class AntSenses : MonoBehaviour 
 {
@@ -10,14 +11,14 @@ public class AntSenses : MonoBehaviour
 	{
 		//initialise ant
 		if(this.ant == null) 
-			this.ant = (AntManager) transform.parent.GetComponent("AntManager");
+			this.ant = (AntManager) transform.parent.GetComponent(Naming.Ants.Controller);
 		
 		if(other.tag != "Ant")
 		{
 			return;
 		}
 		
-		AntManager otherAnt = (AntManager)other.transform.GetComponent("AntManager");
+		AntManager otherAnt = (AntManager)other.transform.GetComponent(Naming.Ants.Controller);
 		
 		if(this.ant.state == AntManager.State.Reversing && !this.ant.isTandemRunning())
 		{

@@ -150,7 +150,7 @@ public class SimulationManager : MonoBehaviour
 
     private string CreateAntId(int colonySize, int antNumber)
     {
-        return Naming.Ants.CarryAnt;
+        return Naming.Ants.Tag;
         //return string.Format("{0}{1}", Naming.Entities.AntPrefix, antNumber);
     }
 

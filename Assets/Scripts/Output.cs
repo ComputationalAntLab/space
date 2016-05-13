@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.IO;
 using System.Text;
+using Assets.Scripts;
 
 public class Output : MonoBehaviour 
 {
@@ -24,15 +25,15 @@ public class Output : MonoBehaviour
 		p = new List<Transform>();
 		s = GameObject.Find("S").transform;
 		p.Add(GameObject.Find("P0").transform);
-		for(int i = 1; i <= GameObject.Find("NewNests").transform.childCount; i++)
+		for(int i = 1; i <= GameObject.Find(Naming.World.NewNests).transform.childCount; i++)
 		{
 			p.Add(GameObject.Find("P" + i).transform);
 			a.Add(GameObject.Find("A" + i).transform);
 			r.Add(GameObject.Find("R" + i).transform);
 		}
 		
-		GameObject batchGO = GameObject.Find("BatchRunner");
-		BatchRunner batch = (BatchRunner) batchGO.transform.GetComponent("BatchRunner");
+		GameObject batchGO = GameObject.Find(Naming.Simulation.BatchRunner);
+		BatchRunner batch = (BatchRunner) batchGO.transform.GetComponent(Naming.Simulation.BatchRunner);
 		string outputFile = batch.GetNextOutputFile();
 		int quorumThresh = batch.quorumThreshold;
 		
@@ -108,7 +109,7 @@ public class Output : MonoBehaviour
 			c = -1;
 			WriteFinalState();
 			sw.Close();
-			((BatchRunner) GameObject.Find("BatchRunner").GetComponent("BatchRunner")).StartExperiment();
+			((BatchRunner) GameObject.Find(Naming.Simulation.BatchRunner).GetComponent(Naming.Simulation.BatchRunner)).StartExperiment();
 		}
 	}
 
@@ -140,7 +141,7 @@ public class Output : MonoBehaviour
 
 		foreach (UnityEngine.GameObject ant in ants)
 		{
-			SimData Data = (SimData) ant.GetComponent("SimData");
+			SimData Data = (SimData) ant.GetComponent(Naming.Simulation.AntData);
 			sw.Write(Data.LeftOld+ ", ");
 			sw.Write(Data.firstTandem+ ", ");
 			sw.Write(Data.firstCarry+ ", ");

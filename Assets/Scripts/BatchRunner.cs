@@ -5,7 +5,7 @@ public class BatchRunner : MonoBehaviour {
 	
 	public int firstExperiment = 1; 
 	public int lastExperiment = 200;
-	public string sceneName = "Test 2";
+	public string sceneName = "Equidistant";
 	public int[] quorumThresholds = new int[10] {0, 1, 2, 5, 8, 10, 12, 15, 18, 20};
 	public int quorumThreshold = 0;
 	public int repeats = 10;
