@@ -251,7 +251,7 @@ public class AntManager : MonoBehaviour
 			if(transform.parent.name != "R" + id)
 			{
 				transform.parent = GameObject.Find("R" + id).transform;
-				renderer.material.color = Color.blue;
+				GetComponent<Renderer>().material.color = Color.blue;
 			}
 		}
 		else if(this.state == State.Inactive)
@@ -260,13 +260,13 @@ public class AntManager : MonoBehaviour
 			if(transform.parent.name != "P" + id)
 			{
 				transform.parent = GameObject.Find("P" + id).transform;
-				renderer.material.color = Color.black;
+				GetComponent<Renderer>().material.color = Color.black;
 			}
 		}
 		else if(this.state == State.Scouting && transform.parent.name != "S")
 		{
 			transform.parent = GameObject.Find("S").transform;
-			renderer.material.color = Color.white;
+			GetComponent<Renderer>().material.color = Color.white;
 		}
 		else if(this.state == State.Assessing)
 		{
@@ -274,7 +274,7 @@ public class AntManager : MonoBehaviour
 			if(transform.parent.name != "A" + id)
 			{
 				transform.parent = GameObject.Find("A" + id).transform;
-				renderer.material.color = Color.red;
+				GetComponent<Renderer>().material.color = Color.red;
 			}
 		}
 		else if(this.state == State.Reversing)
@@ -283,7 +283,7 @@ public class AntManager : MonoBehaviour
 			if(transform.parent.name != "RT" + id)
 			{
 				transform.parent = GameObject.Find("RT" + id).transform;
-				renderer.material.color = Color.yellow;
+				GetComponent<Renderer>().material.color = Color.yellow;
 			}
 		}
 		/*else 
@@ -712,7 +712,7 @@ public class AntManager : MonoBehaviour
 	}
 	
 	public void nestAssessmentSeconfVisit() {
-		renderer.material.color = Color.grey;
+		GetComponent<Renderer>().material.color = Color.grey;
 		this.assessmentStage = 0;
 		this.nestAssessmentVisitNumber = 2;
 		this.assessTime = getAssessTime();
@@ -921,7 +921,7 @@ public class AntManager : MonoBehaviour
 	// greg edit
 	//
 	private int getAssessTime() {
-		// Eamonn B. Mallon and Nigel R. Franks - Ants estimate area using Buffon’s needle
+		// Eamonn B. Mallon and Nigel R. Franks - Ants estimate area using Buffonâ€™s needle
 		// The median time that a scout spends within a nest cavity assessing a potential nest is 110 s per visit (interquartile range 140 s and n = 115)
 		// range must be +/- 55. As 125+55=180 (110+70). And 95-55=40 (110-70)
 		//greg edit		float halfInterquartileRangeAssessTime = 40f;

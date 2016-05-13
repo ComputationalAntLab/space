@@ -109,7 +109,7 @@ public class SimulationManager : MonoBehaviour
 					AntManager newAM = (AntManager) newAnt.transform.GetComponent("AntManager");
 					newAM.myNest = GameObject.Find("OldNest");
 					newAM.oldNest = GameObject.Find("OldNest");
-					newAnt.renderer.material.color = Color.black;
+					newAnt.GetComponent<Renderer>().material.color = Color.black;
 					newAM.inNest = true;
 					newAM.quorumThreshold = this.quorumThreshold;
 					newAM.rg = this.rg;
@@ -123,7 +123,7 @@ public class SimulationManager : MonoBehaviour
 		//if this is batch running then write output
 		if(batchGO != null)
 		{	
-		 	gameObject.AddComponent("Output");
+		 	gameObject.AddComponent<Output>();
 		 	((Output) transform.GetComponent("Output")).SetUp();
 		 
 //greg edit			
