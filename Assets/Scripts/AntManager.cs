@@ -95,7 +95,7 @@ public class AntManager : MonoBehaviour
         carryPosition = transform.Find(Naming.Ants.CarryPosition);
         sensesCol = (Collider)transform.Find(Naming.Ants.SensesArea).GetComponent("Collider");
         move = gameObject.AntMovement();
-        nestThreshold = normalRandom(qualityThreshMean, qualityThreshNoise);
+        nestThreshold = RandomGenerator.Instance.NormalRandom(qualityThreshMean, qualityThreshNoise);
         percievedQuality = float.MinValue;
         finishedRecruiting = false;
         History = gameObject.AntData();
@@ -128,8 +128,8 @@ public class AntManager : MonoBehaviour
             LeftNest();
 
         //BUGFIX: occasionly when followers enter a nest there enterednest function doesn't get called, this forces that
-        if (state == State.Following && Vector3.Distance(leadersNest().transform.position, transform.position) < leadersNest().transform.localScale.x / 2f)
-            EnteredNest(leadersNest());
+        if (state == State.Following && Vector3.Distance(LeadersNest().transform.position, transform.position) < LeadersNest().transform.localScale.x / 2f)
+            EnteredNest(LeadersNest());
 
         //makes Inactive and !passive ants assess nest that they are in every so often
         if (!passive && state == State.Inactive && nextAssesment > 0 && Time.timeSinceLevelLoad >= nextAssesment)
@@ -202,7 +202,7 @@ public class AntManager : MonoBehaviour
         {
             if (assessmentStage == 0)
             {
-                nestAssessmentVisit();
+                NestAssessmentVisit();
             }
         }
 
@@ -214,11 +214,11 @@ public class AntManager : MonoBehaviour
         timeStep++;
         if (state == State.Recruiting)
         {
-            if (isTransporting())
+            if (IsTransporting())
             {
                 History.StateHistory.Add(AntManager.State.Carrying);
             }
-            else if (isTandemRunning())
+            else if (IsTandemRunning())
             {
                 History.StateHistory.Add(AntManager.State.Leading);
             }
@@ -229,7 +229,7 @@ public class AntManager : MonoBehaviour
         }
         else if (state == State.Reversing)
         {
-            if (isTandemRunning())
+            if (IsTandemRunning())
             {
                 History.StateHistory.Add(AntManager.State.ReversingLeading);
                 //				this.History.StateHistory.Add(AntManager.State.Reversing);
@@ -292,7 +292,7 @@ public class AntManager : MonoBehaviour
     }
 
     //returns true if this ant is carrying another
-    public bool isTransporting()
+    public bool IsTransporting()
     {
         if (transform.parent.tag == Naming.Ants.CarryPosition || carryPosition.childCount > 0)
             return true;
@@ -301,7 +301,7 @@ public class AntManager : MonoBehaviour
     }
 
     //returns true if this ant is leading or being led
-    public bool isTandemRunning()
+    public bool IsTandemRunning()
     {
         if (follower != null || leader != null)
             return true;
@@ -309,7 +309,7 @@ public class AntManager : MonoBehaviour
             return false;
     }
 
-    private GameObject leadersNest()
+    private GameObject LeadersNest()
     {
         return leader.gameObject.AntManager().myNest;
     }
@@ -354,7 +354,7 @@ public class AntManager : MonoBehaviour
 
     public void ReverseLead(AntManager follower)
     {
-        var date = System.DateTime.Now;
+        var date = DateTime.Now;
         startTandemRunSeconds = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
 
         // set start of reverse tandem run (log start position and timestep)
@@ -437,7 +437,7 @@ public class AntManager : MonoBehaviour
     //follow the leader ant 
     public void Follow(AntManager leader)
     {
-        var date = System.DateTime.Now;
+        var date = DateTime.Now;
         startTandemRunSeconds = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
 
         //start following leader towards nest
@@ -686,11 +686,8 @@ public class AntManager : MonoBehaviour
                     RecruitToNest(myNest);
         }
     }
-
-
-    //greg edit
-    //
-    private void nestAssessmentVisit()
+    
+    private void NestAssessmentVisit()
     {
 
         if (nestAssessmentVisitNumber == 1)
@@ -706,23 +703,21 @@ public class AntManager : MonoBehaviour
         move.assessingDistance = 0f;
 
         // store buffon needle assessment values and reset (once assessment has finishe)
-        storeAssessmentHistory();
+        StoreAssessmentHistory();
 
         AssessNest(nestToAssess);
     }
 
-    public void nestAssessmentSeconfVisit()
+    public void NestAssessmentSecondVisit()
     {
         GetComponent<Renderer>().material.color = Color.grey;
         assessmentStage = 0;
         nestAssessmentVisitNumber = 2;
-        assessTime = getAssessTime();
+        assessTime = GetAssessTime();
         move.usePheromones = false;
     }
-
-
-
-    private void storeAssessmentHistory()
+    
+    private void StoreAssessmentHistory()
     {
         if (nestAssessmentVisitNumber != 2)
         {
@@ -768,26 +763,12 @@ public class AntManager : MonoBehaviour
             History.numAssessments[nestID]++;
         }
 
-        //greg edit 
-        /*
-                // nest quality based on size of nest
-                float q = 0f;
-                if (this.currentNestArea <= 2000f) {
-                    q = 0.0005f * this.currentNestArea;
-                } else if (this.currentNestArea > 2000f) {
-                    q = 1 - (0.0005f * (this.currentNestArea - 2000f));
-                }
-        */
-
         //reset current nest area
         currentNestArea = 0f;
 
-        /*
-		 * Old nest quality measurement
-		 *
-		 */
+        // Old nest quality measurement
         NestManager nestM = nest.Nest();
-        float q = normalRandom(nestM.quality, assessmentNoise);
+        float q = RandomGenerator.Instance.NormalRandom(nestM.quality, assessmentNoise);
         if (q < 0f)
             q = 0f;
         else if (q > 1f)
@@ -881,7 +862,7 @@ public class AntManager : MonoBehaviour
         {
             if (assessmentStage == 0)
             {
-                nestAssessmentVisit();
+                NestAssessmentVisit();
             }
 
         }
@@ -913,17 +894,15 @@ public class AntManager : MonoBehaviour
 
         // make this nest assessment their first visit
         nestAssessmentVisitNumber = 1;
-        assessTime = getAssessTime();
+        assessTime = GetAssessTime();
         // get start position of assessor ant
         move.lastPosition = move.transform.position;
         move.usePheromones = true;
     }
-
-    // greg edit
-    //
-    private int getAssessTime()
+    
+    private int GetAssessTime()
     {
-        // Eamonn B. Mallon and Nigel R. Franks - Ants estimate area using Buffonâ€™s needle
+        // Eamonn B. Mallon and Nigel R. Franks - Ants estimate area using Buffon's needle
         // The median time that a scout spends within a nest cavity assessing a potential nest is 110 s per visit (interquartile range 140 s and n = 115)
         // range must be +/- 55. As 125+55=180 (110+70). And 95-55=40 (110-70)
         //greg edit		float halfInterquartileRangeAssessTime = 40f;
@@ -974,7 +953,7 @@ public class AntManager : MonoBehaviour
         }
         else
         {
-            percievedQourum = Mathf.Round(normalRandom(nestM.GetQuorum(), qourumAssessNoise));
+            percievedQourum = Mathf.Round(RandomGenerator.Instance.NormalRandom(nestM.GetQuorum(), qourumAssessNoise));
         }
 
         recTime = recTryTime;
@@ -993,30 +972,23 @@ public class AntManager : MonoBehaviour
         return Vector3.Distance(transform.position, oldNest.transform.position) < Vector3.Distance(transform.position, myNest.transform.position);
     }
 
-
-    private float normalRandom(float mean, float std)
-    {
-        return (float)RandomGenerator.Instance.NormalDeviate() * std + mean;
-
-    }
-
     // called once leader is 2*antennaReach away from follower
-    public void tandemContactLost()
+    public void TandemContactLost()
     {
         if (startTandemRunSeconds == 0)
         {
             return;
         }
         // log the time that the tandem run was lost
-        var date = System.DateTime.Now;
+        var date = DateTime.Now;
         int currentTime = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
         timeWhenTandemLostContact = currentTime;
         // calculate the Leader Give-Up Time (LGUT)
-        calculateLGUT(currentTime);
+        CalculateLGUT(currentTime);
     }
 
     // calculate the LGUT that the leader and follower will wait for a re-connection
-    private void calculateLGUT(int currentTime)
+    private void CalculateLGUT(int currentTime)
     {
         int tandemDuration = (currentTime - startTandemRunSeconds) * (int)Time.timeScale; ;
         double exponent = 0.9651 + 0.3895 * Mathf.Log10(tandemDuration);
@@ -1024,18 +996,18 @@ public class AntManager : MonoBehaviour
     }
 
     // called once a follower has re-connected with the tandem leader (re-sets values)
-    public void tandemContactRegained()
+    public void TandemContactRegained()
     {
         LGUT = 0.0f;
         timeWhenTandemLostContact = 0;
     }
 
     // every time step this function is called from a searching follower
-    public bool hasLGUTExpired()
+    public bool HasLGUTExpired()
     {
         if (LGUT == 0.0 || timeWhenTandemLostContact == 0) { return false; }
 
-        var date = System.DateTime.Now;
+        var date = DateTime.Now;
         int currentTime = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
         int durationLostContact = (currentTime - timeWhenTandemLostContact) * (int)Time.timeScale; ;
 
@@ -1044,22 +1016,22 @@ public class AntManager : MonoBehaviour
     }
 
     // if duration of lost contact is greater than LGUT fail tandem run
-    public void failedTandemRun()
+    public void FailedTandemRun()
     {
         if (state == State.Following && leader != null)
         {
             if (leader.state == State.Recruiting || leader.state == State.Reversing)
             {
                 // failed tandem leader behaviour
-                leader.failedTandemLeaderBehvaiour();
+                leader.FailedTandemLeaderBehvaiour();
                 // failed tandem follower behaviour
-                failedTandemFollowerBehaviour();
+                FailedTandemFollowerBehaviour();
             }
         }
     }
 
     // failed tandem leader behaviour
-    private void failedTandemLeaderBehvaiour()
+    private void FailedTandemLeaderBehvaiour()
     {
         startTandemRunSeconds = 0;
 
@@ -1095,7 +1067,7 @@ public class AntManager : MonoBehaviour
     }
 
     // failed tandem follower behaviour
-    private void failedTandemFollowerBehaviour()
+    private void FailedTandemFollowerBehaviour()
     {
         StopFollowing();
 

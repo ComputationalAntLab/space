@@ -85,14 +85,6 @@ public class AntMovement : MonoBehaviour
         gasterHeadDistance = 0f;
         gasterHeadDistanceCount = 0f;
 
-        //BatchRunner batchObj = (BatchRunner)arena.GetComponent("BatchRunner");
-        //if (batchObj != null)
-        //{
-        //    //			this.leaderStopDistance = batchObj.antennaReach;
-        //    //			this.pheromoneFrequencyBuffon = batchObj.buffonFrequency;
-
-        //}
-
         // all active ants call the LayPheromone function reapeatedly (but only lay is usePheromones true)
         usePheromones = false; // all pheromones are false (turned off if FTR or RTR leader)
                                //greg edit
@@ -113,7 +105,7 @@ public class AntMovement : MonoBehaviour
     void Update()
     {
         //if disabled then don't do anything
-        if (!isEnabled())
+        if (!IsEnabled())
         {
             return;
         }
@@ -136,12 +128,6 @@ public class AntMovement : MonoBehaviour
             }
         }
 
-        /*
-		if (this.ant.state == AntManager.State.Assessing && this.ant.nestAssessmentVisitNumber == 2) {
-			checkForIntersection();
-		}		
-		*/
-
         // if tandem follower is waiting return and do not update movement
         if (ant.leader != null)
         {
@@ -150,7 +136,7 @@ public class AntMovement : MonoBehaviour
             {
                 ChangeDirection();
             }
-            if (hasFollowerTouchedLeader())
+            if (HasFollowerTouchedLeader())
             {
                 return;
             }
@@ -160,7 +146,7 @@ public class AntMovement : MonoBehaviour
         if (ant.follower != null)
         {
             tandemSpeed = 50f;
-            if (shouldTandemLeaderWait())
+            if (ShouldTandemLeaderWait())
             {
                 return;
             }
@@ -191,7 +177,7 @@ public class AntMovement : MonoBehaviour
     }
 
     //
-    private void checkForIntersection()
+    private void CheckForIntersection()
     {
         //get pheromones in assessmenPheromoneRange (mm) range (on top of)
         ArrayList pheromones = AssessmentPheromonesInRange();
@@ -226,7 +212,7 @@ public class AntMovement : MonoBehaviour
 
 
     // checks what movement the tandem follower should take
-    private bool hasFollowerTouchedLeader()
+    private bool HasFollowerTouchedLeader()
     {
         // if follower is waiting for leader to move -> return true (follower waits)
         if (ant.followerWait == true)
@@ -239,17 +225,17 @@ public class AntMovement : MonoBehaviour
             return true;
         }
         // if follower is searching for their leader check if LGUT has expired
-        if (ant.hasLGUTExpired())
+        if (ant.HasLGUTExpired())
         {
             // fail tandem run if LGUT has expired
-            ant.failedTandemRun();
+            ant.FailedTandemRun();
             return false;
         }
         // follower has made contact with leader -> reset tandem variables
         if (Vector3.Distance(transform.position, ant.leader.transform.position) < averageAntennaReach &&
             ant.LineOfSight(ant.leader.gameObject))
         {
-            tandemRegainedContact();
+            TandemRegainedContact();
             return true;
         }
         else {
@@ -258,23 +244,23 @@ public class AntMovement : MonoBehaviour
     }
 
     // tandem follower has found their leader
-    private void tandemRegainedContact()
+    private void TandemRegainedContact()
     {
         // follower waits for leader to move 
         ant.followerWait = true;
         // leader stop waiting and continues
         ant.leader.leaderWaits = false;
         // re-set LGUT and duration of lost contact variables (for both leader and follower)
-        ant.tandemContactRegained();
-        ant.leader.tandemContactRegained();
+        ant.TandemContactRegained();
+        ant.leader.TandemContactRegained();
         // estimate where the leader will move to while the follower waits
-        estimateNextLocationOfLeader();
+        EstimateNextLocationOfLeader();
 
         ant.leader.leaderPositionContact = ant.leader.transform.position;
     }
 
     // calculates the position of where the follower expects next to find the leader
-    private void estimateNextLocationOfLeader()
+    private void EstimateNextLocationOfLeader()
     {
         Vector3 leaderPos = ant.leader.transform.position;
         float angleToLeader = GetAngleBetweenPositions(transform.position, leaderPos);
@@ -283,7 +269,7 @@ public class AntMovement : MonoBehaviour
     }
 
     // checks what movement the tandem leader should take
-    private bool shouldTandemLeaderWait()
+    private bool ShouldTandemLeaderWait()
     {
         // if leader is waiting for follower ensure follower is allowed to move
         if (ant.leaderWaits == true)
@@ -298,28 +284,29 @@ public class AntMovement : MonoBehaviour
         {
             return false;
         }
-        else {
-            tandemLostContact();
-            distanceBetweenLeaderAndFollower();
+        else
+        {
+            TandemLostContact();
+            DistanceBetweenLeaderAndFollower();
             return true;
         }
     }
 
-    private void distanceBetweenLeaderAndFollower()
+    private void DistanceBetweenLeaderAndFollower()
     {
         gasterHeadDistance += Vector3.Distance(ant.follower.transform.position, transform.position);
         gasterHeadDistanceCount += 1f;
     }
 
     // tandem leader has lost tactile contact with the tandem follower 
-    private void tandemLostContact()
+    private void TandemLostContact()
     {
         // leader waits for follower
         ant.leaderWaits = true;
 
         // set the tandem lost contact variables (LGUT, time of lost contact)
-        ant.tandemContactLost();
-        ant.follower.tandemContactLost();
+        ant.TandemContactLost();
+        ant.follower.TandemContactLost();
     }
 
 
@@ -345,11 +332,11 @@ public class AntMovement : MonoBehaviour
         {
             cont.SimpleMove(tandemSpeed * transform.forward);
         }
-        else if (ant.isTransporting())
+        else if (ant.IsTransporting())
         {
             cont.SimpleMove(carrySpeed * transform.forward);
         }
-        else if (ant.isTandemRunning())
+        else if (ant.IsTandemRunning())
         {
             cont.SimpleMove(tandemSpeed * transform.forward);
         }
@@ -360,13 +347,15 @@ public class AntMovement : MonoBehaviour
             {
                 cont.SimpleMove(assessingSpeedFirstVisit * transform.forward);
             }
-            else {
+            else
+            {
                 // if this.ant.nestAssessmentVisitNumber == 2 -> second visit
                 cont.SimpleMove(assessingSpeedSecondVisit * transform.forward);
             }
 
         }
-        else {
+        else
+        {
             cont.SimpleMove(scoutSpeed * transform.forward);
         }
     }
@@ -438,25 +427,14 @@ public class AntMovement : MonoBehaviour
                 ant.estimateNewLeaderPos = ant.leader.transform.position;
             }
             float predictedLeaderAngle = GetAngleBetweenPositions(transform.position, ant.estimateNewLeaderPos);
-            float newDir = normalRandom(predictedLeaderAngle, maxVar);
+            float newDir = RandomGenerator.Instance.NormalRandom(predictedLeaderAngle, maxVar);
             Turn(newDir);
         }
-        else {
+        else
+        {
             // if the follower can see the leader then turn towards them
             transform.LookAt(ant.leader.transform);
         }
-
-        /* OLD SPACE MODLE (Martin) FollowingDirectionChange() function
-		//if not following an ant then walk towards center of nest
-		if(this.ant.leader == null)
-			transform.LookAt(this.ant.myNest.transform);
-		//if following and can't see leader then randomly walk towards them
-		else if(!this.ant.LineOfSight(this.ant.leader.gameObject)) 
-			WalkToGameObject(this.ant.leader.gameObject);
-		//if following then walk at leader
-		else
-			transform.LookAt(this.ant.leader.transform);
-		*/
     }
 
     //inactive ants swarn around center of nest
@@ -489,8 +467,6 @@ public class AntMovement : MonoBehaviour
             WalkToGameObject(NextWaypoint());
     }
 
-    //greg edit
-    //
     private void AssessingDirectionChange()
     {
         if (ant.assessmentStage == 1)
@@ -509,7 +485,7 @@ public class AntMovement : MonoBehaviour
             {
                 if (ant.inNest)
                 {
-                    ant.nestAssessmentSeconfVisit();
+                    ant.NestAssessmentSecondVisit();
                 }
             }
             return;
@@ -532,12 +508,13 @@ public class AntMovement : MonoBehaviour
             {
                 RandomWalk();
             }
-            else {
-                //WalkToGameObject(NextWaypoint());
+            else
+            {
                 WalkToGameObject(ant.nestToAssess);
             }
         }
-        else {
+        else
+        {
             WalkToGameObject(NextWaypoint());
         }
     }
@@ -602,8 +579,7 @@ public class AntMovement : MonoBehaviour
             }
             else
             {
-                NestManager nest = (NestManager)ant.nestToAssess.GetComponent(Naming.World.Nest);
-                return nest.door;
+                return ant.nestToAssess.Nest().door;
             }
         }
 
@@ -614,7 +590,7 @@ public class AntMovement : MonoBehaviour
             if (ant.inNest && !nearerOld)
             {
                 //If not carrying
-                if (!ant.isTandemRunning())
+                if (!ant.IsTandemRunning())
                 {
                     //Find an ant to carry
                     return ant.myNest;
@@ -622,7 +598,7 @@ public class AntMovement : MonoBehaviour
                 else
                 {
                     //Head for exit
-                    NestManager my = (NestManager)ant.myNest.GetComponent(Naming.World.Nest);
+                    NestManager my = ant.myNest.Nest();
                     if (my.door != null)
                         return my.door;
                     else
@@ -634,7 +610,7 @@ public class AntMovement : MonoBehaviour
                 //Go to old nest
                 if (!ant.inNest)
                 {
-                    NestManager old = (NestManager)ant.oldNest.GetComponent(Naming.World.Nest);
+                    NestManager old = ant.oldNest.Nest();
                     if (old.door != null)
                         return old.door;
                     else
@@ -653,7 +629,7 @@ public class AntMovement : MonoBehaviour
             //if in the nest they are recruiting FROM but want to leave then return the position of the nest's door (if this has been marked)
             if (nearerOld)
             {
-                NestManager old = (NestManager)ant.oldNest.GetComponent(Naming.World.Nest);
+                NestManager old = ant.oldNest.Nest();
                 if (old.door != null)
                     return old.door;
                 else
@@ -661,7 +637,9 @@ public class AntMovement : MonoBehaviour
             }
             //if in the nest that they are recruiting TO and don't want to leave returns the position of it's center 
             else
+            {
                 return ant.myNest;
+            }
         }
         //if in nest and going to towards nest that they are recruiting FROM
         else if (ant.inNest)
@@ -669,7 +647,7 @@ public class AntMovement : MonoBehaviour
             //in nest that they recruit TO but trying to leave then return the position of the nest's door (if this has been marked)
             if (!nearerOld)
             {
-                NestManager my = (NestManager)ant.myNest.GetComponent(Naming.World.Nest);
+                NestManager my = ant.myNest.Nest();
                 if (my.door != null)
                     return my.door;
                 else
@@ -677,12 +655,14 @@ public class AntMovement : MonoBehaviour
             }
             //if in nest that recruiting FROM and are looking for ant to recruit then head towards center
             else
+            {
                 return ant.oldNest;
+            }
         }
         //if not in a nest and heading to nest that they recruit TO then return position of door to that nest (if possible)
         else if (!ant.newToOld)
         {
-            NestManager my = (NestManager)ant.myNest.GetComponent(Naming.World.Nest);
+            NestManager my = ant.myNest.Nest();
             if (my.door != null)
                 return my.door;
             else
@@ -691,7 +671,7 @@ public class AntMovement : MonoBehaviour
         //if not in a nest and heading towards nest that they recruit FROM then return position of that nest's door (if possible)
         else
         {
-            NestManager old = (NestManager)ant.oldNest.GetComponent(Naming.World.Nest);
+            NestManager old = ant.oldNest.Nest();
             if (old.door != null)
                 return old.door;
             else
@@ -740,15 +720,9 @@ public class AntMovement : MonoBehaviour
         cont.enabled = false;
     }
 
-    public bool isEnabled()
+    public bool IsEnabled()
     {
         return cont.enabled;
-    }
-
-    private float normalRandom(float mean, float std)
-    {
-        return (float)RandomGenerator.Instance.NormalDeviate() * std + mean;
-
     }
 
     /*this finds mid point (angle wise) between current direction and direction of given object
@@ -764,7 +738,7 @@ public class AntMovement : MonoBehaviour
         if (Mathf.Abs(goalAngle - currentAngle) > 180)
             currentAngle -= 360;
 
-        float newDir = normalRandom((((goalAngle + currentAngle) / 2f) % 360f), maxVar);
+        float newDir = RandomGenerator.Instance.NormalRandom((((goalAngle + currentAngle) / 2f) % 360f), maxVar);
         Turn(newDir);
     }
 
@@ -777,7 +751,7 @@ public class AntMovement : MonoBehaviour
         }
         if (Vector3.Distance(transform.position, lastTurn) == 0)
             maxVar = 180;
-        float theta = normalRandom(0, maxVar);
+        float theta = RandomGenerator.Instance.NormalRandom(0, maxVar);
         float newDir = (dir + theta) % 360;
         Turn(newDir);
     }
@@ -835,7 +809,7 @@ public class AntMovement : MonoBehaviour
             p_a = GetAngleBetweenPositions(transform.position, p_t.position);
 
             //get strength of this pheromone (using equation from antbox)
-            strength = p.strength * Mathf.Exp(-0.5f * (square(2 * Mathf.Abs(p_a - direction) / maxVar)));
+            strength = p.strength * Mathf.Exp(-0.5f * (Square(2 * Mathf.Abs(p_a - direction) / maxVar)));
 
             //add this to the total vector
             d = p_t.position - transform.position;
@@ -847,15 +821,15 @@ public class AntMovement : MonoBehaviour
         if (Random.Range(0f, 1f) < 0.02f)
         {
             nextPheromoneCheck = Time.timeSinceLevelLoad + Random.Range(0, 1) * maxDirChange_time;
-            return normalRandom(dir, maxVar);
+            return RandomGenerator.Instance.NormalRandom(dir, maxVar);
         }
 
         //get angle and add noise
-        return GetAngleBetweenPositions(transform.position, transform.position + v) + Mathf.Exp(-0.5f * (square(2 * Random.Range(-180, 180) / maxVar)));
+        return GetAngleBetweenPositions(transform.position, transform.position + v) + Mathf.Exp(-0.5f * (Square(2 * Random.Range(-180, 180) / maxVar)));
 
     }
 
-    private float square(float x)
+    private float Square(float x)
     {
         return x * x;
     }
@@ -866,7 +840,7 @@ public class AntMovement : MonoBehaviour
         float maxVar = this.maxVar;
         if (Vector3.Distance(transform.position, lastTurn) == 0)
             maxVar = 180;
-        float newDir = normalRandom(0, maxVar);
+        float newDir = RandomGenerator.Instance.NormalRandom(0, maxVar);
         Turn(newDir);
     }
 
@@ -953,15 +927,9 @@ public class AntMovement : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, dir, 0);
     }
 
-
-
-    //
-    //greg edit
+    
     private void LayPheromoneScouting()
     {
-        //		if( !(this.ant.state == AntManager.State.Scouting) || this.ant.inNest) {
-        //			return;
-        //		}
         GameObject pheromone = (GameObject)Instantiate(pheromonePrefab, transform.position, Quaternion.identity);
         pheromone.transform.parent = pheromoneParent;
         if (ant.state == AntManager.State.Scouting)
@@ -1018,10 +986,7 @@ public class AntMovement : MonoBehaviour
             }
         }
     }
-
-    //
-
-
+    
     private ArrayList PheromonesInRange()
     {
         Collider[] cols = Physics.OverlapSphere(transform.position, pheromoneRange);
