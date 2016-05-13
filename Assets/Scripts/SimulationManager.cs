@@ -38,14 +38,20 @@ public class SimulationManager : MonoBehaviour
         GameObject[] newNests = GameObject.FindGameObjectsWithTag(Naming.World.NewNests);
         GameObject arena = GameObject.FindGameObjectWithTag(Naming.World.Arena);
 
-        BatchRunner batchObj = (BatchRunner)arena.GetComponent(Naming.Components.BatchRunner);
+        BatchRunner batchObj = (BatchRunner)arena.GetComponent(Naming.Simulation.BatchRunner);
         if (batchObj != null)
         {
             this.quorumThreshold = batchObj.quorumThreshold;
-            this.startScout = (this.proportionActive * (float)this.colonySize) - 1 * this.quorumThreshold;
+
+        }
+        else
+        {
+            quorumThreshold = 8;
         }
 
-        Transform ants = MakeObject(Naming.ObjectGroups.Pheromones, null).transform;
+        this.startScout = (this.proportionActive * (float)this.colonySize) - 1 * this.quorumThreshold;
+
+        Transform ants = MakeObject(Naming.ObjectGroups.Ants, null).transform;
 
         //set up various classes of ants
         for (int i = 0; i < newNests.Length; i++)
@@ -70,7 +76,7 @@ public class SimulationManager : MonoBehaviour
         if (batchObj != null)
         {
             gameObject.AddComponent<Output>();
-            ((Output)transform.GetComponent(Naming.Components.Output)).SetUp();
+            ((Output)transform.GetComponent(Naming.Simulation.Output)).SetUp();
 
             //greg edit			
             //			gameObject.AddComponent("GregOutput");
@@ -100,15 +106,15 @@ public class SimulationManager : MonoBehaviour
                 newAnt.name = CreateAntId(colonySize, spawnedAnts);
                 if ((float)spawnedAnts < (float)colonySize * this.proportionActive)
                 {
-                    AntManager newAM = (AntManager)newAnt.transform.GetComponent(Naming.Components.Ants.Behaviour);
+                    AntManager newAM = (AntManager)newAnt.transform.GetComponent(Naming.Ants.Behaviour);
                     newAM.state = AntManager.State.Inactive;
                     newAM.passive = false;
                     newAM.myNest = GameObject.Find(Naming.World.InitialNest);
                     newAM.oldNest = GameObject.Find(Naming.World.InitialNest);
-                    Transform senses = newAnt.transform.FindChild(Naming.Components.Ants.SensesArea);
+                    Transform senses = newAnt.transform.FindChild(Naming.Ants.SensesArea);
                     ((SphereCollider)senses.GetComponent("SphereCollider")).enabled = true;
-                    ((SphereCollider)senses.GetComponent("SphereCollider")).radius = ((AntSenses)senses.GetComponent(Naming.Components.Ants.SensesScript)).range;
-                    ((AntSenses)senses.GetComponent(Naming.Components.Ants.SensesScript)).enabled = true;
+                    ((SphereCollider)senses.GetComponent("SphereCollider")).radius = ((AntSenses)senses.GetComponent(Naming.Ants.SensesScript)).range;
+                    ((AntSenses)senses.GetComponent(Naming.Ants.SensesScript)).enabled = true;
                     newAnt.transform.parent = passive;
                     newAM.inNest = true;
                     newAM.quorumThreshold = this.quorumThreshold;
@@ -127,7 +133,7 @@ public class SimulationManager : MonoBehaviour
                 else
                 {
                     newAnt.transform.parent = passive;
-                    AntManager newAM = (AntManager)newAnt.transform.GetComponent(Naming.Components.Ants.Behaviour);
+                    AntManager newAM = (AntManager)newAnt.transform.GetComponent(Naming.Ants.Behaviour);
                     newAM.myNest = GameObject.Find(Naming.World.InitialNest);
                     newAM.oldNest = GameObject.Find(Naming.World.InitialNest);
                     newAnt.GetComponent<Renderer>().material.color = Color.black;

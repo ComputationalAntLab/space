@@ -94,13 +94,13 @@ public class AntManager : MonoBehaviour
 	void Start () 
 	{
 		this.oldNest = GameObject.Find(Naming.World.InitialNest);
-		this.carryPosition = transform.Find("CarryPosition");
-		this.sensesCol = (Collider) transform.Find("Senses").GetComponent("Collider");
-		this.move = (AntMovement) transform.GetComponent("AntMovement");
+		this.carryPosition = transform.Find(Naming.Ants.CarryPosition);
+		this.sensesCol = (Collider) transform.Find(Naming.Ants.SensesArea).GetComponent("Collider");
+		this.move = (AntMovement) transform.GetComponent(Naming.Ants.Movement);
 		this.nestThreshold = normalRandom(this.qualityThreshMean, this.qualityThreshNoise);
 		this.percievedQuality = float.MinValue;
 		this.finishedRecruiting = false;
-		this.History = (SimData) transform.GetComponent("SimData");
+		this.History = (SimData) transform.GetComponent(Naming.Simulation.SimData);
 		//make sure the value is within contraints
 		if(this.nestThreshold > 1)
 			this.nestThreshold = 1;
@@ -143,7 +143,7 @@ public class AntManager : MonoBehaviour
 		//if an ant is carrying another and is within x distance of their nest's centre then drop the ant
 		if(this.carryPosition.childCount > 0 && Vector3.Distance(this.myNest.transform.position, transform.position) < this.myNest.transform.localScale.x/4f)
 		{
-			((AntManager) this.carryPosition.Find("Ant").GetComponent("AntManager")).Dropped(this.myNest);
+			((AntManager) this.carryPosition.Find(Naming.Ants.CarryAnt).GetComponent(Naming.Ants.Behaviour)).Dropped(this.myNest);
 			
 			// drop social carry "follower" calculate total timesteps for social carry
 			if (socialCarrying == true) {
@@ -244,7 +244,7 @@ public class AntManager : MonoBehaviour
 	//makes sure that ants are always under correct parent object
 	private void AssignParent()
 	{
-		if(transform.parent.tag == "CarryPosition")
+		if(transform.parent.tag == Naming.Ants.CarryPosition)
 			return;
 		else if(this.state == State.Recruiting)
 		{
@@ -296,7 +296,7 @@ public class AntManager : MonoBehaviour
 	//returns true if this ant is carrying another
 	public bool isTransporting()
 	{
-		if(transform.parent.tag == "CarryPosition" || this.carryPosition.childCount > 0) 
+		if(transform.parent.tag == Naming.Ants.CarryPosition || this.carryPosition.childCount > 0) 
 			return true;
 		else 
 			return false;
@@ -313,7 +313,7 @@ public class AntManager : MonoBehaviour
 	
 	private GameObject leadersNest()
 	{
-		return ((AntManager) this.leader.GetComponent("AntManager")).myNest;
+		return ((AntManager) this.leader.GetComponent(Naming.Ants.Behaviour)).myNest;
 	}
 	
 	//tell this ant to lead 'follower' to preffered nest
@@ -487,7 +487,7 @@ public class AntManager : MonoBehaviour
 		this.move.Disable();
 		
 		//get into position
-		Transform carryPosition = carrier.Find("CarryPosition");
+		Transform carryPosition = carrier.Find(Naming.Ants.CarryPosition);
 		transform.parent = carryPosition;
 		transform.position = carryPosition.position;
 		transform.rotation = Quaternion.Euler(0, 0, 90);
@@ -504,7 +504,7 @@ public class AntManager : MonoBehaviour
 		transform.position = new Vector3(transform.position.x + 1, 1.08f, transform.position.z);
 		this.move.Enable();
 		
-		if(transform.parent.tag == "CarryPosition") 
+		if(transform.parent.tag == Naming.Ants.CarryPosition) 
 		{
 			int id = GetNestID(nest);
 			transform.parent = GameObject.Find("P" + id).transform;
@@ -580,7 +580,7 @@ public class AntManager : MonoBehaviour
 			return;
 		
 		//ignore ants that are carrying or are being carried
-		if(this.carryPosition.childCount > 0 || transform.parent.tag == "CarryPosition") 
+		if(this.carryPosition.childCount > 0 || transform.parent.tag == Naming.Ants.CarryPosition) 
 			return;
 		
 		//if this ant has been lead to this nest then tell leader that it's done its job
@@ -588,7 +588,7 @@ public class AntManager : MonoBehaviour
 		{
 			if(this.leader.state == State.Recruiting && nest != this.leader.oldNest)
 			{
-				((AntManager) leader.transform.GetComponent("AntManager")).StopLeading();
+				((AntManager) leader.transform.GetComponent(Naming.Ants.Behaviour)).StopLeading();
 				StopFollowing();
 				if(this.passive)
 				{
@@ -604,7 +604,7 @@ public class AntManager : MonoBehaviour
 			}
 			else if(this.leader.state == State.Reversing && nest == this.leader.oldNest)
 			{
-				AntManager leader = (AntManager) this.leader.transform.GetComponent("AntManager");
+				AntManager leader = (AntManager) this.leader.transform.GetComponent(Naming.Ants.Behaviour);
 				this.myNest = leader.myNest;
 				this.oldNest = leader.oldNest;
 				leader.StopLeading();
@@ -639,7 +639,7 @@ public class AntManager : MonoBehaviour
 		
 		if(this.state == State.Recruiting && nest == this.oldNest)
 		{
-			NestManager nestM = (NestManager) nest.transform.GetComponent("NestManager");
+			NestManager nestM = (NestManager) nest.transform.GetComponent(Naming.World.Nest);
 			
 			//if no passive ants left in old nest then turn around and return home
 			if(this.finishedRecruiting || nestM.GetPassive() == 0)
@@ -659,7 +659,7 @@ public class AntManager : MonoBehaviour
 		
 		if(this.state == State.Reversing && nest == this.oldNest)
 		{
-			NestManager nestM = (NestManager) nest.transform.GetComponent("NestManager");
+			NestManager nestM = (NestManager) nest.transform.GetComponent(Naming.World.Nest);
 			
 			if(nestM.GetPassive() == 0)
 			{
@@ -738,7 +738,7 @@ public class AntManager : MonoBehaviour
 			float area = (2.0f * this.assessmentFirstLengthHistory * this.assessmentSecondLengthHistory) / (3.14159265359f * this.move.intersectionNumber);
 			this.currentNestArea = area;
 
-			SimulationManager simManager = (SimulationManager) GameObject.Find("OldNest").transform.GetComponent("SimulationManager");
+			SimulationManager simManager = (SimulationManager) GameObject.Find(Naming.World.InitialNest).transform.GetComponent(Naming.Simulation.Manager);
 			int ID = simManager.nests.IndexOf(this.nestToAssess.transform);
 			this.History.assessmentAreaResult.Add("nest_" + ID + "\":'" + area);
 			
@@ -784,7 +784,7 @@ public class AntManager : MonoBehaviour
 		 * Old nest quality measurement
 		 *
 		 */
-		NestManager nestM = (NestManager) nest.transform.GetComponent("NestManager");
+		NestManager nestM = (NestManager) nest.transform.GetComponent(Naming.World.Nest);
 		float q = normalRandom(nestM.quality, this.assessmentNoise);
 		if(q < 0f) 
 			q = 0f;
@@ -872,7 +872,7 @@ public class AntManager : MonoBehaviour
 	//returns the ID of the nest that is passed in
 	public int GetNestID(GameObject nest)
 	{
-		SimulationManager simManager = (SimulationManager) GameObject.Find("OldNest").transform.GetComponent("SimulationManager");
+		SimulationManager simManager = (SimulationManager) GameObject.Find(Naming.World.InitialNest).transform.GetComponent(Naming.Simulation.Manager);
 		return simManager.nests.IndexOf(nest.transform);
 	}
 	
@@ -961,7 +961,7 @@ public class AntManager : MonoBehaviour
 		}
 		this.newToOld = true;
 		this.myNest = nest;
-		NestManager nestM = (NestManager) nest.transform.GetComponent("NestManager");
+		NestManager nestM = (NestManager) nest.transform.GetComponent(Naming.World.Nest);
 		//check the qourum of this nest until quorum is met once.
 		if(IsQuorumReached())
 		{
@@ -1048,7 +1048,7 @@ public class AntManager : MonoBehaviour
 		if(this.state == State.Following && this.leader != null) {
 			if(this.leader.state == State.Recruiting || this.leader.state == State.Reversing) {
 				// failed tandem leader behaviour
-				((AntManager)leader.transform.GetComponent("AntManager")).failedTandemLeaderBehvaiour();
+				((AntManager)leader.transform.GetComponent(Naming.Ants.Behaviour)).failedTandemLeaderBehvaiour();
 				// failed tandem follower behaviour
 				failedTandemFollowerBehaviour();
 			}
