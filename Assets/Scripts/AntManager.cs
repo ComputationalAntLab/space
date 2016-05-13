@@ -1,7 +1,4 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Assets.Scripts;
 
 public class AntManager : MonoBehaviour
