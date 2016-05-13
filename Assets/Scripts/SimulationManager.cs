@@ -35,9 +35,9 @@ public class SimulationManager : MonoBehaviour
         nests.Add(transform);
 
         GameObject[] newNests = GameObject.FindGameObjectsWithTag("NewNest");
-        GameObject initialNest = GameObject.FindGameObjectWithTag("InitialNest");
-
-        BatchRunner batchObj = (BatchRunner)initialNest.GetComponent("BatchRunner");
+        GameObject arena = GameObject.FindGameObjectWithTag("Arena");
+        
+        BatchRunner batchObj = (BatchRunner)arena.GetComponent("BatchRunner");
         if (batchObj != null)
         {
             this.quorumThreshold = batchObj.quorumThreshold;
