@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class SimulationManager : MonoBehaviour
 {
@@ -27,11 +28,6 @@ public class SimulationManager : MonoBehaviour
         colonySize = 200;
         //
 
-
-        //find size of square to spawn ants into 
-        float sqrt = Mathf.Ceil(Mathf.Sqrt(50));
-        int count = 0;
-        int scoutCount = 0;
         doors = GameObject.FindGameObjectsWithTag("Door");
         nests = new List<Transform>();
         Transform ants = MakeObject("Ants", null).transform;
@@ -70,17 +66,24 @@ public class SimulationManager : MonoBehaviour
         MakeObject("RT0", ants);
         MakeObject("F", ants);
 
+        
+        // Local variables for ant setup
+        //find size of square to spawn ants into 
+        float sqrt = Mathf.Ceil(Mathf.Sqrt(50));
+        int spawnedAnts = 0;
+        int spawnedAntScounts = 0;
+
         //just spawns ants in square around wherever this is placed
-        while (count < this.colonySize)
+        while (spawnedAnts < this.colonySize)
         {
             int column = 0;
-            while ((column == 0 || count % sqrt != 0) && count < colonySize)
+            while ((column == 0 || spawnedAnts % sqrt != 0) && spawnedAnts < colonySize)
             {
-                float row = Mathf.Floor((float)count / sqrt);
+                float row = Mathf.Floor((float)spawnedAnts / sqrt);
                 Vector3 pos = transform.position;
                 GameObject newAnt = (GameObject)Instantiate(this.antPrefab, new Vector3(pos.x + row, 1.08f, pos.z + column), Quaternion.identity);
-                newAnt.name = "Ant";
-                if ((float)count < (float)colonySize * this.proportionActive)
+                newAnt.name = CreateAntId(colonySize, spawnedAnts);
+                if ((float)spawnedAnts < (float)colonySize * this.proportionActive)
                 {
                     AntManager newAM = (AntManager)newAnt.transform.GetComponent("AntManager");
                     newAM.state = AntManager.State.Inactive;
@@ -96,10 +99,10 @@ public class SimulationManager : MonoBehaviour
                     newAM.quorumThreshold = this.quorumThreshold;
                     newAM.rg = this.rg;
 
-                    if ((float)scoutCount < this.startScout)
+                    if ((float)spawnedAntScounts < this.startScout)
                     {
                         newAM.nextAssesment = 1;
-                        scoutCount++;
+                        spawnedAntScounts++;
                     }
                     else
                     {
@@ -119,7 +122,7 @@ public class SimulationManager : MonoBehaviour
                 }
 
                 column++;
-                count++;
+                spawnedAnts++;
             }
         }
 
@@ -133,6 +136,11 @@ public class SimulationManager : MonoBehaviour
             //			gameObject.AddComponent("GregOutput");
             //			((GregOutput) transform.GetComponent("GregOutput")).SetUp();
         }
+    }
+
+    private string CreateAntId(int colonySize, int antNumber)
+    {
+        return  string.Format("Ant_{0}", antNumber);
     }
 
     GameObject MakeObject(string name, Transform parent)
