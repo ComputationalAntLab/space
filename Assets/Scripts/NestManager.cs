@@ -5,6 +5,7 @@ using Assets.Scripts;
 
 public class NestManager : MonoBehaviour 
 {
+    public SimulationManager simulation;
 	public float quality = 0.5f; //between zero and one
 	public GameObject door = null;
 	
@@ -67,7 +68,6 @@ public class NestManager : MonoBehaviour
 	//returns the ID of the nest that is passed in
 	private int GetNestID(GameObject nest)
 	{
-		SimulationManager simManager = (SimulationManager) GameObject.Find(Naming.World.Arena).transform.GetComponent(Naming.Simulation.Manager);
-		return simManager.nests.IndexOf(nest.transform);
+		return simulation.nests.IndexOf(nest.transform);
 	}
 }

@@ -40,6 +40,8 @@ public class SimulationManager : MonoBehaviour
         MakeObject(Naming.ObjectGroups.Pheromones, null);
         nests.Add(initialNest.transform);
 
+        ((NestManager)initialNest.GetComponent(typeof(NestManager))).simulation = this;
+
         GameObject[] newNests = GameObject.FindGameObjectsWithTag(Naming.World.NewNests);
         GameObject arena = GameObject.FindGameObjectWithTag(Naming.World.Arena);
 
@@ -66,6 +68,7 @@ public class SimulationManager : MonoBehaviour
             MakeObject("P" + nests.Count, ants);
             MakeObject("RT" + nests.Count, ants);
             this.nests.Add(t.transform);
+            ((NestManager)newNests[i].GetComponent(typeof(NestManager))).simulation = this;
         }
 
         MakeObject("S", ants);
