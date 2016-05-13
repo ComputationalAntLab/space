@@ -16,12 +16,14 @@ public class SimulationManager : MonoBehaviour
     public int colonySize = 50;
     public float proportionActive = 0.5f;
     public int quorumThreshold;
-    public RandomGenerator rg = new RandomGenerator();
 
 
     //This spawns all the ants and starts the simulation
     void Start()
     {
+        // TODO: get seed from parameters
+        RandomGenerator.Init();
+
         // greg edit
         //
         //		colonySize = 2;
@@ -118,7 +120,6 @@ public class SimulationManager : MonoBehaviour
                     newAnt.transform.parent = passive;
                     newAM.inNest = true;
                     newAM.quorumThreshold = this.quorumThreshold;
-                    newAM.rg = this.rg;
 
                     if ((float)spawnedAntScounts < this.startScout)
                     {
@@ -139,7 +140,6 @@ public class SimulationManager : MonoBehaviour
                     newAnt.GetComponent<Renderer>().material.color = Color.black;
                     newAM.inNest = true;
                     newAM.quorumThreshold = this.quorumThreshold;
-                    newAM.rg = this.rg;
                 }
 
                 column++;
