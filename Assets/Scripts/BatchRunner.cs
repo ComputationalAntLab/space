@@ -7,16 +7,15 @@ public class BatchRunner : MonoBehaviour
     public int lastExperiment = 200;
     public string sceneName = "Equidistant";
     public int[] quorumThresholds = new int[10] { 0, 1, 2, 5, 8, 10, 12, 15, 18, 20 };
-    public int quorumThreshold = 0;
     public int repeats = 10;
 
-    public float antennaReach;
-    public float[] averageAntennaReach;
-    public float buffonFrequency;
-    public float[] buffonFrequencyList;
-    public float pheromoneAdjustment;
-    public float[] pheromoneAdjustmentList;
-    public bool UseBuffons;
+    //public float antennaReach;
+    //public float[] averageAntennaReach;
+    //public float buffonFrequency;
+    //public float[] buffonFrequencyList;
+    //public float pheromoneAdjustment;
+    //public float[] pheromoneAdjustmentList;
+    //public bool UseBuffons;
 
     public string[] fileName;
     public int index = 0;
@@ -65,7 +64,8 @@ public class BatchRunner : MonoBehaviour
         if ((firstExperiment - 1) % repeats == 0)
         {
             Debug.Log(index);
-            quorumThreshold += 2;
+            // TODO: increment quorum threshold
+           // quorumThreshold += 2;
         }
         //		antennaReach = averageAntennaReach[index];		//tandem
         //		buffonFrequency = buffonFrequencyList[index];	//buffon

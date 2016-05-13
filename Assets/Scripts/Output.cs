@@ -33,7 +33,7 @@ public class Output : MonoBehaviour
 		GameObject batchGO = GameObject.Find(Naming.Simulation.BatchRunner);
 		BatchRunner batch = (BatchRunner) batchGO.transform.GetComponent(Naming.Simulation.BatchRunner);
 		string outputFile = batch.GetNextOutputFile();
-		int quorumThresh = batch.quorumThreshold;
+        int quorumThresh = 0;// batch.quorumThreshold; // TODO: set quorum threshhold to file
 		
 		try
 		{

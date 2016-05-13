@@ -34,7 +34,7 @@ public class GregOutput : MonoBehaviour
 		
 		GameObject batchGO = GameObject.Find(Naming.Simulation.BatchRunner);
 		BatchRunner batch = (BatchRunner) batchGO.transform.GetComponent(Naming.Simulation.BatchRunner);
-		int quorumThresh = batch.quorumThreshold;
+        int quorumThresh = 0;// batch.quorumThreshold;// TODO: quorumThresh
 		
 		string gregOutputFile = batch.GREGGetNextOutputFile ();
 		
