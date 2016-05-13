@@ -30,23 +30,21 @@ public class SimulationManager : MonoBehaviour
 
         doors = GameObject.FindGameObjectsWithTag("Door");
         nests = new List<Transform>();
-        Transform ants = MakeObject("Ants", null).transform;
+
         MakeObject("Pheromones", null);
         nests.Add(transform);
 
         GameObject[] newNests = GameObject.FindGameObjectsWithTag("NewNest");
-        GameObject batchGO = GameObject.Find("BatchRunner");
+        GameObject initialNest = GameObject.FindGameObjectWithTag("InitialNest");
 
-        if (batchGO != null)
+        BatchRunner batchObj = (BatchRunner)initialNest.GetComponent("BatchRunner");
+        if (batchObj != null)
         {
-            BatchRunner batchObj = (BatchRunner)batchGO.GetComponent("BatchRunner");
-            if (batchObj != null)
-            {
-                this.quorumThreshold = batchObj.quorumThreshold;
-                this.startScout = (this.proportionActive * (float)this.colonySize) - 1 * this.quorumThreshold;
-            }
+            this.quorumThreshold = batchObj.quorumThreshold;
+            this.startScout = (this.proportionActive * (float)this.colonySize) - 1 * this.quorumThreshold;
         }
-
+        
+        Transform ants = MakeObject("Ants", null).transform;
 
         //set up various classes of ants
         for (int i = 0; i < newNests.Length; i++)
@@ -59,14 +57,30 @@ public class SimulationManager : MonoBehaviour
             this.nests.Add(t.transform);
         }
 
-        Transform passive = MakeObject("P0", ants).transform;
         MakeObject("S", ants);
         MakeObject("A0", ants);
         MakeObject("R0", ants);
         MakeObject("RT0", ants);
         MakeObject("F", ants);
 
-        
+        SpawnColony(ants);
+
+        //if this is batch running then write output
+        if (batchObj != null)
+        {
+            gameObject.AddComponent<Output>();
+            ((Output)transform.GetComponent("Output")).SetUp();
+
+            //greg edit			
+            //			gameObject.AddComponent("GregOutput");
+            //			((GregOutput) transform.GetComponent("GregOutput")).SetUp();
+        }
+    }
+
+    private void SpawnColony(Transform ants)
+    {
+        Transform passive = MakeObject("P0", ants).transform;
+
         // Local variables for ant setup
         //find size of square to spawn ants into 
         float sqrt = Mathf.Ceil(Mathf.Sqrt(50));
@@ -125,22 +139,11 @@ public class SimulationManager : MonoBehaviour
                 spawnedAnts++;
             }
         }
-
-        //if this is batch running then write output
-        if (batchGO != null)
-        {
-            gameObject.AddComponent<Output>();
-            ((Output)transform.GetComponent("Output")).SetUp();
-
-            //greg edit			
-            //			gameObject.AddComponent("GregOutput");
-            //			((GregOutput) transform.GetComponent("GregOutput")).SetUp();
-        }
     }
 
     private string CreateAntId(int colonySize, int antNumber)
     {
-        return  string.Format("Ant_{0}", antNumber);
+        return string.Format("Ant_{0}", antNumber);
     }
 
     GameObject MakeObject(string name, Transform parent)

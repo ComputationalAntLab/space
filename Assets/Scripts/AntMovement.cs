@@ -63,7 +63,8 @@ public class AntMovement : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        this.simManager = (SimulationManager)GameObject.Find("OldNest").GetComponent("SimulationManager");
+        var initialNest = GameObject.FindGameObjectWithTag("InitialNest");
+        this.simManager = (SimulationManager)initialNest.GetComponent("SimulationManager");
         this.ant = (AntManager)transform.GetComponent("AntManager");
         this.cont = (CharacterController)transform.GetComponent("CharacterController");
         this.lastTurn = transform.position;
@@ -85,20 +86,15 @@ public class AntMovement : MonoBehaviour
         //greg edit
         gasterHeadDistance = 0f;
         gasterHeadDistanceCount = 0f;
-
-        // greg edit
-        // get variable from BatchRun 
-        GameObject batchGO = GameObject.Find("BatchRunner");
-        if (batchGO != null)
+        
+        BatchRunner batchObj = (BatchRunner)initialNest.GetComponent("BatchRunner");
+        if (batchObj != null)
         {
-            BatchRunner batchObj = (BatchRunner)batchGO.GetComponent("BatchRunner");
-            if (batchObj != null)
-            {
-                //			this.leaderStopDistance = batchObj.antennaReach;
-                //			this.pheromoneFrequencyBuffon = batchObj.buffonFrequency;
+            //			this.leaderStopDistance = batchObj.antennaReach;
+            //			this.pheromoneFrequencyBuffon = batchObj.buffonFrequency;
 
-            }
         }
+
         // all active ants call the LayPheromone function reapeatedly (but only lay is usePheromones true)
         usePheromones = false; // all pheromones are false (turned off if FTR or RTR leader)
                                //greg edit
