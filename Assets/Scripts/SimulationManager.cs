@@ -112,21 +112,24 @@ public class SimulationManager : MonoBehaviour
                 newAnt.name = CreateAntId(colonySize, spawnedAnts);
                 newAnt.AntMovement().simManager = this;
 
+                AntManager newAM = newAnt.AntManager();
+
+                newAM.myNest = initialNest;
+                newAM.myNest = initialNest;
+                newAM.simulation = this;
+                newAM.inNest = true;
+                newAM.quorumThreshold = this.quorumThreshold;
+                newAnt.transform.parent = passive;
+
                 if ((float)spawnedAnts < (float)colonySize * this.proportionActive)
                 {
-                    AntManager newAM = newAnt.AntManager();
                     newAM.state = AntManager.State.Inactive;
                     newAM.passive = false;
-                    newAM.myNest = initialNest;
-                    newAM.myNest = initialNest;
-                    newAM.simulation = this;
+                    
                     Transform senses = newAnt.transform.FindChild(Naming.Ants.SensesArea);
                     ((SphereCollider)senses.GetComponent("SphereCollider")).enabled = true;
                     ((SphereCollider)senses.GetComponent("SphereCollider")).radius = ((AntSenses)senses.GetComponent(Naming.Ants.SensesScript)).range;
                     ((AntSenses)senses.GetComponent(Naming.Ants.SensesScript)).enabled = true;
-                    newAnt.transform.parent = passive;
-                    newAM.inNest = true;
-                    newAM.quorumThreshold = this.quorumThreshold;
 
                     if ((float)spawnedAntScounts < this.startScout)
                     {
@@ -140,14 +143,9 @@ public class SimulationManager : MonoBehaviour
                 }
                 else
                 {
-                    newAnt.transform.parent = passive;
-                    AntManager newAM = newAnt.AntManager();
-                    newAM.simulation = this;
-                    newAM.myNest = initialNest;
-                    newAM.myNest = initialNest;
+                    // Passive ant
+                    newAM.passive = true;
                     newAnt.GetComponent<Renderer>().material.color = Color.black;
-                    newAM.inNest = true;
-                    newAM.quorumThreshold = this.quorumThreshold;
                 }
 
                 column++;
