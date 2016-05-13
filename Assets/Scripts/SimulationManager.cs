@@ -5,19 +5,18 @@ using Assets.Scripts;
 public class SimulationManager : MonoBehaviour
 {
 
-    public List<Transform> nests;
+    public List<Transform> nests = new List<Transform>();
     public GameObject[] doors;
-    public float startScout;
+
 
     public SimulationSettings Settings;
 
     //Parameters
     public GameObject antPrefab;
-    public int colonySize = 50;
-    public float proportionActive = 0.5f;
-    public int quorumThreshold;
     private GameObject initialNest;
 
+
+    public float InitialScouts { get { return (Settings.ProportionActive * Settings.ColonySize) - 1 * Settings.QuorumThreshold; } }
 
     //This spawns all the ants and starts the simulation
     void Start()
@@ -29,23 +28,16 @@ public class SimulationManager : MonoBehaviour
 
         RandomGenerator.Init(Settings.RandomSeed);
 
-        colonySize = Settings.ColonySize;
-        quorumThreshold = Settings.QuorumThreshold;
-        this.startScout = (this.proportionActive * (float)this.colonySize) - 1 * this.quorumThreshold;
-
         doors = GameObject.FindGameObjectsWithTag(Naming.World.Doors);
+
         initialNest = GameObject.Find(Naming.World.InitialNest);
-
-        nests = new List<Transform>();
-
-        MakeObject(Naming.ObjectGroups.Pheromones, null);
-        nests.Add(initialNest.transform);
-
         initialNest.Nest().simulation = this;
+        nests.Add(initialNest.transform);
 
         GameObject[] newNests = GameObject.FindGameObjectsWithTag(Naming.World.NewNests);
         GameObject arena = GameObject.FindGameObjectWithTag(Naming.World.Arena);
 
+        MakeObject(Naming.ObjectGroups.Pheromones, null);
         Transform antHolder = MakeObject(Naming.ObjectGroups.Ants, null).transform;
 
         //set up various classes of ants
@@ -69,16 +61,12 @@ public class SimulationManager : MonoBehaviour
         SpawnColony(antHolder);
 
 
-        BatchRunner batchObj = (BatchRunner)arena.GetComponent(Naming.Simulation.BatchRunner);
+        BatchRunner batchObj = null;// (BatchRunner)arena.GetComponent(Naming.Simulation.BatchRunner);
         //if this is batch running then write output
         if (batchObj != null)
         {
             gameObject.AddComponent<Output>();
             ((Output)transform.GetComponent(Naming.Simulation.Output)).SetUp();
-
-            //greg edit			
-            //			gameObject.AddComponent("GregOutput");
-            //			((GregOutput) transform.GetComponent("GregOutput")).SetUp();
         }
     }
 
@@ -93,16 +81,16 @@ public class SimulationManager : MonoBehaviour
         int spawnedAntScounts = 0;
 
         //just spawns ants in square around wherever this is placed
-        while (spawnedAnts < this.colonySize)
+        while (spawnedAnts < Settings.ColonySize)
         {
             int column = 0;
-            while ((column == 0 || spawnedAnts % sqrt != 0) && spawnedAnts < colonySize)
+            while ((column == 0 || spawnedAnts % sqrt != 0) && spawnedAnts < Settings.ColonySize)
             {
                 float row = Mathf.Floor((float)spawnedAnts / sqrt);
                 Vector3 pos = initialNest.transform.position;
 
                 GameObject newAnt = (GameObject)Instantiate(this.antPrefab, new Vector3(pos.x + row, 1.08f, pos.z + column), Quaternion.identity);
-                newAnt.name = CreateAntId(colonySize, spawnedAnts);
+                newAnt.name = CreateAntId(Settings.ColonySize, spawnedAnts);
                 newAnt.AntMovement().simManager = this;
 
                 AntManager newAM = newAnt.AntManager();
@@ -111,10 +99,10 @@ public class SimulationManager : MonoBehaviour
                 newAM.myNest = initialNest;
                 newAM.simulation = this;
                 newAM.inNest = true;
-                newAM.quorumThreshold = this.quorumThreshold;
+                newAM.quorumThreshold = Settings.QuorumThreshold;
                 newAnt.transform.parent = passive;
 
-                if ((float)spawnedAnts < (float)colonySize * this.proportionActive)
+                if ((float)spawnedAnts < (float)Settings.ColonySize * Settings.ProportionActive)
                 {
                     newAM.state = AntManager.State.Inactive;
                     newAM.passive = false;
@@ -124,7 +112,7 @@ public class SimulationManager : MonoBehaviour
                     ((SphereCollider)senses.GetComponent("SphereCollider")).radius = ((AntSenses)senses.GetComponent(Naming.Ants.SensesScript)).range;
                     ((AntSenses)senses.GetComponent(Naming.Ants.SensesScript)).enabled = true;
 
-                    if ((float)spawnedAntScounts < this.startScout)
+                    if ((float)spawnedAntScounts < InitialScouts)
                     {
                         newAM.nextAssesment = 1;
                         spawnedAntScounts++;
