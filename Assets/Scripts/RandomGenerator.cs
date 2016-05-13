@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 //Available here: http://blog.msevestre.ca/2010/12/how-to-generate-gaussian-random-numbers.html
 
@@ -8,29 +9,27 @@ public class RandomGenerator
 
     private static RandomGenerator _instance;
 
-    private readonly Random _random;
+    private readonly System.Random _random;
 
     //indicates that an extra deviates was already calculated
     private bool _hasAnotherDeviate;
 
     //The other deviate calculated using the Box-Muller transformation
     private double _otherGaussianDeviate;
+    private int _seed;
 
     public static void Init(int seed = 0)
     {
         _instance = new RandomGenerator(seed);
     }
 
-    private RandomGenerator(int seed) : this(new Random(seed))
+    private RandomGenerator(int seed)
     {
-
+        _seed = seed;
+        _random = new System.Random(seed);
+        UnityEngine.Random.seed = seed;
     }
 
-
-    private RandomGenerator(Random random)
-    {
-        _random = random;
-    }
 
     // returns a normally distributed deviate with zero mean and unit variance.
     // Adapted from Numerical Recipe page 289: Normal (Gaussian) Deviates
@@ -70,9 +69,9 @@ public class RandomGenerator
         return _random.NextDouble();
     }
 
-    internal float Range(float v1, float v2)
+    internal float Range(float min, float max)
     {
-        throw new NotImplementedException();
+        return UnityEngine.Random.Range(min, max);
     }
 }
 

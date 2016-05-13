@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts
 {
-  public static  class EntityExtensions
+    public static  class EntityExtensions
     {
         public static NestManager Nest(this GameObject gameObject)
         {
