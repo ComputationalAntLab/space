@@ -30,6 +30,15 @@
             public const string Tag = "Ant";
 
             public const string Pheromone = "Pheromone";
+
+            public class BehavourState
+            {
+                public const string Recruiting = "R";
+                public const string Inactive = "P";
+                public const string Scouting = "S";
+                public const string Assessing = "A";
+                public const string Reversing = "RT";
+            }
         }
 
         public static class ObjectGroups

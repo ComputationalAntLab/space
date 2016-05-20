@@ -8,6 +8,7 @@ public class SimulationManager : MonoBehaviour
     public List<Transform> nests = new List<Transform>();
     public GameObject[] doors;
 
+    public List<AntManager> Ants { get; private set; } 
 
     public SimulationSettings Settings;
 
@@ -21,6 +22,8 @@ public class SimulationManager : MonoBehaviour
     //This spawns all the ants and starts the simulation
     void Start()
     {
+        Ants = new List<AntManager>();
+
         // TODO: load from file
 
         if (Settings == null)
@@ -94,6 +97,8 @@ public class SimulationManager : MonoBehaviour
                 newAnt.AntMovement().simManager = this;
 
                 AntManager newAM = newAnt.AntManager();
+
+                Ants.Add(newAM);
 
                 newAM.myNest = initialNest;
                 newAM.myNest = initialNest;

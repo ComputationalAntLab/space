@@ -267,28 +267,24 @@ public class AntManager : MonoBehaviour
             return;
         else if (state == State.Recruiting)
         {
-            AssignParent(myNest, "R", Color.blue);
+            AssignParent(myNest, Naming.Ants.BehavourState.Recruiting, Color.blue);
         }
         else if (state == State.Inactive)
         {
-            AssignParent(myNest, "P", Color.black);
+            AssignParent(myNest, Naming.Ants.BehavourState.Inactive, Color.black);
         }
         else if (state == State.Scouting && transform.parent.name != "S")
         {
-            AssignParent(null, "S", Color.white);
+            AssignParent(null, Naming.Ants.BehavourState.Scouting, Color.white);
         }
         else if (state == State.Assessing)
         {
-            AssignParent(nestToAssess, "A", Color.red);
+            AssignParent(nestToAssess, Naming.Ants.BehavourState.Assessing, Color.red);
         }
         else if (state == State.Reversing)
         {
-            AssignParent(myNest, "RT", Color.yellow);
+            AssignParent(myNest, Naming.Ants.BehavourState.Reversing, Color.yellow);
         }
-        /*else 
-		{
-        	transform.parent = GameObject.Find("F").transform;
-		}*/
     }
 
     //returns true if this ant is carrying another
