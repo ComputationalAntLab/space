@@ -8,7 +8,7 @@ public class SimulationManager : MonoBehaviour
     public List<Transform> nests = new List<Transform>();
     public GameObject[] doors;
 
-    public List<AntManager> Ants { get; private set; } 
+    public List<AntManager> Ants { get; private set; }
 
     public SimulationSettings Settings;
 
@@ -47,18 +47,19 @@ public class SimulationManager : MonoBehaviour
         for (int i = 0; i < newNests.Length; i++)
         {
             Transform t = newNests[i].transform;
-            MakeObject("A" + nests.Count, antHolder);
-            MakeObject("R" + nests.Count, antHolder);
-            MakeObject("P" + nests.Count, antHolder);
-            MakeObject("RT" + nests.Count, antHolder);
+            MakeObject(Naming.Ants.BehavourState.Assessing + nests.Count, antHolder);
+            MakeObject(Naming.Ants.BehavourState.Recruiting + nests.Count, antHolder);
+            MakeObject(Naming.Ants.BehavourState.Inactive + nests.Count, antHolder);
+            MakeObject(Naming.Ants.BehavourState.Reversing + nests.Count, antHolder);
             this.nests.Add(t.transform);
             newNests[i].Nest().simulation = this;
         }
 
-        MakeObject("S", antHolder);
-        MakeObject("A0", antHolder);
-        MakeObject("R0", antHolder);
-        MakeObject("RT0", antHolder);
+        // For some reason scouting isnt suffixed with nest number - perhaps because scouting doesnt need a nest
+        MakeObject(Naming.Ants.BehavourState.Scouting, antHolder);
+        MakeObject(Naming.Ants.BehavourState.Assessing + "0", antHolder);
+        MakeObject(Naming.Ants.BehavourState.Recruiting + "0", antHolder);
+        MakeObject(Naming.Ants.BehavourState.Reversing + "0", antHolder);
         MakeObject("F", antHolder);
 
         SpawnColony(antHolder);
