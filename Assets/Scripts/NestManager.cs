@@ -35,7 +35,7 @@ public class NestManager : MonoBehaviour
 	
 	public int GetQuorum()
 	{
-		int id = GetNestID(gameObject);
+		int id = simulation.GetNestID(gameObject);
 		int total = GameObject.Find("P" + id).transform.childCount;
 		Transform a = GameObject.Find("A" + id).transform;
 
@@ -60,12 +60,6 @@ public class NestManager : MonoBehaviour
 	
 	public int GetPassive()
 	{
-		return GameObject.Find("P" + GetNestID(gameObject)).transform.childCount;
-	}
-	
-	//returns the ID of the nest that is passed in
-	private int GetNestID(GameObject nest)
-	{
-		return simulation.nests.IndexOf(nest.transform);
+		return GameObject.Find("P" + simulation.GetNestID(gameObject)).transform.childCount;
 	}
 }
