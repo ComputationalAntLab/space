@@ -24,7 +24,7 @@ public class NestCount : MonoBehaviour
 
     void Update()
     {
-        string id = "Nest:\t\t\t";
+        string id = "Nest:\t\t\t\t";
         string passive = "Inactive:\t\t";
         string assessing = "Assessing:\t\t";
         string recruiting = "Recruiting:\t\t";
@@ -32,11 +32,11 @@ public class NestCount : MonoBehaviour
 
         foreach (var n in Simulation.NestInfo)
         {
-            id += n.NestId + "\t";
-            passive += n.AntsInactive.transform.childCount + "\t";
-            assessing += n.AntsAssessing.transform.childCount + "\t";
-            recruiting += n.AntsRecruiting.transform.childCount + "\t";
-            reversing += n.AntsReversing.transform.childCount + "\t";
+            id += n.NestId + "\t\t";
+            passive += n.AntsInactive.transform.childCount + "\t\t";
+            assessing += n.AntsAssessing.transform.childCount + "\t\t";
+            recruiting += n.AntsRecruiting.transform.childCount + "\t\t";
+            reversing += n.AntsReversing.transform.childCount + "\t\t";
         }
 
         txtNestId.text = id;
