@@ -55,14 +55,9 @@ public class SimulationManager : MonoBehaviour
 
         // For some reason scouting isnt suffixed with nest number - perhaps because scouting doesnt need a nest
         MakeObject(Naming.Ants.BehavourState.Scouting, antHolder);
+        MakeObject("F", antHolder);
 
-        NestInfo.Add(new Assets.Scripts.NestInfo(0, true,
-            MakeObject(Naming.Ants.BehavourState.Assessing + "0", antHolder),
-            MakeObject(Naming.Ants.BehavourState.Recruiting + "0", antHolder),
-            MakeObject("F", antHolder),
-            MakeObject(Naming.Ants.BehavourState.Reversing + "0", antHolder)
-        ));
-        
+        SpawnColony(antHolder);
 
         //set up various classes of ants
         for (int i = 0; i < newNests.Length; i++)
@@ -72,18 +67,16 @@ public class SimulationManager : MonoBehaviour
             this.nests.Add(t.transform);
             newNests[i].Nest().simulation = this;
 
-            NestInfo.Add(new Assets.Scripts.NestInfo(nests.Count, false,
-                MakeObject(Naming.Ants.BehavourState.Assessing + nests.Count, antHolder),
-                MakeObject(Naming.Ants.BehavourState.Recruiting + nests.Count, antHolder),
-                MakeObject(Naming.Ants.BehavourState.Inactive + nests.Count, antHolder),
-                MakeObject(Naming.Ants.BehavourState.Reversing + nests.Count, antHolder)
+            int id = i + 1;
+
+            NestInfo.Add(new Assets.Scripts.NestInfo(id, false,
+                MakeObject(Naming.Ants.BehavourState.Assessing + id, antHolder),
+                MakeObject(Naming.Ants.BehavourState.Recruiting + id, antHolder),
+                MakeObject(Naming.Ants.BehavourState.Inactive + id, antHolder),
+                MakeObject(Naming.Ants.BehavourState.Reversing + id, antHolder)
                 ));
         }
-
-
-        SpawnColony(antHolder);
-
-
+        
         BatchRunner batchObj = null;// (BatchRunner)arena.GetComponent(Naming.Simulation.BatchRunner);
         //if this is batch running then write output
         if (batchObj != null)
@@ -103,6 +96,13 @@ public class SimulationManager : MonoBehaviour
     private void SpawnColony(Transform ants)
     {
         Transform passive = MakeObject("P0", ants).transform;
+
+        NestInfo.Add(new Assets.Scripts.NestInfo(0, true,
+               MakeObject(Naming.Ants.BehavourState.Assessing + "0", ants),
+               MakeObject(Naming.Ants.BehavourState.Recruiting + "0", ants),
+                passive.gameObject,
+               MakeObject(Naming.Ants.BehavourState.Reversing + "0", ants)
+           ));
 
         // Local variables for ant setup
         //find size of square to spawn ants into 

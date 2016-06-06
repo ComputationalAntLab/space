@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts
 {
-   public class NestInfo
+    public class NestInfo
     {
         public bool IsStartingNest { get; private set; }
         public int NestId { get; private set; }
