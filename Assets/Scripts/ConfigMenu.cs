@@ -5,21 +5,26 @@ using UnityEngine.SceneManagement;
 
 public class ConfigMenu : MonoBehaviour
 {
-    private SimulationSettings _settings = new SimulationSettings();
+    public static SimulationSettings Settings { get; set; }
 
     void Start()
     {
-        foreach (var v in _settings.AllProperties)
+        Settings = new SimulationSettings();
+        //DontDestroyOnLoad(this);
+
+        foreach (var v in Settings.AllProperties)
             CreateInput(v);
 
-        var start = GameObject.Find("Start").GetComponent< Button>();
+        var start = GameObject.Find("Start").GetComponent<Button>();
+
+        start.GetComponentInChildren<Text>().text = "Run Simulation";
 
         start.onClick.AddListener(Start_Clicked);
     }
 
     private void Start_Clicked()
     {
-        var level = GameObject.Find("Level").GetComponent<Dropdown>();
+        var level = GameObject.Find("LevelSelect").GetComponent<Dropdown>();
 
         SceneManager.LoadScene(level.options[level.value].text);
     }

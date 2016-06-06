@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using Assets.Scripts;
 using Assets.Scripts.Extensions;
 using Assets.Scripts.Config;
+using Assets.Scripts.Output;
+using System;
 
 public class SimulationManager : MonoBehaviour
 {
-
     public List<Transform> nests = new List<Transform>();
+    public List<NestInfo> NestInfo { get; private set; }
     public GameObject[] doors;
 
     public List<AntManager> Ants { get; private set; }
@@ -18,16 +20,22 @@ public class SimulationManager : MonoBehaviour
     public GameObject antPrefab;
     private GameObject initialNest;
 
+    private List<Results> results;
 
     public float InitialScouts { get { return (Settings.ProportionActive.Value * Settings.ColonySize.Value) - 1 * Settings.QuorumThreshold.Value; } }
+
+    private int currentStep = 0;
+    private DateTime lastStep = DateTime.Now;
+    private int stepMS = 1000;
 
     //This spawns all the ants and starts the simulation
     void Start()
     {
         Ants = new List<AntManager>();
+        NestInfo = new List<NestInfo>();
 
         // TODO: load from file
-
+        Settings = ConfigMenu.Settings;
         if (Settings == null)
             Settings = new SimulationSettings();
 
@@ -45,24 +53,33 @@ public class SimulationManager : MonoBehaviour
         MakeObject(Naming.ObjectGroups.Pheromones, null);
         Transform antHolder = MakeObject(Naming.ObjectGroups.Ants, null).transform;
 
+        // For some reason scouting isnt suffixed with nest number - perhaps because scouting doesnt need a nest
+        MakeObject(Naming.Ants.BehavourState.Scouting, antHolder);
+
+        NestInfo.Add(new Assets.Scripts.NestInfo(0, true,
+            MakeObject(Naming.Ants.BehavourState.Assessing + "0", antHolder),
+            MakeObject(Naming.Ants.BehavourState.Recruiting + "0", antHolder),
+            MakeObject("F", antHolder),
+            MakeObject(Naming.Ants.BehavourState.Reversing + "0", antHolder)
+        ));
+        
+
         //set up various classes of ants
         for (int i = 0; i < newNests.Length; i++)
         {
             Transform t = newNests[i].transform;
-            MakeObject(Naming.Ants.BehavourState.Assessing + nests.Count, antHolder);
-            MakeObject(Naming.Ants.BehavourState.Recruiting + nests.Count, antHolder);
-            MakeObject(Naming.Ants.BehavourState.Inactive + nests.Count, antHolder);
-            MakeObject(Naming.Ants.BehavourState.Reversing + nests.Count, antHolder);
+
             this.nests.Add(t.transform);
             newNests[i].Nest().simulation = this;
+
+            NestInfo.Add(new Assets.Scripts.NestInfo(nests.Count, false,
+                MakeObject(Naming.Ants.BehavourState.Assessing + nests.Count, antHolder),
+                MakeObject(Naming.Ants.BehavourState.Recruiting + nests.Count, antHolder),
+                MakeObject(Naming.Ants.BehavourState.Inactive + nests.Count, antHolder),
+                MakeObject(Naming.Ants.BehavourState.Reversing + nests.Count, antHolder)
+                ));
         }
 
-        // For some reason scouting isnt suffixed with nest number - perhaps because scouting doesnt need a nest
-        MakeObject(Naming.Ants.BehavourState.Scouting, antHolder);
-        MakeObject(Naming.Ants.BehavourState.Assessing + "0", antHolder);
-        MakeObject(Naming.Ants.BehavourState.Recruiting + "0", antHolder);
-        MakeObject(Naming.Ants.BehavourState.Reversing + "0", antHolder);
-        MakeObject("F", antHolder);
 
         SpawnColony(antHolder);
 
@@ -74,6 +91,13 @@ public class SimulationManager : MonoBehaviour
             gameObject.AddComponent<Output>();
             ((Output)transform.GetComponent(Naming.Simulation.Output)).SetUp();
         }
+
+        results = new List<Results>
+        {
+            new AntResults(this, Settings.ExperimentName),
+            new NestResults(this, Settings.ExperimentName)
+        };
+        lastStep = DateTime.Now;
     }
 
     private void SpawnColony(Transform ants)
@@ -149,6 +173,17 @@ public class SimulationManager : MonoBehaviour
         //return string.Format("{0}{1}", Naming.Entities.AntPrefix, antNumber);
     }
 
+    void Update()
+    {
+        if ((DateTime.Now - lastStep).TotalMilliseconds >= stepMS)
+        {
+            foreach (var res in results)
+                res.Step(currentStep);
+            currentStep++;
+            lastStep = DateTime.Now;
+        }
+    }
+
     private GameObject MakeObject(string name, Transform parent)
     {
         GameObject g = new GameObject();
@@ -161,5 +196,11 @@ public class SimulationManager : MonoBehaviour
     public int GetNestID(GameObject nest)
     {
         return nests.IndexOf(nest.transform);
+    }
+
+    void OnDestroy()
+    {
+        foreach (var res in results)
+            res.Dispose();
     }
 }

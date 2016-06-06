@@ -4,15 +4,13 @@ namespace Assets.Scripts.Output
 {
     public class AntResults : Results
     {
-        public SimulationManager Simulation { get; set; }
-
-        public AntResults(string experiment)
-            :base(experiment + "_ants")
+        public AntResults(SimulationManager simulation, string experiment)
+            :base(simulation, experiment + "_ants")
         {
 
         }
 
-        public void LogStep()
+        public override void Step(int step)
         {
             //from ant in Simulation.Ants
             //group ant.state
