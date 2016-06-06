@@ -1,6 +1,7 @@
 using UnityEngine;
 using Assets.Scripts;
 using System;
+using Assets.Scripts.Extensions;
 
 public class AntManager : MonoBehaviour
 {
@@ -9,8 +10,8 @@ public class AntManager : MonoBehaviour
     AntMovement move;                       //controls movement
     Collider sensesCol;                     //the collider used to sense ants and doors
     Transform carryPosition;                //where to carry ant 
-    public State state;                     //which state the ant is currently in
-    State previousState;                    //the state which the ant was in prior to assessing
+    public BehaviourState state;                     //which state the ant is currently in
+    BehaviourState previousState;                    //the state which the ant was in prior to assessing
     public GameObject myNest;               //recruit to this nest
     public GameObject oldNest;              //recruit from this nest
     public GameObject nestToAssess;         //nest that the ant is currently assessing
@@ -75,18 +76,6 @@ public class AntManager : MonoBehaviour
 
     //Other	
 
-    public enum State
-    {
-        Inactive,
-        Scouting,
-        Assessing,
-        Recruiting,
-        Following,
-        Reversing,
-        ReversingLeading,
-        Leading,
-        Carrying,
-    };
 
     // Use this for initialization
     void Start()
@@ -123,16 +112,16 @@ public class AntManager : MonoBehaviour
     {
 
         //BUGFIX: sometimes assessors leave nest without triggering OnExit in NestManager
-        if (state == State.Assessing && Vector3.Distance(nestToAssess.transform.position, transform.position) >
+        if (state == BehaviourState.Assessing && Vector3.Distance(nestToAssess.transform.position, transform.position) >
            Mathf.Sqrt(Mathf.Pow(nestToAssess.transform.localScale.x, 2) + Mathf.Pow(nestToAssess.transform.localScale.z, 2)))
             LeftNest();
 
         //BUGFIX: occasionly when followers enter a nest there enterednest function doesn't get called, this forces that
-        if (state == State.Following && Vector3.Distance(LeadersNest().transform.position, transform.position) < LeadersNest().transform.localScale.x / 2f)
+        if (state == BehaviourState.Following && Vector3.Distance(LeadersNest().transform.position, transform.position) < LeadersNest().transform.localScale.x / 2f)
             EnteredNest(LeadersNest());
 
         //makes Inactive and !passive ants assess nest that they are in every so often
-        if (!passive && state == State.Inactive && nextAssesment > 0 && Time.timeSinceLevelLoad >= nextAssesment)
+        if (!passive && state == BehaviourState.Inactive && nextAssesment > 0 && Time.timeSinceLevelLoad >= nextAssesment)
         {
             AssessNest(myNest);
             nextAssesment = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0.5f, 1f) * maxAssessmentWait;
@@ -167,7 +156,7 @@ public class AntManager : MonoBehaviour
         }
 
         //BUGFIX: Sometimes new to old is incorrectly set for recruiters - unclear why as of yet.
-        if (state == State.Recruiting && follower != null && inNest && NearerOld())
+        if (state == BehaviourState.Recruiting && follower != null && inNest && NearerOld())
         {
             newToOld = false;
         }
@@ -177,7 +166,7 @@ public class AntManager : MonoBehaviour
     private void DecrementCounters()
     {
         //Only try reverse tandem runs for a certain amount of time
-        if (state == State.Reversing && inNest && !NearerOld() && follower == null)
+        if (state == BehaviourState.Reversing && inNest && !NearerOld() && follower == null)
         {
             if (revTime < 1)
             {
@@ -194,11 +183,11 @@ public class AntManager : MonoBehaviour
             droppedRecently -= 1;
         }
 
-        if (state == State.Assessing && assessTime > 0)
+        if (state == BehaviourState.Assessing && assessTime > 0)
         {
             assessTime -= 1;
         }
-        else if (state == State.Assessing)
+        else if (state == BehaviourState.Assessing)
         {
             if (assessmentStage == 0)
             {
@@ -212,31 +201,31 @@ public class AntManager : MonoBehaviour
     {
         //Update timestep
         timeStep++;
-        if (state == State.Recruiting)
+        if (state == BehaviourState.Recruiting)
         {
             if (IsTransporting())
             {
-                History.StateHistory.Add(AntManager.State.Carrying);
+                History.StateHistory.Add(AntManager.BehaviourState.Carrying);
             }
             else if (IsTandemRunning())
             {
-                History.StateHistory.Add(AntManager.State.Leading);
+                History.StateHistory.Add(AntManager.BehaviourState.Leading);
             }
             else
             {
-                History.StateHistory.Add(AntManager.State.Recruiting);
+                History.StateHistory.Add(AntManager.BehaviourState.Recruiting);
             }
         }
-        else if (state == State.Reversing)
+        else if (state == BehaviourState.Reversing)
         {
             if (IsTandemRunning())
             {
-                History.StateHistory.Add(AntManager.State.ReversingLeading);
+                History.StateHistory.Add(AntManager.BehaviourState.ReversingLeading);
                 //				this.History.StateHistory.Add(AntManager.State.Reversing);
             }
             else
             {
-                History.StateHistory.Add(AntManager.State.Reversing);
+                History.StateHistory.Add(AntManager.BehaviourState.Reversing);
             }
         }
         else
@@ -265,23 +254,23 @@ public class AntManager : MonoBehaviour
     {
         if (transform.parent.tag == Naming.Ants.CarryPosition)
             return;
-        else if (state == State.Recruiting)
+        else if (state == BehaviourState.Recruiting)
         {
             AssignParent(myNest, Naming.Ants.BehavourState.Recruiting, Color.blue);
         }
-        else if (state == State.Inactive)
+        else if (state == BehaviourState.Inactive)
         {
             AssignParent(myNest, Naming.Ants.BehavourState.Inactive, Color.black);
         }
-        else if (state == State.Scouting && transform.parent.name != "S")
+        else if (state == BehaviourState.Scouting && transform.parent.name != "S")
         {
             AssignParent(null, Naming.Ants.BehavourState.Scouting, Color.white);
         }
-        else if (state == State.Assessing)
+        else if (state == BehaviourState.Assessing)
         {
             AssignParent(nestToAssess, Naming.Ants.BehavourState.Assessing, Color.red);
         }
-        else if (state == State.Reversing)
+        else if (state == BehaviourState.Reversing)
         {
             AssignParent(myNest, Naming.Ants.BehavourState.Reversing, Color.yellow);
         }
@@ -313,7 +302,7 @@ public class AntManager : MonoBehaviour
     //tell this ant to lead 'follower' to preffered nest
     public void Lead(AntManager follower)
     {
-        if (failedTandemLeader == true && state == State.Recruiting)
+        if (failedTandemLeader == true && state == BehaviourState.Recruiting)
         {
             failedTandemLeader = false;
             History.failedLeaderFoundFollowerAdd();
@@ -437,7 +426,7 @@ public class AntManager : MonoBehaviour
         startTandemRunSeconds = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
 
         //start following leader towards nest
-        ChangeState(State.Following);
+        ChangeState(BehaviourState.Following);
         newToOld = false;
         this.leader = leader;
 
@@ -509,7 +498,7 @@ public class AntManager : MonoBehaviour
         myNest = nest;
         droppedRecently = droppedWait;
         //this.nextAssesment = Time.timeSinceLevelLoad + Random.Range(0.5f, 1f) * this.maxAssessmentWait;
-        ChangeState(State.Inactive);
+        ChangeState(BehaviourState.Inactive);
 
         //turns senses on if non passive ant
         if (!passive)
@@ -543,7 +532,7 @@ public class AntManager : MonoBehaviour
     //this is called whenever an ant enters a nest
     public void EnteredNest(GameObject nest)
     {
-        if (failedTandemLeader == true && state == State.Recruiting && nest != oldNest)
+        if (failedTandemLeader == true && state == BehaviourState.Recruiting && nest != oldNest)
         {
             failedTandemLeader = false;
             History.failedLeaderNewNestAdd();
@@ -558,7 +547,7 @@ public class AntManager : MonoBehaviour
             if (History.NestDiscoveryTime[nestID] == 0)
             {
                 History.NestDiscoveryTime[nestID] = timeStep;
-                if (state == State.Following)
+                if (state == BehaviourState.Following)
                 {
                     History.NestDiscoveryType[nestID] = SimData.DiscoveryType.Lead;
                 }
@@ -570,7 +559,7 @@ public class AntManager : MonoBehaviour
         }
 
         //ignore ants that have just been dropped here
-        if (nest == myNest && state == State.Inactive)
+        if (nest == myNest && state == BehaviourState.Inactive)
             return;
 
         //ignore ants that are carrying or are being carried
@@ -578,25 +567,25 @@ public class AntManager : MonoBehaviour
             return;
 
         //if this ant has been lead to this nest then tell leader that it's done its job
-        if (state == State.Following && leader != null)
+        if (state == BehaviourState.Following && leader != null)
         {
-            if (leader.state == State.Recruiting && nest != leader.oldNest)
+            if (leader.state == BehaviourState.Recruiting && nest != leader.oldNest)
             {
                 leader.StopLeading();
                 StopFollowing();
                 if (passive)
                 {
                     myNest = nest;
-                    ChangeState(State.Inactive);
+                    ChangeState(BehaviourState.Inactive);
                     return;
                 }
                 else
                 {
                     nestToAssess = nest;
-                    ChangeState(State.Assessing);
+                    ChangeState(BehaviourState.Assessing);
                 }
             }
-            else if (leader.state == State.Reversing && nest == leader.oldNest)
+            else if (leader.state == BehaviourState.Reversing && nest == leader.oldNest)
             {
                 myNest = leader.myNest;
                 oldNest = leader.oldNest;
@@ -607,12 +596,12 @@ public class AntManager : MonoBehaviour
         }
 
         //if entering own nest and finished recruiting then become inactive
-        if (state == State.Recruiting && nest == myNest)
+        if (state == BehaviourState.Recruiting && nest == myNest)
         {
 
             if (finishedRecruiting == true)
             {
-                ChangeState(State.Inactive);
+                ChangeState(BehaviourState.Inactive);
                 finishedRecruiting = false;
                 return;
             }
@@ -621,7 +610,7 @@ public class AntManager : MonoBehaviour
                 if (follower == null && RandomGenerator.Instance.Range(0f, 1f) < pRecAssessNew && !IsQuorumReached())
                 {
                     nestToAssess = nest;
-                    ChangeState(State.Assessing);
+                    ChangeState(BehaviourState.Assessing);
                 }
                 else
                 {
@@ -630,7 +619,7 @@ public class AntManager : MonoBehaviour
             }
         }
 
-        if (state == State.Recruiting && nest == oldNest)
+        if (state == BehaviourState.Recruiting && nest == oldNest)
         {
             NestManager nestM = nest.Nest();
 
@@ -645,19 +634,19 @@ public class AntManager : MonoBehaviour
             else if (RandomGenerator.Instance.Range(0f, 1f) < pRecAssessOld)
             {
                 nestToAssess = nest;
-                ChangeState(State.Assessing);
+                ChangeState(BehaviourState.Assessing);
                 return;
             }
         }
 
-        if (state == State.Reversing && nest == oldNest)
+        if (state == BehaviourState.Reversing && nest == oldNest)
         {
             NestManager nestM = nest.Nest();
 
             if (nestM.GetPassive() == 0)
             {
                 newToOld = false;
-                ChangeState(State.Recruiting);
+                ChangeState(BehaviourState.Recruiting);
                 finishedRecruiting = true;
                 return;
             }
@@ -665,10 +654,10 @@ public class AntManager : MonoBehaviour
 
 
         //if either ant is following or this isn't one of the ants known nests then assess it
-        if (((state == State.Scouting || state == State.Recruiting) && nest != oldNest && nest != myNest) || state == State.Following && leader.state != State.Reversing && nest != leader.oldNest)
+        if (((state == BehaviourState.Scouting || state == BehaviourState.Recruiting) && nest != oldNest && nest != myNest) || state == BehaviourState.Following && leader.state != BehaviourState.Reversing && nest != leader.oldNest)
         {
             nestToAssess = nest;
-            ChangeState(State.Assessing);
+            ChangeState(BehaviourState.Assessing);
         }
         else
         {
@@ -678,7 +667,7 @@ public class AntManager : MonoBehaviour
                 //oldNest = null;    
 
                 //if recruiting and this is your nest then go back to looking around for ants to recruit 
-                if (state == State.Recruiting && nest == myNest && follower == null)
+                if (state == BehaviourState.Recruiting && nest == myNest && follower == null)
                     RecruitToNest(myNest);
         }
     }
@@ -772,13 +761,13 @@ public class AntManager : MonoBehaviour
 
 
         //if an !passive ant decides that his current isn't good enough then go look for another
-        if (state == State.Inactive && nest == myNest)
+        if (state == BehaviourState.Inactive && nest == myNest)
         {
             percievedQuality = q;
             if (q < nestThreshold)
             {
                 oldNest = myNest;
-                ChangeState(State.Scouting);
+                ChangeState(BehaviourState.Scouting);
             }
         }
         else
@@ -834,9 +823,9 @@ public class AntManager : MonoBehaviour
             }
             else
             {
-                if (previousState == State.Scouting)
-                    ChangeState(State.Scouting);
-                else if (previousState == State.Recruiting)
+                if (previousState == BehaviourState.Scouting)
+                    ChangeState(BehaviourState.Scouting);
+                else if (previousState == BehaviourState.Recruiting)
                     RecruitToNest(myNest);
             }
         }
@@ -854,7 +843,7 @@ public class AntManager : MonoBehaviour
         inNest = false;
 
         //when an assessor leaves the nest then make decision about wether to recruit TO that nest
-        if (state == State.Assessing && assessTime == 0)
+        if (state == BehaviourState.Assessing && assessTime == 0)
         {
             if (assessmentStage == 0)
             {
@@ -871,13 +860,13 @@ public class AntManager : MonoBehaviour
     }
 
     //changes state of ant and assigns the correct parent in gameobject heirachy
-    public void ChangeState(State state)
+    public void ChangeState(BehaviourState state)
     {
-        if (state == State.Assessing)
+        if (state == BehaviourState.Assessing)
         {
             ChangeStateAssessing();
         }
-        if (this.state != State.Following && this.state != State.Assessing)
+        if (this.state != BehaviourState.Following && this.state != BehaviourState.Assessing)
         {
             previousState = this.state;
         }
@@ -953,12 +942,12 @@ public class AntManager : MonoBehaviour
         }
 
         recTime = recTryTime;
-        ChangeState(State.Recruiting);
+        ChangeState(BehaviourState.Recruiting);
     }
 
     private void Reverse(GameObject nest)
     {
-        ChangeState(State.Reversing);
+        ChangeState(BehaviourState.Reversing);
         revTime = revTryTime;
     }
 
@@ -1014,9 +1003,9 @@ public class AntManager : MonoBehaviour
     // if duration of lost contact is greater than LGUT fail tandem run
     public void FailedTandemRun()
     {
-        if (state == State.Following && leader != null)
+        if (state == BehaviourState.Following && leader != null)
         {
-            if (leader.state == State.Recruiting || leader.state == State.Reversing)
+            if (leader.state == BehaviourState.Recruiting || leader.state == BehaviourState.Reversing)
             {
                 // failed tandem leader behaviour
                 leader.FailedTandemLeaderBehvaiour();
@@ -1050,10 +1039,10 @@ public class AntManager : MonoBehaviour
         follower = null;
 
         // behaviour after failed tandem run
-        ChangeState(State.Recruiting);
+        ChangeState(BehaviourState.Recruiting);
         failedTandemLeader = true;
 
-        if (previousState == State.Reversing)
+        if (previousState == BehaviourState.Reversing)
         {
             newToOld = true;
         }
@@ -1071,13 +1060,26 @@ public class AntManager : MonoBehaviour
         //TODO need to make accurate behaviour after
         if (myNest == oldNest)
         {
-            ChangeState(State.Scouting);
+            ChangeState(BehaviourState.Scouting);
         }
         else
         {
-            ChangeState(State.Inactive);
+            ChangeState(BehaviourState.Inactive);
         }
     }
+
+    public enum BehaviourState
+    {
+        Inactive,
+        Scouting,
+        Assessing,
+        Recruiting,
+        Following,
+        Reversing,
+        ReversingLeading,
+        Leading,
+        Carrying,
+    };
 }
 
 

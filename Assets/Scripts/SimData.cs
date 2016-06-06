@@ -10,7 +10,7 @@ public class SimData : MonoBehaviour {
 	public int numSwitch = 0;
 	public int firstRev = 0;
 	public int numRev = 0;
-	public List<AntManager.State> StateHistory = new List<AntManager.State>();
+	public List<AntManager.BehaviourState> StateHistory = new List<AntManager.BehaviourState>();
 	public List<int> NestDiscoveryTime = new List<int>();
 	public List<int> NestRecruitTime = new List<int>();
 	public List<int> numAssessments = new List<int>();

@@ -19,10 +19,10 @@ public class AntSenses : MonoBehaviour
 		
 		AntManager otherAnt = (AntManager)other.transform.GetComponent(Naming.Ants.Controller);
 		
-		if(ant.state == AntManager.State.Reversing && !ant.IsTandemRunning())
+		if(ant.state == AntManager.BehaviourState.Reversing && !ant.IsTandemRunning())
 		{
 			//only inactive scouts can be reverse tandem run
-			if (otherAnt.state == AntManager.State.Inactive && otherAnt.passive == false && otherAnt.droppedRecently == 0)
+			if (otherAnt.state == AntManager.BehaviourState.Inactive && otherAnt.passive == false && otherAnt.droppedRecently == 0)
 			{
 				
 				ant.ReverseLead(otherAnt);
@@ -41,11 +41,11 @@ public class AntSenses : MonoBehaviour
 		
 		
 		//only continue if this ant is recruiting, the collision was with an ant and this ant isn't currently leading or carrying
-		if(ant.state != AntManager.State.Recruiting || ant.IsTransporting() || ant.IsTandemRunning()) 
+		if(ant.state != AntManager.BehaviourState.Recruiting || ant.IsTransporting() || ant.IsTandemRunning()) 
 			return;
 		
 		//assessing and following ants can't be recruited
-		if(otherAnt.state == AntManager.State.Assessing || otherAnt.state == AntManager.State.Following)
+		if(otherAnt.state == AntManager.BehaviourState.Assessing || otherAnt.state == AntManager.BehaviourState.Following)
 			return;
 		
 		//if ant already has allegiance to the same nest, or the other ant is currently transporting or tandem running or we can't see the other ant then ignore
@@ -67,7 +67,7 @@ public class AntSenses : MonoBehaviour
 		}
 		
 		//if the ant is recruiting then use probabilities to decide wether they can be recruited
-		if(otherAnt.state == AntManager.State.Recruiting)
+		if(otherAnt.state == AntManager.BehaviourState.Recruiting)
 		{
 			float r = Random.Range(0f, 1f);
 			if(otherAnt.IsQuorumReached())

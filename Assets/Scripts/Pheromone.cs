@@ -36,7 +36,7 @@ public class Pheromone : MonoBehaviour
 		
 		this.owner = owner;
 		
-		if (this.owner.ant.state == AntManager.State.Recruiting) {
+		if (this.owner.ant.state == AntManager.BehaviourState.Recruiting) {
             strength = 1.05f;
 		} else {
             strength = 1.0f;
@@ -68,7 +68,7 @@ public class Pheromone : MonoBehaviour
 	}
 	
 	private void Remove() {
-		if(owner.ant.state != AntManager.State.Assessing) {
+		if(owner.ant.state != AntManager.BehaviourState.Assessing) {
 			Destroy(gameObject);
 		}
 	}

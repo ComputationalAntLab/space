@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Assets.Scripts;
+using Assets.Scripts.Extensions;
+using Assets.Scripts.Config;
 
 public class SimulationManager : MonoBehaviour
 {
@@ -17,7 +19,7 @@ public class SimulationManager : MonoBehaviour
     private GameObject initialNest;
 
 
-    public float InitialScouts { get { return (Settings.ProportionActive * Settings.ColonySize) - 1 * Settings.QuorumThreshold; } }
+    public float InitialScouts { get { return (Settings.ProportionActive.Value * Settings.ColonySize.Value) - 1 * Settings.QuorumThreshold.Value; } }
 
     //This spawns all the ants and starts the simulation
     void Start()
@@ -29,7 +31,7 @@ public class SimulationManager : MonoBehaviour
         if (Settings == null)
             Settings = new SimulationSettings();
 
-        RandomGenerator.Init(Settings.RandomSeed);
+        RandomGenerator.Init(Settings.RandomSeed.Value);
 
         doors = GameObject.FindGameObjectsWithTag(Naming.World.Doors);
 
@@ -85,16 +87,16 @@ public class SimulationManager : MonoBehaviour
         int spawnedAntScounts = 0;
 
         //just spawns ants in square around wherever this is placed
-        while (spawnedAnts < Settings.ColonySize)
+        while (spawnedAnts < Settings.ColonySize.Value)
         {
             int column = 0;
-            while ((column == 0 || spawnedAnts % sqrt != 0) && spawnedAnts < Settings.ColonySize)
+            while ((column == 0 || spawnedAnts % sqrt != 0) && spawnedAnts < Settings.ColonySize.Value)
             {
                 float row = Mathf.Floor(spawnedAnts / sqrt);
                 Vector3 pos = initialNest.transform.position;
 
                 GameObject newAnt = (GameObject)Instantiate(antPrefab, new Vector3(pos.x + row, 1.08f, pos.z + column), Quaternion.identity);
-                newAnt.name = CreateAntId(Settings.ColonySize, spawnedAnts);
+                newAnt.name = CreateAntId(Settings.ColonySize.Value, spawnedAnts);
                 newAnt.AntMovement().simManager = this;
 
                 AntManager newAM = newAnt.AntManager();
@@ -105,12 +107,12 @@ public class SimulationManager : MonoBehaviour
                 newAM.myNest = initialNest;
                 newAM.simulation = this;
                 newAM.inNest = true;
-                newAM.quorumThreshold = Settings.QuorumThreshold;
+                newAM.quorumThreshold = Settings.QuorumThreshold.Value;
                 newAnt.transform.parent = passive;
 
-                if (spawnedAnts < Settings.ColonySize * Settings.ProportionActive)
+                if (spawnedAnts < Settings.ColonySize.Value * Settings.ProportionActive.Value)
                 {
-                    newAM.state = AntManager.State.Inactive;
+                    newAM.state = AntManager.BehaviourState.Inactive;
                     newAM.passive = false;
 
                     Transform senses = newAnt.transform.FindChild(Naming.Ants.SensesArea);

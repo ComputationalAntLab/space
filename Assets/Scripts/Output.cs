@@ -186,7 +186,7 @@ public class Output : MonoBehaviour
             sw.Write(result + ", ");
 
             builder = new StringBuilder();
-            foreach (AntManager.State state in Data.StateHistory)
+            foreach (AntManager.BehaviourState state in Data.StateHistory)
             {
                 // Append each int to the StringBuilder overload.
                 builder.Append(state).Append(" ");

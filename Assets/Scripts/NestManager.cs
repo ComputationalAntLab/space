@@ -27,7 +27,7 @@ public class NestManager : MonoBehaviour
 		AntManager ant = (AntManager)other.transform.GetComponent(Naming.Ants.Controller);
 		
 		//if ant is passive and somehow reaches edge of nest then turn around, otherwise let the ant know it has left the nest
-		if(ant.state == AntManager.State.Inactive) 
+		if(ant.state == AntManager.BehaviourState.Inactive) 
 			ant.transform.rotation = Quaternion.Euler(0, (ant.transform.rotation.eulerAngles.y + 180) % 360, 0);
 		else 
 			ant.LeftNest();

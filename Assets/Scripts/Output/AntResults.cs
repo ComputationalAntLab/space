@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Assets.Scripts.Output
 {
@@ -17,7 +14,14 @@ namespace Assets.Scripts.Output
 
         public void LogStep()
         {
+            //from ant in Simulation.Ants
+            //group ant.state
+            //select WriteAntGroup(a)
+        }
 
+        private void WriteAnt(AntManager ant)
+        {
+            throw new NotImplementedException();
         }
     }
 }

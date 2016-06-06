@@ -329,7 +329,7 @@ public class GregOutput : MonoBehaviour
 			int timeStamp = 0;
 			gregBuilder = new StringBuilder();
 			greg_sw.Write("\t\t\t");
-			foreach (AntManager.State state in Data.StateHistory)
+			foreach (AntManager.BehaviourState state in Data.StateHistory)
 			{
 				timeStamp = timeStamp + 1;
 				gregBuilder.Append("\"T_" + timeStamp + "\":'").Append(state).Append("', ");

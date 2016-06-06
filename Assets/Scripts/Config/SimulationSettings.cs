@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Xml.Serialization;
 using UnityEngine;
+using System.Collections.Generic;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Config
 {
     [Serializable]
     public class SimulationSettings
@@ -10,16 +12,19 @@ namespace Assets.Scripts
         public string ExperimentName { get; set; }
 
         [SerializeField]
-        public int RandomSeed { get; set; }
+        public RandomSeed RandomSeed { get; set; }
 
         [SerializeField]
-        public int ColonySize { get; set; }
+        public ColonySize ColonySize { get; set; }
 
         [SerializeField]
-        public int QuorumThreshold { get; set; }
+        public QuorumThreshold QuorumThreshold { get; set; }
 
         [SerializeField]
-        public float ProportionActive { get; set; }
+        public ProportionActive ProportionActive { get; set; }
+
+        [XmlIgnore]
+        public List<SimulationPropertyBase> AllProperties { get; private set; }
 
         // Sections for colony
         // Sections for ant behaviour etc
@@ -28,17 +33,19 @@ namespace Assets.Scripts
         public SimulationSettings()
         {
             ExperimentName = "Experiment1";
-            ColonySize = 200;
-            QuorumThreshold = 5;
-        }
 
-        public bool Validate()
-        {
-            Validate("ColonySize", ColonySize, 0, null);
-            Validate("QuorumThreshold", QuorumThreshold, 0, null);
-            Validate("ProportionActive", ProportionActive, 0, 1);
+            RandomSeed = new RandomSeed();
+            ColonySize = new ColonySize();
+            QuorumThreshold = new QuorumThreshold();
+            ProportionActive = new ProportionActive();
 
-            return true;
+            AllProperties = new List<SimulationPropertyBase>
+            {
+                RandomSeed,
+                ColonySize,
+                QuorumThreshold,
+                ProportionActive
+            };
         }
 
         private void Validate(string param, float value, float? min, float? max)
@@ -60,7 +67,7 @@ namespace Assets.Scripts
                 else if (min.HasValue && !max.HasValue)
                     message = string.Format("Must be greater than \"{0}\"", min);
                 else if (min.HasValue && max.HasValue)
-                    message = string.Format("Must be greater than \"{0}\" and less than \"{1}\"", min,max);
+                    message = string.Format("Must be greater than \"{0}\" and less than \"{1}\"", min, max);
 
                 throw new ArgumentOutOfRangeException(param, message);
             }
