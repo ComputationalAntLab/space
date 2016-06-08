@@ -2,6 +2,7 @@
 using Assets.Scripts.Config;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Assets.Scripts.Extensions;
 
 public class ConfigMenu : MonoBehaviour
 {
