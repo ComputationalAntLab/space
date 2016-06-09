@@ -2,6 +2,7 @@
 using System.Xml.Serialization;
 using UnityEngine;
 using System.Collections.Generic;
+using Assets.Common;
 
 namespace Assets.Scripts.Config
 {
@@ -24,7 +25,9 @@ namespace Assets.Scripts.Config
         public ProportionActive ProportionActive { get; set; }
 
         [XmlIgnore]
-        public List<SimulationPropertyBase> AllProperties { get; private set; }
+        public List<SimulationPropertyBase> AllProperties { get { return _allProperties.Value; } }
+
+        private Lazy<List<SimulationPropertyBase>> _allProperties;
 
         // Sections for colony
         // Sections for ant behaviour etc
@@ -39,13 +42,16 @@ namespace Assets.Scripts.Config
             QuorumThreshold = new QuorumThreshold();
             ProportionActive = new ProportionActive();
 
-            AllProperties = new List<SimulationPropertyBase>
-            {
-                RandomSeed,
-                ColonySize,
-                QuorumThreshold,
-                ProportionActive
-            };
+            _allProperties = new Lazy<List<SimulationPropertyBase>>(() =>
+             {
+                 return new List<SimulationPropertyBase>
+                {
+                    RandomSeed,
+                    ColonySize,
+                    QuorumThreshold,
+                    ProportionActive
+               };
+             });
         }
 
         private void Validate(string param, float value, float? min, float? max)

@@ -3,6 +3,10 @@ using Assets.Scripts.Config;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Assets.Scripts.Extensions;
+using System;
+using UnityEditor;
+using System.IO;
+using System.Xml.Serialization;
 
 public class ConfigMenu : MonoBehaviour
 {
@@ -10,17 +14,60 @@ public class ConfigMenu : MonoBehaviour
 
     void Start()
     {
-        Settings = new SimulationSettings();
         //DontDestroyOnLoad(this);
-
-        foreach (var v in Settings.AllProperties)
-            CreateInput(v);
+        Load(new SimulationSettings());
 
         var start = GameObject.Find("Start").GetComponent<Button>();
 
         start.GetComponentInChildren<Text>().text = "Run Simulation";
 
         start.onClick.AddListener(Start_Clicked);
+
+        var save = GameObject.Find("Save").GetComponent<Button>();
+        save.onClick.AddListener(Save_Clicked);
+        save.GetComponentInChildren<Text>().text = "Save";
+        var load = GameObject.Find("Load").GetComponent<Button>();
+        load.onClick.AddListener(Load_Clicked);
+        load.GetComponentInChildren<Text>().text = "Load";
+    }
+
+    private void Load(SimulationSettings settings)
+    {
+        Settings = settings;
+        num = 0;
+        GetPropertiesContentArea().DetachChildren();
+        foreach (var v in Settings.AllProperties)
+            CreateInput(v);
+    }
+
+    private void Load_Clicked()
+    {
+        var file = EditorUtility.OpenFilePanel("Load File", string.Empty, "xml");
+
+        using(var sr = new StreamReader(file))
+        {
+            var xml = new XmlSerializer(typeof(SimulationSettings));
+
+            var settings = xml.Deserialize(sr) as SimulationSettings;
+
+            if(settings != null)
+            {
+                Load(settings);
+            }
+        }
+        
+    }
+
+    private void Save_Clicked()
+    {
+        var file = EditorUtility.SaveFilePanel("Save File", string.Empty,"space.xml", "xml");
+
+        using (var sr = new StreamWriter(file))
+        {
+            var xml = new XmlSerializer(typeof(SimulationSettings));
+
+            xml.Serialize(sr, Settings);
+        }
     }
 
     private void Start_Clicked()
@@ -33,8 +80,7 @@ public class ConfigMenu : MonoBehaviour
     int num = 0;
     private void CreateInput(SimulationPropertyBase property)
     {
-        var properties = GameObject.Find("Properties");
-        var content = properties.transform.Find("Viewport").Find("Content");
+        Transform content = GetPropertiesContentArea();
 
         var inputControl = Resources.Load("InputPrefab") as GameObject;
 
@@ -54,6 +100,13 @@ public class ConfigMenu : MonoBehaviour
 
 
         num++;
+    }
+
+    private static Transform GetPropertiesContentArea()
+    {
+        var properties = GameObject.Find("Properties");
+        var content = properties.transform.Find("Viewport").Find("Content");
+        return content;
     }
 
     private class InputWrapper
