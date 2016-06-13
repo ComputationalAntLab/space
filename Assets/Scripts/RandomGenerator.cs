@@ -70,7 +70,8 @@ public class RandomGenerator
 
     public float Range(float min, float max)
     {
-        return UnityEngine.Random.Range(min, max);
+        //return UnityEngine.Random.Range(min, max);
+        return (float)_random.NextDouble() * (max - min);
     }
     
     public float NormalRandom(float mean, float std)

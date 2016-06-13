@@ -5,6 +5,8 @@ using Assets.Scripts.Extensions;
 
 public class AntManager : MonoBehaviour
 {
+    public int AntId { get; set; }
+
     //Individuals properties
     public SimulationManager simulation;
     AntMovement move;                       //controls movement

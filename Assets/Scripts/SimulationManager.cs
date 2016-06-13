@@ -127,6 +127,7 @@ public class SimulationManager : MonoBehaviour
 
                 Ants.Add(newAM);
 
+                newAM.AntId = spawnedAnts;
                 newAM.myNest = initialNest;
                 newAM.myNest = initialNest;
                 newAM.simulation = this;

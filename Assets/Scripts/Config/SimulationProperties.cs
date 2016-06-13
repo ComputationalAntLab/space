@@ -14,7 +14,8 @@ namespace Assets.Scripts.Config
 
         public RandomSeed()
         {
-            Value = new Random().Next();
+            //Value = new Random().Next();
+            Value = 13;
         }
     }
 

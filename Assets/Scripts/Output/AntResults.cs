@@ -7,19 +7,13 @@ namespace Assets.Scripts.Output
         public AntResults(SimulationManager simulation, string experiment)
             :base(simulation, experiment + "_ants")
         {
-
+            Write("Step,AntId,State,Position");
         }
 
         public override void Step(int step)
         {
-            //from ant in Simulation.Ants
-            //group ant.state
-            //select WriteAntGroup(a)
-        }
-
-        private void WriteAnt(AntManager ant)
-        {
-            throw new NotImplementedException();
+            foreach (var ant in Simulation.Ants)
+                Write(string.Format("{0},{1},{2},{3}", step, ant.name, ant.state, ant.transform.position));
         }
     }
 }

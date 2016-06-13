@@ -69,7 +69,7 @@ public class AntSenses : MonoBehaviour
 		//if the ant is recruiting then use probabilities to decide wether they can be recruited
 		if(otherAnt.state == AntManager.BehaviourState.Recruiting)
 		{
-			float r = Random.Range(0f, 1f);
+			float r = RandomGenerator.Instance.Range(0f, 1f);
 			if(otherAnt.IsQuorumReached())
 			{
 				if(r > otherAnt.carryRecSwitchProb)
