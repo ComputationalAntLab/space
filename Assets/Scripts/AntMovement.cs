@@ -67,7 +67,7 @@ public class AntMovement : MonoBehaviour
         ant = (AntManager)transform.GetComponent(Naming.Ants.Controller);
         cont = (CharacterController)transform.GetComponent("CharacterController");
         lastTurn = transform.position;
-        dir = Random.Range(0, 360);
+        dir = RandomGenerator.Instance.Range(0, 360);
         nextDirChange_time = Time.timeSinceLevelLoad + maxDirChange_time;
 
         pheromoneParent = GameObject.Find(Naming.ObjectGroups.Pheromones).transform;
@@ -273,7 +273,7 @@ public class AntMovement : MonoBehaviour
     private bool ShouldTandemLeaderWait()
     {
         // if leader is waiting for follower ensure follower is allowed to move
-        if (ant.leaderWaits == true)
+        if (ant.leaderWaits )
         {
             ant.follower.followerWait = false;
             return true;
@@ -327,26 +327,26 @@ public class AntMovement : MonoBehaviour
         //move ant at appropriate speed
         if (ant.state == AntManager.BehaviourState.Inactive)
         {
-            cont.SimpleMove(inactiveSpeed * transform.forward);
+            cont.SimpleMove(inactiveSpeed * transform.forward );
         }
         else if (ant.state == AntManager.BehaviourState.Reversing)
         {
-            cont.SimpleMove(tandemSpeed * transform.forward);
+            cont.SimpleMove(tandemSpeed * transform.forward );
         }
         else if (ant.IsTransporting())
         {
-            cont.SimpleMove(carrySpeed * transform.forward);
+            cont.SimpleMove(carrySpeed * transform.forward );
         }
         else if (ant.IsTandemRunning())
         {
-            cont.SimpleMove(tandemSpeed * transform.forward);
+            cont.SimpleMove(tandemSpeed * transform.forward );
         }
         else if (ant.state == AntManager.BehaviourState.Assessing)
         {
 
             if (ant.nestAssessmentVisitNumber == 1)
             {
-                cont.SimpleMove(assessingSpeedFirstVisit * transform.forward);
+                cont.SimpleMove(assessingSpeedFirstVisit * transform.forward );
             }
             else
             {
@@ -357,7 +357,7 @@ public class AntMovement : MonoBehaviour
         }
         else
         {
-            cont.SimpleMove(scoutSpeed * transform.forward);
+            cont.SimpleMove(scoutSpeed * transform.forward );
         }
     }
 
@@ -391,7 +391,8 @@ public class AntMovement : MonoBehaviour
             maxVar = 40f;
             ReversingDirectionChange();
         }
-        else {
+        else
+        {
             //this.maxVar = 20f;
             AssessingDirectionChange();
         }
@@ -702,12 +703,12 @@ public class AntMovement : MonoBehaviour
         if (Vector3.Distance(transform.position, lastTurn) > 0)
         {
             if (ant.state == AntManager.BehaviourState.Assessing)
-                nextDirChange_time = Time.timeSinceLevelLoad + Random.Range(0, 1f) * maxDirChange_time * 2f;
+                nextDirChange_time = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time * 2f;
             else
-                nextDirChange_time = Time.timeSinceLevelLoad + Random.Range(0, 1f) * maxDirChange_time;
+                nextDirChange_time = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time;
         }
         else
-            nextDirChange_time = Time.timeSinceLevelLoad + (Random.Range(0, 1f) * maxDirChange_time) / 10f;
+            nextDirChange_time = Time.timeSinceLevelLoad + (RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time) / 10f;
         lastTurn = transform.position;
     }
 
@@ -819,14 +820,14 @@ public class AntMovement : MonoBehaviour
         }
 
         //this stops long snake-like chains of ants following the same path over and over again
-        if (Random.Range(0f, 1f) < 0.02f)
+        if (RandomGenerator.Instance.Range(0f, 1f) < 0.02f)
         {
-            nextPheromoneCheck = Time.timeSinceLevelLoad + Random.Range(0, 1) * maxDirChange_time;
+            nextPheromoneCheck = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0, 1) * maxDirChange_time;
             return RandomGenerator.Instance.NormalRandom(dir, maxVar);
         }
 
         //get angle and add noise
-        return GetAngleBetweenPositions(transform.position, transform.position + v) + Mathf.Exp(-0.5f * (Square(2 * Random.Range(-180, 180) / maxVar)));
+        return GetAngleBetweenPositions(transform.position, transform.position + v) + Mathf.Exp(-0.5f * (Square(2 * RandomGenerator.Instance.Range(-180, 180) / maxVar)));
 
     }
 
@@ -911,7 +912,7 @@ public class AntMovement : MonoBehaviour
 
         //roulette wheel selection method for new direction (with directions with larger weight taking up more of the wheel)
         float sum = vals.Sum();
-        float rand = Random.Range(0, sum);
+        float rand = RandomGenerator.Instance.Range(0, sum);
         int index = 0;
         float total = 0;
         for (int i = 0; i < 4; i++)

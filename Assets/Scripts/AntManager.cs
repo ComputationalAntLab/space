@@ -103,7 +103,7 @@ public class AntManager : MonoBehaviour
 		if(nestM.quality < 0)
 			this.nextAssesment = Time.timeSinceLevelLoad;
 		else 
-			this.nextAssesment = Time.timeSinceLevelLoad + Random.Range(0.5f, 1f) * this.maxAssessmentWait;
+			this.nextAssesment = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0.5f, 1f) * this.maxAssessmentWait;
 		*/
         InvokeRepeating("WriteHistory", 0f, 1.0f);
         InvokeRepeating("DecrementCounters", 0f, 1.0f);
@@ -386,13 +386,13 @@ public class AntManager : MonoBehaviour
         float TRSpeed = TRDistance / tandemTimeSteps;
 
         // update forward / reverse tandem run speed and successful tandem run
-        if (forwardTandemRun == true)
+        if (forwardTandemRun)
         {
             History.forwardTandemTimeSteps.Add(TRSpeed);
             History.completeFTR();
             forwardTandemRun = false;
         }
-        else if (reverseTandemRun == true)
+        else if (reverseTandemRun)
         {
             History.reverseTandemTimeSteps.Add(TRSpeed);
             History.completeRTR();
@@ -499,7 +499,7 @@ public class AntManager : MonoBehaviour
         oldNest = nest;
         myNest = nest;
         droppedRecently = droppedWait;
-        //this.nextAssesment = Time.timeSinceLevelLoad + Random.Range(0.5f, 1f) * this.maxAssessmentWait;
+        //this.nextAssesment = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0.5f, 1f) * this.maxAssessmentWait;
         ChangeState(BehaviourState.Inactive);
 
         //turns senses on if non passive ant
@@ -673,7 +673,7 @@ public class AntManager : MonoBehaviour
                     RecruitToNest(myNest);
         }
     }
-    
+
     private void NestAssessmentVisit()
     {
 
@@ -703,7 +703,7 @@ public class AntManager : MonoBehaviour
         assessTime = GetAssessTime();
         move.usePheromones = false;
     }
-    
+
     private void StoreAssessmentHistory()
     {
         if (nestAssessmentVisitNumber != 2)
@@ -886,7 +886,7 @@ public class AntManager : MonoBehaviour
         move.lastPosition = move.transform.position;
         move.usePheromones = true;
     }
-    
+
     private int GetAssessTime()
     {
         // Eamonn B. Mallon and Nigel R. Franks - Ants estimate area using Buffon's needle
