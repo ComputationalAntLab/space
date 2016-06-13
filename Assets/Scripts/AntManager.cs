@@ -3,7 +3,7 @@ using Assets.Scripts;
 using System;
 using Assets.Scripts.Extensions;
 
-public class AntManager : MonoBehaviour
+public class AntManager : MonoBehaviour, ITickable
 {
     public int AntId { get; set; }
 
@@ -41,8 +41,8 @@ public class AntManager : MonoBehaviour
     public bool socialCarrying;
     public bool followerWait = true;
     public bool leaderWaits = false;
-    private int startTandemRunSeconds = 0;
-    private int timeWhenTandemLostContact = 0;
+    private float startTandemRunSeconds = 0;
+    private float timeWhenTandemLostContact = 0;
     public float LGUT = 0.0f;
     public Vector3 estimateNewLeaderPos;
     public bool failedTandemLeader = false;
@@ -77,6 +77,7 @@ public class AntManager : MonoBehaviour
     public int recTryTime = 20;             //No. of collisions with passive ants before a recruiter gives up.
 
     //Other	
+    public bool ShouldBeRemoved { get { return false; } }
 
 
     // Use this for initialization
@@ -95,23 +96,16 @@ public class AntManager : MonoBehaviour
             nestThreshold = 1;
         else if (nestThreshold < 0)
             nestThreshold = 0;
-
-
-        //!passive ants assess nest as a soon as simulation begins
-        /*
-		NestManager nestM = (NestManager) this.oldNest.GetComponent("NestManager");
-		if(nestM.quality < 0)
-			this.nextAssesment = Time.timeSinceLevelLoad;
-		else 
-			this.nextAssesment = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0.5f, 1f) * this.maxAssessmentWait;
-		*/
-        InvokeRepeating("WriteHistory", 0f, 1.0f);
-        InvokeRepeating("DecrementCounters", 0f, 1.0f);
     }
 
-    //called every frame
-    void Update()
+    private float _elapsed;
+    public void Tick(float elapsedSimulationMS)
     {
+        if (Ticker.Should(elapsedSimulationMS, ref _elapsed, 1000))
+        {
+            WriteHistory();
+            DecrementCounters();
+        }
 
         //BUGFIX: sometimes assessors leave nest without triggering OnExit in NestManager
         if (state == BehaviourState.Assessing && Vector3.Distance(nestToAssess.transform.position, transform.position) >
@@ -310,8 +304,7 @@ public class AntManager : MonoBehaviour
             History.failedLeaderFoundFollowerAdd();
         }
 
-        var date = DateTime.Now;
-        startTandemRunSeconds = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
+        startTandemRunSeconds = simulation.TickManager.TotalElapsedSimulatedSeconds;
 
         // set start of forward tandem run (log start position and timestep)
         forwardTandemRun = true;
@@ -341,8 +334,7 @@ public class AntManager : MonoBehaviour
 
     public void ReverseLead(AntManager follower)
     {
-        var date = DateTime.Now;
-        startTandemRunSeconds = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
+        startTandemRunSeconds = simulation.TickManager.TotalElapsedSimulatedSeconds;
 
         // set start of reverse tandem run (log start position and timestep)
         reverseTandemRun = true;
@@ -424,8 +416,7 @@ public class AntManager : MonoBehaviour
     //follow the leader ant 
     public void Follow(AntManager leader)
     {
-        var date = DateTime.Now;
-        startTandemRunSeconds = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
+        startTandemRunSeconds = simulation.TickManager.TotalElapsedSimulatedSeconds;
 
         //start following leader towards nest
         ChangeState(BehaviourState.Following);
@@ -443,7 +434,7 @@ public class AntManager : MonoBehaviour
         followerWait = true;
         leaderWaits = false;
         startTandemRunSeconds = 0;
-        estimateNewLeaderPos = new Vector3(0, 0, 0);
+        estimateNewLeaderPos = Vector3.zero;
         leader = null;
     }
 
@@ -967,17 +958,15 @@ public class AntManager : MonoBehaviour
             return;
         }
         // log the time that the tandem run was lost
-        var date = DateTime.Now;
-        int currentTime = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
-        timeWhenTandemLostContact = currentTime;
+        timeWhenTandemLostContact = simulation.TickManager.TotalElapsedSimulatedSeconds;
         // calculate the Leader Give-Up Time (LGUT)
-        CalculateLGUT(currentTime);
+        CalculateLGUT();
     }
 
     // calculate the LGUT that the leader and follower will wait for a re-connection
-    private void CalculateLGUT(int currentTime)
+    private void CalculateLGUT()
     {
-        int tandemDuration = (currentTime - startTandemRunSeconds) * (int)Time.timeScale; ;
+        float tandemDuration = (simulation.TickManager.TotalElapsedSimulatedSeconds - startTandemRunSeconds);
         double exponent = 0.9651 + 0.3895 * Mathf.Log10(tandemDuration);
         LGUT = Mathf.Pow(10, (float)exponent);
     }
@@ -994,9 +983,7 @@ public class AntManager : MonoBehaviour
     {
         if (LGUT == 0.0 || timeWhenTandemLostContact == 0) { return false; }
 
-        var date = DateTime.Now;
-        int currentTime = (date.Hour * 3600) + (date.Minute * 60) + (date.Second);
-        int durationLostContact = (currentTime - timeWhenTandemLostContact) * (int)Time.timeScale; ;
+        float durationLostContact = (simulation.TickManager.TotalElapsedSimulatedSeconds - timeWhenTandemLostContact);
 
         // if duration since lost contact is longer than LGUT then tandem run has failed  
         return durationLostContact > LGUT;

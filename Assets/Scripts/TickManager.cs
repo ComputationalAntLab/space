@@ -9,6 +9,8 @@ namespace Assets.Scripts
         public float SimulatedMillisecondsPerTick { get; private set; }
 
         public int TicksPerFrame { get; set; }
+        public float TotalElapsedSimulatedSeconds { get { return TotalElapsedSimulatedMilliseconds / 1000; } }
+        public float TotalElapsedSimulatedMilliseconds { get; private set; }
 
         private List<ITickable> _entities = new List<ITickable>();
 
@@ -31,7 +33,7 @@ namespace Assets.Scripts
             }
         }
 
-        public void Update()
+        public void Process()
         {
             for (int i = 0; i < TicksPerFrame; i++)
                 Tick();
@@ -50,7 +52,7 @@ namespace Assets.Scripts
                     i--;
                 }
             }
-
+            TotalElapsedSimulatedMilliseconds += elapsed;
             CurrentTick++;
         }
     }

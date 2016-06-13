@@ -12,6 +12,8 @@ public class SimulationManager : MonoBehaviour
     public List<NestInfo> NestInfo { get; private set; }
     public GameObject[] doors;
 
+    public TickManager TickManager { get; private set; }
+
     public List<AntManager> Ants { get; private set; }
 
     public SimulationSettings Settings;
@@ -91,6 +93,8 @@ public class SimulationManager : MonoBehaviour
             new NestResults(this, Settings.ExperimentName)
         };
         lastStep = DateTime.Now;
+
+        TickManager = new TickManager();
     }
 
     private void SpawnColony(Transform ants)
@@ -183,6 +187,8 @@ public class SimulationManager : MonoBehaviour
             currentStep++;
             lastStep = DateTime.Now;
         }
+
+        TickManager.Process();
     }
 
     private GameObject MakeObject(string name, Transform parent)
