@@ -2,8 +2,6 @@
 using Assets.Scripts.Config;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Assets.Scripts.Extensions;
-using System;
 using UnityEditor;
 using System.IO;
 using System.Xml.Serialization;

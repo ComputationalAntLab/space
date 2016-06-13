@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Assets.Scripts.Output
+﻿namespace Assets.Scripts.Output
 {
     public class AntResults : Results
     {
