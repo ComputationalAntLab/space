@@ -107,6 +107,8 @@ public class AntManager : MonoBehaviour, ITickable
             DecrementCounters();
         }
 
+        move.Tick(elapsedSimulationMS);
+
         //BUGFIX: sometimes assessors leave nest without triggering OnExit in NestManager
         if (state == BehaviourState.Assessing && Vector3.Distance(nestToAssess.transform.position, transform.position) >
            Mathf.Sqrt(Mathf.Pow(nestToAssess.transform.localScale.x, 2) + Mathf.Pow(nestToAssess.transform.localScale.z, 2)))

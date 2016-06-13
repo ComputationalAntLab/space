@@ -4,7 +4,7 @@ using System.Linq;
 using Assets.Scripts;
 using Assets.Scripts.Extensions;
 
-public class AntMovement : MonoBehaviour
+public class AntMovement : MonoBehaviour, ITickable
 {
     public AntManager ant;
     public SimulationManager simManager;
@@ -59,7 +59,7 @@ public class AntMovement : MonoBehaviour
     public static float gasterHeadDistanceCount = 0f;
     public float pheromoneFrequencyScouting = 0.125f;
 
-
+    public bool ShouldBeRemoved { get { return false; } }
 
     // Use this for initialization
     void Start()
@@ -68,10 +68,10 @@ public class AntMovement : MonoBehaviour
         cont = (CharacterController)transform.GetComponent("CharacterController");
         lastTurn = transform.position;
         dir = RandomGenerator.Instance.Range(0, 360);
-        nextDirChange_time = Time.timeSinceLevelLoad + maxDirChange_time;
+        nextDirChange_time = simManager.TickManager.TotalElapsedSimulatedSeconds + maxDirChange_time;
 
         pheromoneParent = GameObject.Find(Naming.ObjectGroups.Pheromones).transform;
-        nextPheromoneCheck = Time.timeSinceLevelLoad;
+        nextPheromoneCheck = simManager.TickManager.TotalElapsedSimulatedSeconds;
         //passive ants laying in centre of nests makes ants gravitate towards nest centers to much
 
         // set the speeds
@@ -96,15 +96,24 @@ public class AntMovement : MonoBehaviour
 
         //		if (!this.ant.passive) {
         //			InvokeRepeating ("LayPheromoneScouting", 0, pheromoneFrequencyScouting);
-        InvokeRepeating("LayPheromoneFTR", 0, pheromoneFrequencyFTR);
-        InvokeRepeating("LayPheromoneRTR", 0, pheromoneFrequencyRTR);
         //InvokeRepeating ("LayPheromoneAssessing", 0, pheromoneFrequencyBuffon);
         //		}
     }
 
-    //called every frame
-    void Update()
+    private float _elapsedFTR = 0, _elapsedRTR = 0;
+    public void Tick(float elapsedSimulatedMS)
     {
+        // Mimic the InvokeRepeating for the tandem pheromones
+        if (Ticker.Should(elapsedSimulatedMS, ref _elapsedFTR, pheromoneFrequencyFTR))
+        {
+            LayPheromoneFTR();
+        }
+        if (Ticker.Should(elapsedSimulatedMS, ref _elapsedRTR, pheromoneFrequencyRTR))
+        {
+            LayPheromoneRTR();
+        }
+
+
         //if disabled then don't do anything
         if (!IsEnabled())
         {
@@ -154,7 +163,7 @@ public class AntMovement : MonoBehaviour
         }
 
         //move ant forwards
-        Move();
+        Move(elapsedSimulatedMS);
 
         //TODO: try pheromone and doorcheck in here
         if (!ant.inNest)
@@ -170,7 +179,7 @@ public class AntMovement : MonoBehaviour
         }
 
         //wait for specified time until direction change
-        if (Time.timeSinceLevelLoad < nextDirChange_time)
+        if (simManager.TickManager.TotalElapsedSimulatedSeconds < nextDirChange_time)
             return;
 
         //change direction calculate when next direction change occurs 
@@ -273,7 +282,7 @@ public class AntMovement : MonoBehaviour
     private bool ShouldTandemLeaderWait()
     {
         // if leader is waiting for follower ensure follower is allowed to move
-        if (ant.leaderWaits )
+        if (ant.leaderWaits)
         {
             ant.follower.followerWait = false;
             return true;
@@ -319,34 +328,36 @@ public class AntMovement : MonoBehaviour
     }
 
     //move ant forwards
-    public void Move()
+    public void Move(float elapsed)
     {
+        // TODO: update move
+
         //check for obstructions, turn to avoid if there are
         ObstructionCheck();
 
         //move ant at appropriate speed
         if (ant.state == AntManager.BehaviourState.Inactive)
         {
-            cont.SimpleMove(inactiveSpeed * transform.forward );
+            cont.SimpleMove(inactiveSpeed * transform.forward);
         }
         else if (ant.state == AntManager.BehaviourState.Reversing)
         {
-            cont.SimpleMove(tandemSpeed * transform.forward );
+            cont.SimpleMove(tandemSpeed * transform.forward);
         }
         else if (ant.IsTransporting())
         {
-            cont.SimpleMove(carrySpeed * transform.forward );
+            cont.SimpleMove(carrySpeed * transform.forward);
         }
         else if (ant.IsTandemRunning())
         {
-            cont.SimpleMove(tandemSpeed * transform.forward );
+            cont.SimpleMove(tandemSpeed * transform.forward);
         }
         else if (ant.state == AntManager.BehaviourState.Assessing)
         {
 
             if (ant.nestAssessmentVisitNumber == 1)
             {
-                cont.SimpleMove(assessingSpeedFirstVisit * transform.forward );
+                cont.SimpleMove(assessingSpeedFirstVisit * transform.forward);
             }
             else
             {
@@ -357,7 +368,7 @@ public class AntMovement : MonoBehaviour
         }
         else
         {
-            cont.SimpleMove(scoutSpeed * transform.forward );
+            cont.SimpleMove(scoutSpeed * transform.forward);
         }
     }
 
@@ -703,12 +714,12 @@ public class AntMovement : MonoBehaviour
         if (Vector3.Distance(transform.position, lastTurn) > 0)
         {
             if (ant.state == AntManager.BehaviourState.Assessing)
-                nextDirChange_time = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time * 2f;
+                nextDirChange_time = simManager.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time * 2f;
             else
-                nextDirChange_time = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time;
+                nextDirChange_time = simManager.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time;
         }
         else
-            nextDirChange_time = Time.timeSinceLevelLoad + (RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time) / 10f;
+            nextDirChange_time = simManager.TickManager.TotalElapsedSimulatedSeconds + (RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time) / 10f;
         lastTurn = transform.position;
     }
 
@@ -929,7 +940,7 @@ public class AntMovement : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, dir, 0);
     }
 
-    
+
     private void LayPheromoneScouting()
     {
         GameObject pheromone = (GameObject)Instantiate(pheromonePrefab, transform.position, Quaternion.identity);
@@ -988,7 +999,7 @@ public class AntMovement : MonoBehaviour
             }
         }
     }
-    
+
     private ArrayList PheromonesInRange()
     {
         Collider[] cols = Physics.OverlapSphere(transform.position, pheromoneRange);
