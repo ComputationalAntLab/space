@@ -80,7 +80,6 @@ public class Pheromone : MonoBehaviour, ITickable
         }
 
         assessingPheromone = false;
-        InvokeRepeating("Weaken", 1, 1);
     }
 
     private void UpdateTandeom()

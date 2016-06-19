@@ -125,7 +125,7 @@ public class SimulationManager : MonoBehaviour
                 float row = Mathf.Floor(spawnedAnts / sqrt);
                 Vector3 pos = initialNest.transform.position;
 
-                GameObject newAnt = (GameObject)Instantiate(antPrefab, new Vector3(pos.x + row, 1.08f, pos.z + column), Quaternion.identity);
+                GameObject newAnt = (GameObject)Instantiate(antPrefab, new Vector3(pos.x + row, 0, pos.z + column), Quaternion.identity);
                 newAnt.name = CreateAntId(Settings.ColonySize.Value, spawnedAnts);
                 newAnt.AntMovement().simManager = this;
 

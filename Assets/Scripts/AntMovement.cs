@@ -379,7 +379,7 @@ public class AntMovement : MonoBehaviour, ITickable
         speed /= 1000f / 30f;
         speed /= 40;
 
-        cont.transform.position += transform.forward * speed * elapsed;
+        transform.position += transform.forward * speed * elapsed;
     }
 
     //change direction based on state
