@@ -33,6 +33,11 @@ namespace Assets.Scripts
             }
         }
 
+        public void AddEntities(IEnumerable<ITickable> entities)
+        {
+            _entities.AddRange(entities);
+        }
+
         public void Process()
         {
             for (int i = 0; i < TicksPerFrame; i++)

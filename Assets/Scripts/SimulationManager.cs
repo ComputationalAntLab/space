@@ -5,6 +5,7 @@ using Assets.Scripts.Extensions;
 using Assets.Scripts.Config;
 using Assets.Scripts.Output;
 using System;
+using System.Linq;
 
 public class SimulationManager : MonoBehaviour
 {
@@ -95,6 +96,7 @@ public class SimulationManager : MonoBehaviour
         lastStep = DateTime.Now;
 
         TickManager = new TickManager();
+        TickManager.AddEntities(Ants.Cast<ITickable>());
     }
 
     private void SpawnColony(Transform ants)

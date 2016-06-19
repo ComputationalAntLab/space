@@ -163,7 +163,7 @@ public class AntMovement : MonoBehaviour, ITickable
         }
 
         //move ant forwards
-        Move(elapsedSimulatedMS);
+        ProcessMovement(elapsedSimulatedMS);
 
         //TODO: try pheromone and doorcheck in here
         if (!ant.inNest)
@@ -328,48 +328,58 @@ public class AntMovement : MonoBehaviour, ITickable
     }
 
     //move ant forwards
-    public void Move(float elapsed)
+    public void ProcessMovement(float elapsed)
     {
-        // TODO: update move
-
         //check for obstructions, turn to avoid if there are
         ObstructionCheck();
 
         //move ant at appropriate speed
         if (ant.state == AntManager.BehaviourState.Inactive)
         {
-            cont.SimpleMove(inactiveSpeed * transform.forward);
+            MoveAtSpeed(inactiveSpeed , elapsed);
         }
         else if (ant.state == AntManager.BehaviourState.Reversing)
         {
-            cont.SimpleMove(tandemSpeed * transform.forward);
+            MoveAtSpeed(tandemSpeed , elapsed);
         }
         else if (ant.IsTransporting())
         {
-            cont.SimpleMove(carrySpeed * transform.forward);
+            MoveAtSpeed(carrySpeed , elapsed);
         }
         else if (ant.IsTandemRunning())
         {
-            cont.SimpleMove(tandemSpeed * transform.forward);
+            MoveAtSpeed(tandemSpeed , elapsed);
         }
         else if (ant.state == AntManager.BehaviourState.Assessing)
         {
 
             if (ant.nestAssessmentVisitNumber == 1)
             {
-                cont.SimpleMove(assessingSpeedFirstVisit * transform.forward);
+                MoveAtSpeed(assessingSpeedFirstVisit , elapsed);
             }
             else
             {
                 // if this.ant.nestAssessmentVisitNumber == 2 -> second visit
-                cont.SimpleMove(assessingSpeedSecondVisit * transform.forward);
+                MoveAtSpeed(assessingSpeedSecondVisit , elapsed);
             }
 
         }
         else
         {
-            cont.SimpleMove(scoutSpeed * transform.forward);
+            MoveAtSpeed(scoutSpeed , elapsed);
         }
+    }
+
+    private void MoveAtSpeed(float speed, float elapsed)
+    {
+        // previously this function does it once per update
+        // we are now adding a simlated delta (elapsed)
+        // correct the original speeds to be in the domain of 1x speed
+
+        speed /= 1000f / 30f;
+        speed /= 40;
+
+        cont.transform.position += transform.forward * speed * elapsed;
     }
 
     //change direction based on state
