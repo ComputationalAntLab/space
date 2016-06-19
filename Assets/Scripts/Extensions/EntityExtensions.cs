@@ -31,5 +31,10 @@ namespace Assets.Scripts.Extensions
 
             return (T)gameObject.GetComponent(typeof(T));
         }
+
+        public static T ComponentFromChild<T>(this Transform transform, string childName) where T : Component
+        {
+            return transform.FindChild(childName).GetComponent<T>();
+        }
     }
 }

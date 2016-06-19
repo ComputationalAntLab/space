@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Extensions;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class NestCountControl : MonoBehaviour
@@ -11,13 +12,13 @@ public class NestCountControl : MonoBehaviour
     
     void Start ()
     {
-        txtNestId = transform.FindChild("txtNestId").GetComponent<Text>();
-        txtPassive = transform.FindChild("txtPassive").GetComponent<Text>();
-        txtAssessing = transform.FindChild("txtAssessing").GetComponent<Text>();
-        txtRecruiting = transform.FindChild("txtRecruiting").GetComponent<Text>();
-        txtReversing = transform.FindChild("txtReversing").GetComponent<Text>();
+        txtNestId = this.TextByName("txtNestId");
+        txtPassive = this.TextByName("txtPassive");
+        txtAssessing = this.TextByName("txtAssessing");
+        txtRecruiting = this.TextByName("txtRecruiting");
+        txtReversing = this.TextByName("txtReversing");
     }
-
+    
     public void SetData(int nestId, int passive, int assessing,int recruiting, int reversing)
     {
         txtNestId.text = nestId.ToString();

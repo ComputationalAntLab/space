@@ -1,6 +1,5 @@
 using UnityEngine;
 using Assets.Scripts;
-using System;
 using Assets.Scripts.Extensions;
 
 public class AntManager : MonoBehaviour, ITickable
