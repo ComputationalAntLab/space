@@ -13,7 +13,7 @@ namespace Assets.Scripts
         public float TotalElapsedSimulatedMilliseconds { get; private set; }
 
         private List<ITickable> _entities = new List<ITickable>();
-
+        
         public TickManager()
         {
             SetTicksPerSimulatedSecond(60);

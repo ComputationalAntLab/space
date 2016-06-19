@@ -9,6 +9,8 @@ using System.Linq;
 
 public class SimulationManager : MonoBehaviour
 {
+    public static SimulationManager Instance { get; private set; }
+
     public List<Transform> nests = new List<Transform>();
     public List<NestInfo> NestInfo { get; private set; }
     public GameObject[] doors;
@@ -34,6 +36,8 @@ public class SimulationManager : MonoBehaviour
     //This spawns all the ants and starts the simulation
     void Start()
     {
+        Instance = this;
+
         Ants = new List<AntManager>();
         NestInfo = new List<NestInfo>();
 

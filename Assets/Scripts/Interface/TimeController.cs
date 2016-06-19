@@ -24,8 +24,8 @@ public class TimeController : MonoBehaviour
         btnUp = this.ButtonByName("btnUp");
         btnDown = this.ButtonByName("btnDown");
 
-        btnUp.GetComponent<Text>().text = "+";
-        btnDown.GetComponent<Text>().text = "-";
+        btnUp.GetComponentInChildren<Text>().text = "+";
+        btnDown.GetComponentInChildren<Text>().text = "-";
 
         btnUp.onClick.AddListener(btnUp_Click);
         btnDown.onClick.AddListener(btnDown_Click);
@@ -51,6 +51,8 @@ public class TimeController : MonoBehaviour
         _currentSpeed = newSpeed;
 
         txtSpeed.text = _currentSpeed + "x";
+
+        SimulationManager.Instance.TickManager.TicksPerFrame = _currentSpeed;
     }
 
     void Update()
