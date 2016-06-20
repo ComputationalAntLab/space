@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using Assets.Scripts.Extensions;
 
-public class TimeController : MonoBehaviour
+public class TimeControl : MonoBehaviour
 {
     private Text txtFPS, txtSpeed;
 
@@ -68,8 +68,7 @@ public class TimeController : MonoBehaviour
         }
         else
         {
-            txtFPS.text = string.Format("FPS: {0}", _lastFramerate);
-
+            txtFPS.text = string.Format("FPS: {0}", _frameCounter);
             _lastFramerate = (float)_frameCounter / _timeCounter;
             _frameCounter = 0;
             _timeCounter = 0.0f;
