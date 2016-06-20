@@ -8,7 +8,7 @@ using Assets.Scripts.Ticking;
 public class AntMovement : MonoBehaviour, ITickable
 {
     public AntManager ant;
-    public SimulationManager simManager;
+    public SimulationManager simulation;
     CharacterController cont;
 
     float dir;                              //current direction
@@ -69,10 +69,10 @@ public class AntMovement : MonoBehaviour, ITickable
         cont = (CharacterController)transform.GetComponent("CharacterController");
         lastTurn = transform.position;
         dir = RandomGenerator.Instance.Range(0, 360);
-        nextDirChange_time = simManager.TickManager.TotalElapsedSimulatedSeconds + maxDirChange_time;
+        nextDirChange_time = simulation.TickManager.TotalElapsedSimulatedSeconds + maxDirChange_time;
 
         pheromoneParent = GameObject.Find(Naming.ObjectGroups.Pheromones).transform;
-        nextPheromoneCheck = simManager.TickManager.TotalElapsedSimulatedSeconds;
+        nextPheromoneCheck = simulation.TickManager.TotalElapsedSimulatedSeconds;
         //passive ants laying in centre of nests makes ants gravitate towards nest centers to much
 
         // set the speeds
@@ -180,7 +180,7 @@ public class AntMovement : MonoBehaviour, ITickable
         }
 
         //wait for specified time until direction change
-        if (simManager.TickManager.TotalElapsedSimulatedSeconds < nextDirChange_time)
+        if (simulation.TickManager.TotalElapsedSimulatedSeconds < nextDirChange_time)
             return;
 
         //change direction calculate when next direction change occurs 
@@ -705,7 +705,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
     private GameObject DoorCheck()
     {
-        foreach (GameObject door in simManager.doors)
+        foreach (GameObject door in simulation.doors)
         {
             if (Vector3.Distance(door.transform.position, transform.position) < doorSenseRange && transform.InverseTransformPoint(door.transform.position).z >= 0)
             {
@@ -725,12 +725,12 @@ public class AntMovement : MonoBehaviour, ITickable
         if (Vector3.Distance(transform.position, lastTurn) > 0)
         {
             if (ant.state == AntManager.BehaviourState.Assessing)
-                nextDirChange_time = simManager.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time * 2f;
+                nextDirChange_time = simulation.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time * 2f;
             else
-                nextDirChange_time = simManager.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time;
+                nextDirChange_time = simulation.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time;
         }
         else
-            nextDirChange_time = simManager.TickManager.TotalElapsedSimulatedSeconds + (RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time) / 10f;
+            nextDirChange_time = simulation.TickManager.TotalElapsedSimulatedSeconds + (RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time) / 10f;
         lastTurn = transform.position;
     }
 
@@ -803,7 +803,7 @@ public class AntMovement : MonoBehaviour, ITickable
         if (direction < 0)
             direction += 360;
 
-        if (Time.timeSinceLevelLoad < nextPheromoneCheck)
+        if (simulation.TickManager.TotalElapsedSimulatedSeconds < nextPheromoneCheck)
             return direction;
 
         //if not using pheromones then just use given direction
@@ -844,7 +844,7 @@ public class AntMovement : MonoBehaviour, ITickable
         //this stops long snake-like chains of ants following the same path over and over again
         if (RandomGenerator.Instance.Range(0f, 1f) < 0.02f)
         {
-            nextPheromoneCheck = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0, 1) * maxDirChange_time;
+            nextPheromoneCheck = simulation.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0, 1) * maxDirChange_time;
             return RandomGenerator.Instance.NormalRandom(dir, maxVar);
         }
 

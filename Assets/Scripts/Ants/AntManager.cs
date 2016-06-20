@@ -119,10 +119,10 @@ public class AntManager : MonoBehaviour, ITickable
             EnteredNest(LeadersNest());
 
         //makes Inactive and !passive ants assess nest that they are in every so often
-        if (!passive && state == BehaviourState.Inactive && nextAssesment > 0 && Time.timeSinceLevelLoad >= nextAssesment)
+        if (!passive && state == BehaviourState.Inactive && nextAssesment > 0 && simulation.TickManager.TotalElapsedSimulatedSeconds >= nextAssesment)
         {
             AssessNest(myNest);
-            nextAssesment = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0.5f, 1f) * maxAssessmentWait;
+            nextAssesment = simulation.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0.5f, 1f) * maxAssessmentWait;
         }
 
         //if an ant is carrying another and is within x distance of their nest's centre then drop the ant
@@ -492,7 +492,7 @@ public class AntManager : MonoBehaviour, ITickable
         oldNest = nest;
         myNest = nest;
         droppedRecently = droppedWait;
-        //this.nextAssesment = Time.timeSinceLevelLoad + RandomGenerator.Instance.Range(0.5f, 1f) * this.maxAssessmentWait;
+        //this.nextAssesment = simulation.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0.5f, 1f) * this.maxAssessmentWait;
         ChangeState(BehaviourState.Inactive);
 
         //turns senses on if non passive ant

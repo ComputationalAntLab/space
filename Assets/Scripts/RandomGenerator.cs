@@ -59,7 +59,7 @@ public class RandomGenerator
     // Returns a uniformly distributed random number between min and max.
     public double UniformDeviate(double min, double max)
     {
-        return (max - min) * _random.NextDouble() + min;
+        return (max - min) * NextDouble() + min;
     }
 
     // Returns a random number between 0 and 1
@@ -70,14 +70,12 @@ public class RandomGenerator
 
     public float Range(float min, float max)
     {
-        //return UnityEngine.RandomGenerator.Instance.Range(min, max);
-        return (float)_random.NextDouble() * (max - min);
+        return (float)NextDouble() * (max - min);
     }
     
     public float NormalRandom(float mean, float std)
     {
         return (float)NormalDeviate() * std + mean;
-
     }
 }
 

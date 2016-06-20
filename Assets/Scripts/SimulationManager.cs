@@ -125,7 +125,7 @@ public class SimulationManager : MonoBehaviour
 
                 GameObject newAnt = (GameObject)Instantiate(antPrefab, new Vector3(pos.x + row, 0, pos.z + column), Quaternion.identity);
                 newAnt.name = CreateAntId(Settings.ColonySize.Value, spawnedAnts);
-                newAnt.AntMovement().simManager = this;
+                newAnt.AntMovement().simulation = this;
 
                 AntManager newAM = newAnt.AntManager();
 
