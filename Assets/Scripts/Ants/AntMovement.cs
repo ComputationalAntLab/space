@@ -214,7 +214,8 @@ public class AntMovement : MonoBehaviour, ITickable
                     }
                     return;
                 }
-                else {
+                else
+                {
                     assessingSpeedSecondVisit = 32.175f;
                 }
             }
@@ -249,7 +250,8 @@ public class AntMovement : MonoBehaviour, ITickable
             TandemRegainedContact();
             return true;
         }
-        else {
+        else
+        {
             return false;
         }
     }
