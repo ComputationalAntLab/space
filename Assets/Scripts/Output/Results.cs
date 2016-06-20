@@ -15,7 +15,7 @@ namespace Assets.Scripts.Output
             _writer = new StreamWriter(fileNameWithoutExtension + ".txt", false);
         }
 
-        public abstract void Step(int step);
+        public abstract void Step(long step);
 
         protected void Write(string message)
         {

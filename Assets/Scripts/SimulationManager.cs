@@ -6,6 +6,8 @@ using Assets.Scripts.Config;
 using Assets.Scripts.Output;
 using System;
 using System.Linq;
+using System.IO;
+using Assets;
 
 public class SimulationManager : MonoBehaviour
 {
@@ -16,23 +18,19 @@ public class SimulationManager : MonoBehaviour
     public GameObject[] doors;
 
     public TickManager TickManager { get; private set; }
+    public ResultsManager ResultsManager{ get; private set; }
 
     public List<AntManager> Ants { get; private set; }
 
-    public SimulationSettings Settings;
+    public SimulationSettings Settings { get; private set; }
 
     //Parameters
     public GameObject antPrefab;
     private GameObject initialNest;
-
-    private List<Results> results;
-
+    
     public float InitialScouts { get { return (Settings.ProportionActive.Value * Settings.ColonySize.Value) - 1 * Settings.QuorumThreshold.Value; } }
 
-    private int currentStep = 0;
-    private DateTime lastStep = DateTime.Now;
-    private int stepMS = 1000;
-
+    
     //This spawns all the ants and starts the simulation
     void Start()
     {
@@ -83,7 +81,7 @@ public class SimulationManager : MonoBehaviour
                 MakeObject(Naming.Ants.BehavourState.Reversing + id, antHolder)
                 ));
         }
-        
+
         BatchRunner batchObj = null;// (BatchRunner)arena.GetComponent(Naming.Simulation.BatchRunner);
         //if this is batch running then write output
         if (batchObj != null)
@@ -92,15 +90,11 @@ public class SimulationManager : MonoBehaviour
             ((Output)transform.GetComponent(Naming.Simulation.Output)).SetUp();
         }
 
-        results = new List<Results>
-        {
-            new AntResults(this, Settings.ExperimentName),
-            new NestResults(this, Settings.ExperimentName)
-        };
-        lastStep = DateTime.Now;
+        ResultsManager = new ResultsManager(this);
 
         TickManager = new TickManager();
         TickManager.AddEntities(Ants.Cast<ITickable>());
+        TickManager.AddEntity(ResultsManager);
     }
 
     private void SpawnColony(Transform ants)
@@ -186,14 +180,6 @@ public class SimulationManager : MonoBehaviour
 
     void Update()
     {
-        if ((DateTime.Now - lastStep).TotalMilliseconds >= stepMS)
-        {
-            foreach (var res in results)
-                res.Step(currentStep);
-            currentStep++;
-            lastStep = DateTime.Now;
-        }
-
         TickManager.Process();
     }
 
@@ -211,9 +197,9 @@ public class SimulationManager : MonoBehaviour
         return nests.IndexOf(nest.transform);
     }
 
+
     void OnDestroy()
     {
-        foreach (var res in results)
-            res.Dispose();
+        ResultsManager.Dispose();
     }
 }

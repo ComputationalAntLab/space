@@ -1,14 +1,16 @@
-﻿namespace Assets.Scripts.Output
+﻿using System.IO;
+
+namespace Assets.Scripts.Output
 {
     public class NestResults : Results
     {
-        public NestResults(SimulationManager simulation, string experiment)
-            :base(simulation,experiment + "_colony")
+        public NestResults(SimulationManager simulation, string basePath)
+            : base(simulation, Path.Combine(basePath, "colony"))
         {
             Write("Step,NestId,Inactive,Assessing,Recruiting,Reversing");
         }
 
-        public override void Step(int step)
+        public override void Step(long step)
         {
             foreach(var nest in Simulation.NestInfo)
             {
