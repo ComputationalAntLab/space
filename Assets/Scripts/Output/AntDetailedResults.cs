@@ -2,10 +2,10 @@
 
 namespace Assets.Scripts.Output
 {
-    public class AntResults : Results
+    public class AntDetailedResults : Results
     {
-        public AntResults(SimulationManager simulation, string basePath)
-            : base(simulation, Path.Combine(basePath, "ants"))
+        public AntDetailedResults(SimulationManager simulation, string basePath)
+            : base(simulation, Path.Combine(basePath, "ants_detail"))
         {
             Write("Step,AntId,State,Position");
         }

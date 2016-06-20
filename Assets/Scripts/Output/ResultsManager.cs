@@ -33,10 +33,18 @@ namespace Assets
 
             var experimentPath = Path.Combine(outDir, experimentName);
 
-            if (!Directory.Exists(experimentPath))
-                Directory.CreateDirectory(experimentPath);
+            if (Directory.Exists(experimentPath))
+            {
+                int suffix = 1;
+                while (Directory.Exists(experimentPath + "_" + suffix))
+                    suffix++;
 
-            using(StreamWriter sw = new StreamWriter(Path.Combine(experimentPath, "settings.xml")))
+                experimentPath = experimentPath + "_" + suffix;
+            }
+            
+            Directory.CreateDirectory(experimentPath);
+
+            using (StreamWriter sw = new StreamWriter(Path.Combine(experimentPath, "settings.xml")))
             {
                 XmlSerializer xml = new XmlSerializer(typeof(SimulationSettings));
 
@@ -46,11 +54,12 @@ namespace Assets
             results = new List<Results>
             {
                 new NestResults(Simulation, experimentPath),
-                new AntResults(Simulation, experimentPath)
-                
+                //new AntDetailedResults(Simulation, experimentPath),
+                new AntDeltaResults(Simulation, experimentPath)
+
             };
         }
-        
+
         public void Dispose()
         {
             foreach (var res in results)
