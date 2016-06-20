@@ -17,19 +17,18 @@ public class SimulationManager : MonoBehaviour
     public GameObject[] doors;
 
     public TickManager TickManager { get; private set; }
-    public ResultsManager ResultsManager{ get; private set; }
+    public ResultsManager ResultsManager { get; private set; }
 
     public List<AntManager> Ants { get; private set; }
 
     public SimulationSettings Settings { get; private set; }
 
     //Parameters
-    public GameObject antPrefab;
     private GameObject initialNest;
-    
+
     public float InitialScouts { get { return (Settings.ProportionActive.Value * Settings.ColonySize.Value) - 1 * Settings.QuorumThreshold.Value; } }
 
-    
+
     //This spawns all the ants and starts the simulation
     void Start()
     {
@@ -98,6 +97,8 @@ public class SimulationManager : MonoBehaviour
 
     private void SpawnColony(Transform ants)
     {
+        var antPrefab = Resources.Load(Naming.Resources.AntPrefab) as GameObject;
+
         Transform passive = MakeObject("P0", ants).transform;
 
         NestInfo.Add(new NestInfo(0, true,

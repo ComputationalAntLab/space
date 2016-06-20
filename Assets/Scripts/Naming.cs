@@ -2,6 +2,11 @@
 {
     public static class Naming
     {
+        public static class Resources
+        {
+            public const string AntPrefab = "Ant";
+        }
+
         public static class World
         {
             public const string Doors = "Door";
