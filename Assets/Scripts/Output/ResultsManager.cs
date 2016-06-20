@@ -1,11 +1,9 @@
-﻿using Assets.Scripts;
-using Assets.Scripts.Config;
+﻿using Assets.Scripts.Config;
 using Assets.Scripts.Output;
+using Assets.Scripts.Ticking;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace Assets

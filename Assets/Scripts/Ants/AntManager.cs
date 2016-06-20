@@ -1,6 +1,7 @@
 using UnityEngine;
 using Assets.Scripts;
 using Assets.Scripts.Extensions;
+using Assets.Scripts.Ticking;
 
 public class AntManager : MonoBehaviour, ITickable
 {

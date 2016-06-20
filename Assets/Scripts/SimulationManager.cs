@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using Assets.Scripts;
 using Assets.Scripts.Extensions;
 using Assets.Scripts.Config;
-using Assets.Scripts.Output;
-using System;
 using System.Linq;
-using System.IO;
 using Assets;
+using Assets.Scripts.Ticking;
+using Assets.Scripts.Nests;
 
 public class SimulationManager : MonoBehaviour
 {
@@ -74,7 +73,7 @@ public class SimulationManager : MonoBehaviour
 
             int id = i + 1;
 
-            NestInfo.Add(new Assets.Scripts.NestInfo(id, false,
+            NestInfo.Add(new NestInfo(id, false,
                 MakeObject(Naming.Ants.BehavourState.Assessing + id, antHolder),
                 MakeObject(Naming.Ants.BehavourState.Recruiting + id, antHolder),
                 MakeObject(Naming.Ants.BehavourState.Inactive + id, antHolder),
@@ -101,7 +100,7 @@ public class SimulationManager : MonoBehaviour
     {
         Transform passive = MakeObject("P0", ants).transform;
 
-        NestInfo.Add(new Assets.Scripts.NestInfo(0, true,
+        NestInfo.Add(new NestInfo(0, true,
                MakeObject(Naming.Ants.BehavourState.Assessing + "0", ants),
                MakeObject(Naming.Ants.BehavourState.Recruiting + "0", ants),
                 passive.gameObject,

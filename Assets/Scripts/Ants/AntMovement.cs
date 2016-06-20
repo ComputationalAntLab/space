@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using Assets.Scripts;
 using Assets.Scripts.Extensions;
+using Assets.Scripts.Ticking;
 
 public class AntMovement : MonoBehaviour, ITickable
 {

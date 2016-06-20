@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.Extensions;
-using System;
 
 public class TimeController : MonoBehaviour
 {

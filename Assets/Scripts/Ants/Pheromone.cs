@@ -1,4 +1,4 @@
-using Assets.Scripts;
+using Assets.Scripts.Ticking;
 using UnityEngine;
 
 public class Pheromone : MonoBehaviour, ITickable
