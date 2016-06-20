@@ -68,7 +68,7 @@ public class TimeController : MonoBehaviour
         }
         else
         {
-            txtFPS.text = string.Format("FPS: {0}", _frameCounter);
+            txtFPS.text = string.Format("FPS: {0}", _lastFramerate);
 
             _lastFramerate = (float)_frameCounter / _timeCounter;
             _frameCounter = 0;
