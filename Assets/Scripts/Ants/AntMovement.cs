@@ -382,7 +382,9 @@ public class AntMovement : MonoBehaviour, ITickable
         speed /= 1000f / 30f;
         speed /= 40;
 
-        transform.position += transform.forward * speed * elapsed;
+        //var newPosition = transform.position + ( transform.forward * speed * elapsed);
+        //transform.position = new Vector3(Mathf.Round(newPosition.x), Mathf.Round(newPosition.y), Mathf.Round(newPosition.z));
+        transform.position += (transform.forward * speed * elapsed);
     }
 
     //change direction based on state

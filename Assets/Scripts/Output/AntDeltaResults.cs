@@ -19,7 +19,7 @@ namespace Assets.Scripts.Output
             foreach (var ant in Simulation.Ants)
             {
                 if (StateChanged(ant))
-                    Write(string.Format("{0},{1},{2},{3}", step, ant.AntId, ant.state, ant.transform.position));
+                    Write(string.Format("{0},{1},{2},({3},{4},{5})", step, ant.AntId, ant.state, ant.transform.position.x, ant.transform.position.y, ant.transform.position.z));
             }
         }
 

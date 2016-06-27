@@ -34,7 +34,6 @@ public class RandomGenerator
     // Adapted from Numerical Recipe page 289: Normal (Gaussian) Deviates
     public double NormalDeviate()
     {
-        return NextDouble();
         double rsq, v1, v2;
         if (_hasAnotherDeviate)
         {
