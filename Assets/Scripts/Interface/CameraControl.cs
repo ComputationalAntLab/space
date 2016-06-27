@@ -15,12 +15,12 @@ public class CameraControl : MonoBehaviour
 
     void Start()
     {
-        btnToggle = this.ButtonByName("btnDownbtnToggle");
+        btnToggle = this.ButtonByName("btnChangeCamera");
 
         btnToggle.onClick.AddListener(btnToggle_Click);
 
-        _freeCamera = GameObject.FindGameObjectWithTag("Free Camera").GetComponent<Camera>();
-        _mainCamera = GameObject.FindGameObjectWithTag("Main Camera").GetComponent<Camera>();
+        _freeCamera = GameObject.FindGameObjectWithTag("FreeCamera").GetComponent<Camera>();
+        _mainCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
 
         UpdateCamera();
     }
