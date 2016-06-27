@@ -2,6 +2,7 @@ using UnityEngine;
 using Assets.Scripts;
 using Assets.Scripts.Extensions;
 using Assets.Scripts.Ticking;
+using Assets.Scripts.Ants;
 
 public class AntManager : MonoBehaviour, ITickable
 {
@@ -54,7 +55,7 @@ public class AntManager : MonoBehaviour, ITickable
     private float assessmentSecondLengthHistory = 0;
     private int assessmentFirstTimeHistory = 0;
     private int assessmentSecondTimeHistory = 0;
-    public int assessmentStage = 0;
+    public NestAssessmentStage assessmentStage = 0;
     private float currentNestArea = 0;
 
 
@@ -203,27 +204,27 @@ public class AntManager : MonoBehaviour, ITickable
         {
             if (IsTransporting())
             {
-                History.StateHistory.Add(AntManager.BehaviourState.Carrying);
+                History.StateHistory.Add(BehaviourState.Carrying);
             }
             else if (IsTandemRunning())
             {
-                History.StateHistory.Add(AntManager.BehaviourState.Leading);
+                History.StateHistory.Add(BehaviourState.Leading);
             }
             else
             {
-                History.StateHistory.Add(AntManager.BehaviourState.Recruiting);
+                History.StateHistory.Add(BehaviourState.Recruiting);
             }
         }
         else if (state == BehaviourState.Reversing)
         {
             if (IsTandemRunning())
             {
-                History.StateHistory.Add(AntManager.BehaviourState.ReversingLeading);
+                History.StateHistory.Add(BehaviourState.ReversingLeading);
                 //				this.History.StateHistory.Add(AntManager.State.Reversing);
             }
             else
             {
-                History.StateHistory.Add(AntManager.BehaviourState.Reversing);
+                History.StateHistory.Add(BehaviourState.Reversing);
             }
         }
         else
@@ -675,7 +676,7 @@ public class AntManager : MonoBehaviour, ITickable
             // store lenght of first visit and reset length to zero
             assessmentFirstLengthHistory = move.assessingDistance;
             move.assessingDistance = 0f;
-            assessmentStage = 1;
+            assessmentStage =NestAssessmentStage.ReturningToHomeNest;
             print("finished assessment");
             return;
         }
@@ -1058,19 +1059,6 @@ public class AntManager : MonoBehaviour, ITickable
             ChangeState(BehaviourState.Inactive);
         }
     }
-
-    public enum BehaviourState
-    {
-        Inactive,
-        Scouting,
-        Assessing,
-        Recruiting,
-        Following,
-        Reversing,
-        ReversingLeading,
-        Leading,
-        Carrying,
-    };
 }
 
 

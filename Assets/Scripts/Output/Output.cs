@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Assets.Scripts;
+using Assets.Scripts.Ants;
 
 public class Output : MonoBehaviour
 {
@@ -186,7 +187,7 @@ public class Output : MonoBehaviour
             sw.Write(result + ", ");
 
             builder = new StringBuilder();
-            foreach (AntManager.BehaviourState state in Data.StateHistory)
+            foreach (BehaviourState state in Data.StateHistory)
             {
                 // Append each int to the StringBuilder overload.
                 builder.Append(state).Append(" ");

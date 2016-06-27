@@ -1,3 +1,4 @@
+using Assets.Scripts.Ants;
 using Assets.Scripts.Ticking;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ public class Pheromone : MonoBehaviour, ITickable
     public bool assessingPheromone;     //identifies if the pheromone is for assessing
     public bool assessingPheromoneCounted;
 
-    private AntManager.BehaviourState _behaviour;
+    private BehaviourState _behaviour;
 
     public bool ShouldBeRemoved { get; private set; }
 
@@ -21,14 +22,14 @@ public class Pheromone : MonoBehaviour, ITickable
         {
             switch (_behaviour)
             {
-                case AntManager.BehaviourState.Assessing:
+                case BehaviourState.Assessing:
                     UpdateAssessing();
                     break;
-                case AntManager.BehaviourState.Recruiting:
-                case AntManager.BehaviourState.ReversingLeading:
+                case BehaviourState.Recruiting:
+                case BehaviourState.ReversingLeading:
                     UpdateTandeom();
                     break;
-                case AntManager.BehaviourState.Scouting:
+                case BehaviourState.Scouting:
                     UpdateScouting();
                     break;
                 default:
@@ -41,7 +42,7 @@ public class Pheromone : MonoBehaviour, ITickable
     //greg edit
     public void LayScouting(AntMovement owner)
     {
-        _behaviour = AntManager.BehaviourState.Scouting;
+        _behaviour = BehaviourState.Scouting;
 
         SphereCollider myCollider = transform.GetComponent<SphereCollider>();
         //myCollider.radius = 0.5f;
@@ -67,14 +68,14 @@ public class Pheromone : MonoBehaviour, ITickable
 
         this.owner = owner;
 
-        if (this.owner.ant.state == AntManager.BehaviourState.Recruiting)
+        if (this.owner.ant.state == BehaviourState.Recruiting)
         {
             strength = 1.05f;
-            _behaviour = AntManager.BehaviourState.Recruiting;
+            _behaviour = BehaviourState.Recruiting;
         }
         else
         {
-            _behaviour = AntManager.BehaviourState.ReversingLeading;
+            _behaviour = BehaviourState.ReversingLeading;
             strength = 1.0f;
         }
 
@@ -90,7 +91,7 @@ public class Pheromone : MonoBehaviour, ITickable
     
     public void LayAssessing(AntMovement owner)
     {
-        _behaviour = AntManager.BehaviourState.Assessing;
+        _behaviour = BehaviourState.Assessing;
 
         SphereCollider myCollider = transform.GetComponent<SphereCollider>();
         myCollider.radius = 0.125f;
@@ -103,7 +104,7 @@ public class Pheromone : MonoBehaviour, ITickable
 
     private void UpdateAssessing()
     {
-        if (owner.ant.state != AntManager.BehaviourState.Assessing)
+        if (owner.ant.state != BehaviourState.Assessing)
         {
             DestroyPheromone();
         }

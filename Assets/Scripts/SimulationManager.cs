@@ -7,6 +7,7 @@ using System.Linq;
 using Assets;
 using Assets.Scripts.Ticking;
 using Assets.Scripts.Nests;
+using Assets.Scripts.Ants;
 
 public class SimulationManager : MonoBehaviour
 {
@@ -141,7 +142,7 @@ public class SimulationManager : MonoBehaviour
 
                 if (spawnedAnts < Settings.ColonySize.Value * Settings.ProportionActive.Value)
                 {
-                    newAM.state = AntManager.BehaviourState.Inactive;
+                    newAM.state = BehaviourState.Inactive;
                     newAM.passive = false;
 
                     Transform senses = newAnt.transform.FindChild(Naming.Ants.SensesArea);

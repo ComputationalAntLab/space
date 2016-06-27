@@ -1,5 +1,6 @@
 using UnityEngine;
 using Assets.Scripts;
+using Assets.Scripts.Ants;
 
 public class NestManager : MonoBehaviour 
 {
@@ -32,7 +33,7 @@ public class NestManager : MonoBehaviour
 		AntManager ant = (AntManager)other.transform.GetComponent(Naming.Ants.Controller);
 		
 		//if ant is passive and somehow reaches edge of nest then turn around, otherwise let the ant know it has left the nest
-		if(ant.state == AntManager.BehaviourState.Inactive) 
+		if(ant.state == BehaviourState.Inactive) 
 			ant.transform.rotation = Quaternion.Euler(0, (ant.transform.rotation.eulerAngles.y + 180) % 360, 0);
 		else 
 			ant.LeftNest();

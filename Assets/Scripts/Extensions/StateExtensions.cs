@@ -1,18 +1,19 @@
-﻿using System;
+﻿using Assets.Scripts.Ants;
+using System;
 
 namespace Assets.Scripts.Extensions
 {
     public static class StateExtensions
     {
-        public static string StateName(this AntManager.BehaviourState state)
+        public static string StateName(this BehaviourState state)
         {
             switch (state)
             {
-                case AntManager.BehaviourState.Assessing:
+                case BehaviourState.Assessing:
                     return Naming.Ants.BehavourState.Assessing;
-                case AntManager.BehaviourState.Inactive:
+                case BehaviourState.Inactive:
                     return Naming.Ants.BehavourState.Inactive;
-                case AntManager.BehaviourState.Recruiting:
+                case BehaviourState.Recruiting:
                     return Naming.Ants.BehavourState.Recruiting;
                 default:
                     throw new ArgumentOutOfRangeException("state");

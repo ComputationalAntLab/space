@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Ants;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -6,7 +7,7 @@ namespace Assets.Scripts.Output
 {
     public class AntDeltaResults : Results
     {
-        private Dictionary<int, AntManager.BehaviourState> _stateHistory = new Dictionary<int, AntManager.BehaviourState>();
+        private Dictionary<int, BehaviourState> _stateHistory = new Dictionary<int, BehaviourState>();
 
         public AntDeltaResults(SimulationManager simulation, string basePath)
             : base(simulation, Path.Combine(basePath, "ants_delta"))

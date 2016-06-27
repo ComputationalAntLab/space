@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Assets.Scripts.Ants;
 
 public class SimData : MonoBehaviour {
 	public int LeftOld = 0;
@@ -10,7 +11,7 @@ public class SimData : MonoBehaviour {
 	public int numSwitch = 0;
 	public int firstRev = 0;
 	public int numRev = 0;
-	public List<AntManager.BehaviourState> StateHistory = new List<AntManager.BehaviourState>();
+	public List<BehaviourState> StateHistory = new List<BehaviourState>();
 	public List<int> NestDiscoveryTime = new List<int>();
 	public List<int> NestRecruitTime = new List<int>();
 	public List<int> numAssessments = new List<int>();

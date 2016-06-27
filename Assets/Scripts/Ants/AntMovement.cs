@@ -4,6 +4,7 @@ using System.Linq;
 using Assets.Scripts;
 using Assets.Scripts.Extensions;
 using Assets.Scripts.Ticking;
+using Assets.Scripts.Ants;
 
 public class AntMovement : MonoBehaviour, ITickable
 {
@@ -90,7 +91,7 @@ public class AntMovement : MonoBehaviour, ITickable
         // all active ants call the LayPheromone function reapeatedly (but only lay is usePheromones true)
         usePheromones = false; // all pheromones are false (turned off if FTR or RTR leader)
                                //greg edit
-        if (ant.state == AntManager.BehaviourState.Scouting)
+        if (ant.state == BehaviourState.Scouting)
         {
             usePheromones = false;
         }
@@ -126,11 +127,11 @@ public class AntMovement : MonoBehaviour, ITickable
         //This statements makes assessors in the nest change direction more frequently than those outside the nest.
 
 
-        if (ant.state == AntManager.BehaviourState.Assessing && !ant.inNest && ant.assessmentStage == 0)
+        if (ant.state == BehaviourState.Assessing && !ant.inNest && ant.assessmentStage == 0)
         {
             ChangeDirection();
         }
-        else if (ant.state == AntManager.BehaviourState.Assessing && ant.inNest && ant.assessmentStage == 0)
+        else if (ant.state == BehaviourState.Assessing && ant.inNest && ant.assessmentStage == 0)
         {
             frameNumber++;
             if ((frameNumber) % assessorChangeDirectionPerFrame == 0)
@@ -169,7 +170,7 @@ public class AntMovement : MonoBehaviour, ITickable
         //TODO: try pheromone and doorcheck in here
         if (!ant.inNest)
         {
-            if (ant.state == AntManager.BehaviourState.Scouting || ant.state == AntManager.BehaviourState.Inactive)
+            if (ant.state == BehaviourState.Scouting || ant.state == BehaviourState.Inactive)
             {
                 GameObject door = DoorCheck();
                 if (door != null)
@@ -337,11 +338,11 @@ public class AntMovement : MonoBehaviour, ITickable
         ObstructionCheck();
 
         //move ant at appropriate speed
-        if (ant.state == AntManager.BehaviourState.Inactive)
+        if (ant.state == BehaviourState.Inactive)
         {
             MoveAtSpeed(inactiveSpeed , elapsed);
         }
-        else if (ant.state == AntManager.BehaviourState.Reversing)
+        else if (ant.state == BehaviourState.Reversing)
         {
             MoveAtSpeed(tandemSpeed , elapsed);
         }
@@ -353,7 +354,7 @@ public class AntMovement : MonoBehaviour, ITickable
         {
             MoveAtSpeed(tandemSpeed , elapsed);
         }
-        else if (ant.state == AntManager.BehaviourState.Assessing)
+        else if (ant.state == BehaviourState.Assessing)
         {
 
             if (ant.nestAssessmentVisitNumber == 1)
@@ -392,27 +393,27 @@ public class AntMovement : MonoBehaviour, ITickable
     {
         // the maxVar is 40f unless the ant is following a tandem run where it is 20f 
         // Franks et al. Ant Search Strategy After Interrupted Tandem Runs
-        if (ant.state == AntManager.BehaviourState.Scouting)
+        if (ant.state == BehaviourState.Scouting)
         {
             maxVar = 40f;
             ScoutingDirectionChange();
         }
-        else if (ant.state == AntManager.BehaviourState.Following)
+        else if (ant.state == BehaviourState.Following)
         {
             maxVar = 20f;
             FollowingDirectionChange();
         }
-        else if (ant.state == AntManager.BehaviourState.Inactive)
+        else if (ant.state == BehaviourState.Inactive)
         {
             maxVar = 40f;
             InactiveDirectionChange();
         }
-        else if (ant.state == AntManager.BehaviourState.Recruiting)
+        else if (ant.state == BehaviourState.Recruiting)
         {
             maxVar = 40f;
             RecruitingDirectionChange();
         }
-        else if (ant.state == AntManager.BehaviourState.Reversing)
+        else if (ant.state == BehaviourState.Reversing)
         {
             maxVar = 40f;
             ReversingDirectionChange();
@@ -497,16 +498,16 @@ public class AntMovement : MonoBehaviour, ITickable
 
     private void AssessingDirectionChange()
     {
-        if (ant.assessmentStage == 1)
+        if (ant.assessmentStage == NestAssessmentStage.ReturningToHomeNest)
         {
             WalkToGameObject(ant.oldNest);
             if (Vector3.Distance(transform.position, ant.oldNest.transform.position) < 20f)
             {
-                ant.assessmentStage = 2;
+                ant.assessmentStage = NestAssessmentStage.ReturningToPotentialNest;
             }
             return;
         }
-        else if (ant.assessmentStage == 2)
+        else if (ant.assessmentStage == NestAssessmentStage.ReturningToPotentialNest)
         {
             WalkToGameObject(ant.nestToAssess);
             if (Vector3.Distance(transform.position, ant.nestToAssess.transform.position) < 40f)
@@ -596,10 +597,10 @@ public class AntMovement : MonoBehaviour, ITickable
             nearerOld = false;
 
         //if this is a passive ant then always direct them towards center of their nest (because they are either carried or lead between)
-        if (ant.passive || ant.state == AntManager.BehaviourState.Inactive)
+        if (ant.passive || ant.state == BehaviourState.Inactive)
             return ant.myNest;
 
-        if (ant.state == AntManager.BehaviourState.Assessing)
+        if (ant.state == BehaviourState.Assessing)
         {
             if (ant.assessTime > 0)
             {
@@ -612,7 +613,7 @@ public class AntMovement : MonoBehaviour, ITickable
         }
 
         //if reversing
-        if (ant.state == AntManager.BehaviourState.Reversing)
+        if (ant.state == BehaviourState.Reversing)
         {
             //If in new nest
             if (ant.inNest && !nearerOld)
@@ -728,7 +729,7 @@ public class AntMovement : MonoBehaviour, ITickable
         //if stuck then wait less time till next change as it may take a few random rotations to get unstuck
         if (Vector3.Distance(transform.position, lastTurn) > 0)
         {
-            if (ant.state == AntManager.BehaviourState.Assessing)
+            if (ant.state == BehaviourState.Assessing)
                 nextDirChange_time = simulation.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time * 2f;
             else
                 nextDirChange_time = simulation.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time;
@@ -755,13 +756,13 @@ public class AntMovement : MonoBehaviour, ITickable
 
     /*this finds mid point (angle wise) between current direction and direction of given object
 	then picks direction that is that mid point +/- an angle <= this.maxVar*/
-    public void WalkToGameObject(GameObject nest)
+    public void WalkToGameObject(GameObject target)
     {
         float goalAngle;
         float currentAngle = transform.eulerAngles.y;
 
         //find angle mod 360 of current position to goal
-        goalAngle = GetAngleBetweenPositions(transform.position, nest.transform.position);
+        goalAngle = GetAngleBetweenPositions(transform.position, target.transform.position);
 
         if (Mathf.Abs(goalAngle - currentAngle) > 180)
             currentAngle -= 360;
@@ -773,7 +774,7 @@ public class AntMovement : MonoBehaviour, ITickable
     private void RandomWalk()
     {
         float maxVar = this.maxVar;
-        if (ant.state == AntManager.BehaviourState.Assessing)
+        if (ant.state == BehaviourState.Assessing)
         {
             maxVar = 10f;
         }
@@ -812,7 +813,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
         //if not using pheromones then just use given direction
         // only followers that are not in a nest uses phereomones
-        if (ant.inNest || (ant.state != AntManager.BehaviourState.Following && ant.state != AntManager.BehaviourState.Scouting))
+        if (ant.inNest || (ant.state != BehaviourState.Following && ant.state != BehaviourState.Scouting))
             return direction;
 
         //get pheromones in range
@@ -882,7 +883,7 @@ public class AntMovement : MonoBehaviour, ITickable
             if (hit.collider.transform.tag == Naming.Ants.Tag)
             {
                 // follower ant wants to have tactile contact with leader ant
-                if (ant.state != AntManager.BehaviourState.Following)
+                if (ant.state != BehaviourState.Following)
                 {
                     RandomRotate();
                 }
@@ -960,7 +961,7 @@ public class AntMovement : MonoBehaviour, ITickable
     {
         GameObject pheromone = (GameObject)Instantiate(pheromonePrefab, transform.position, Quaternion.identity);
         pheromone.transform.parent = pheromoneParent;
-        if (ant.state == AntManager.BehaviourState.Scouting)
+        if (ant.state == BehaviourState.Scouting)
         {
             ((Pheromone)pheromone.transform.GetComponent(Naming.Ants.Pheromone)).LayScouting(this);
         }
@@ -968,13 +969,13 @@ public class AntMovement : MonoBehaviour, ITickable
 
     private void LayPheromoneFTR()
     {
-        if (!(ant.state == AntManager.BehaviourState.Leading || ant.state == AntManager.BehaviourState.Recruiting) || usePheromones == false || ant.inNest)
+        if (!(ant.state == BehaviourState.Leading || ant.state == BehaviourState.Recruiting) || usePheromones == false || ant.inNest)
         {
             return;
         }
         GameObject pheromone = (GameObject)Instantiate(pheromonePrefab, transform.position, Quaternion.identity);
         pheromone.transform.parent = pheromoneParent;
-        if (ant.state == AntManager.BehaviourState.Reversing || ant.state == AntManager.BehaviourState.Leading || ant.state == AntManager.BehaviourState.Recruiting)
+        if (ant.state == BehaviourState.Reversing || ant.state == BehaviourState.Leading || ant.state == BehaviourState.Recruiting)
         {
             ((Pheromone)pheromone.transform.GetComponent(Naming.Ants.Pheromone)).LayTandem(this);
         }
@@ -982,13 +983,13 @@ public class AntMovement : MonoBehaviour, ITickable
 
     private void LayPheromoneRTR()
     {
-        if (!(ant.state == AntManager.BehaviourState.Reversing) || usePheromones == false || ant.inNest)
+        if (!(ant.state == BehaviourState.Reversing) || usePheromones == false || ant.inNest)
         {
             return;
         }
         GameObject pheromone = (GameObject)Instantiate(pheromonePrefab, transform.position, Quaternion.identity);
         pheromone.transform.parent = pheromoneParent;
-        if (ant.state == AntManager.BehaviourState.Reversing || ant.state == AntManager.BehaviourState.Leading || ant.state == AntManager.BehaviourState.Recruiting)
+        if (ant.state == BehaviourState.Reversing || ant.state == BehaviourState.Leading || ant.state == BehaviourState.Recruiting)
         {
             ((Pheromone)pheromone.transform.GetComponent(Naming.Ants.Pheromone)).LayTandem(this);
         }
@@ -996,7 +997,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
     private void LayPheromoneAssessing()
     {
-        if (ant.state != AntManager.BehaviourState.Assessing || usePheromones == false || !ant.inNest)
+        if (ant.state != BehaviourState.Assessing || usePheromones == false || !ant.inNest)
         {
             return;
         }
@@ -1006,7 +1007,7 @@ public class AntMovement : MonoBehaviour, ITickable
         }
         GameObject pheromone = (GameObject)Instantiate(pheromonePrefab, transform.position, Quaternion.identity);
         pheromone.transform.parent = pheromoneParent;
-        if (ant.state == AntManager.BehaviourState.Assessing)
+        if (ant.state == BehaviourState.Assessing)
         {
             if (ant.nestToAssess != ant.oldNest)
             {
