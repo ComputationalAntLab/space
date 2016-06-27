@@ -7,6 +7,11 @@ public class NestManager : MonoBehaviour
 	public float quality = 0.5f; //between zero and one
 	public GameObject door = null;
 	
+    void Start()
+    {
+        door = transform.FindChild("Door").gameObject;
+    }
+
 	void OnTriggerEnter(Collider other) 
 	{
 		//if other isn't an ant or an ants collider has intersected with nest collider in an area that isn't the entrance then ignore
