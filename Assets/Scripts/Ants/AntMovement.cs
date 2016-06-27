@@ -63,9 +63,13 @@ public class AntMovement : MonoBehaviour, ITickable
 
     public bool ShouldBeRemoved { get { return false; } }
 
+
+    private float obstructionCheckRaycastLength = 1;
+
     // Use this for initialization
     void Start()
     {
+        pheromonePrefab = Resources.Load("Pheromone") as GameObject;
         ant = (AntManager)transform.GetComponent(Naming.Ants.Controller);
         cont = (CharacterController)transform.GetComponent("CharacterController");
         lastTurn = transform.position;
@@ -385,7 +389,8 @@ public class AntMovement : MonoBehaviour, ITickable
 
         //var newPosition = transform.position + ( transform.forward * speed * elapsed);
         //transform.position = new Vector3(Mathf.Round(newPosition.x), Mathf.Round(newPosition.y), Mathf.Round(newPosition.z));
-        transform.position += (transform.forward * speed * elapsed);
+        //transform.position += (transform.forward * speed * elapsed);
+        cont.transform.position += (transform.forward * speed * elapsed);
     }
 
     //change direction based on state
@@ -792,7 +797,8 @@ public class AntMovement : MonoBehaviour, ITickable
     //turn ant to this face this direction (around y axis)
     private void Turn(float newDir)
     {
-        dir = NewDirectionCheck(PheromoneDirection(newDir));
+        dir = -dir;
+        //dir = NewDirectionCheck(PheromoneDirection(newDir));
         transform.rotation = Quaternion.Euler(0, dir, 0);
     }
 
@@ -881,7 +887,7 @@ public class AntMovement : MonoBehaviour, ITickable
     private bool ObstructionCheck()
     {
         RaycastHit hit = new RaycastHit();
-        if (Physics.Raycast(transform.position, transform.forward, out hit, 1))
+        if (Physics.Raycast(transform.position, transform.forward, out hit, obstructionCheckRaycastLength))
         {
             //if there is an ant directly in front of this ant then randomly turn otherwise must be a wall so follow it
             if (hit.collider.transform.tag == Naming.Ants.Tag)
@@ -890,11 +896,14 @@ public class AntMovement : MonoBehaviour, ITickable
                 if (ant.state != BehaviourState.Following)
                 {
                     RandomRotate();
+                    Turned();
                 }
             }
             else
                 FollowWall();
-            Turned();
+            // Ants were following walls too much. I've made it only call Turned() if they collided with another ant
+            // This will make them turn direction even if they have recently hit a wall
+            //Turned();
             return true;
         }
         return false;
@@ -903,12 +912,14 @@ public class AntMovement : MonoBehaviour, ITickable
     //this will only work well on right angle corners, randomness included so ant may not always follow round corner but might turn around
     private void FollowWall()
     {
+        GetComponent<Renderer>().material.color = Color.cyan;
+
         //find it if there are obstructions infront, behind and to either side of ant
         bool[] rays = new bool[4];
-        rays[0] = Physics.Raycast(transform.position, Vector3.forward, 1);
-        rays[1] = Physics.Raycast(transform.position, Vector3.right, 1);
-        rays[2] = Physics.Raycast(transform.position, -Vector3.forward, 1);
-        rays[3] = Physics.Raycast(transform.position, -Vector3.right, 1);
+        rays[0] = Physics.Raycast(transform.position, Vector3.forward, obstructionCheckRaycastLength);
+        rays[1] = Physics.Raycast(transform.position, Vector3.right, obstructionCheckRaycastLength);
+        rays[2] = Physics.Raycast(transform.position, -Vector3.forward, obstructionCheckRaycastLength);
+        rays[3] = Physics.Raycast(transform.position, -Vector3.right, obstructionCheckRaycastLength);
         float a = Mathf.Round(transform.rotation.eulerAngles.y);
 
         //get direction of ant (0 = forwards, 1 = right, 2 = backwards, 3 = left)

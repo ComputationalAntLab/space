@@ -52,8 +52,6 @@ namespace Assets.Scripts.Config
                     ProportionActive
                };
              });
-
-            ColonySize.Value = 1;
         }
 
         private void Validate(string param, float value, float? min, float? max)

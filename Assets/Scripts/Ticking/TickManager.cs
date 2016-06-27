@@ -12,8 +12,13 @@ namespace Assets.Scripts.Ticking
         public float TotalElapsedSimulatedSeconds { get { return TotalElapsedSimulatedMilliseconds / 1000; } }
         public float TotalElapsedSimulatedMilliseconds { get; private set; }
 
+        /// <summary>
+        /// Set to true to perform a single tick, even if the speed is set to zero
+        /// </summary>
+        public bool TickOnce { get; set; }
+
         private List<ITickable> _entities = new List<ITickable>();
-        
+
         public TickManager()
         {
             SetTicksPerSimulatedSecond(60);
@@ -40,8 +45,16 @@ namespace Assets.Scripts.Ticking
 
         public void Process()
         {
-            for (int i = 0; i < TicksPerFrame; i++)
+            if (TicksPerFrame <= 0 && TickOnce)
+            {
+                TickOnce = false;
                 Tick();
+            }
+            else
+            {
+                for (int i = 0; i < TicksPerFrame; i++)
+                    Tick();
+            }
         }
 
         private void Tick()

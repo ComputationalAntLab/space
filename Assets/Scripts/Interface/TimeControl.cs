@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.Extensions;
+using System;
 
 public class TimeControl : MonoBehaviour
 {
     private Text txtFPS, txtSpeed;
 
-    private Button btnUp, btnDown;
+    private Button btnUp, btnDown, btnTick;
 
     int _frameCounter = 0;
     float _timeCounter = 0.0f;
@@ -28,6 +29,15 @@ public class TimeControl : MonoBehaviour
 
         btnUp.onClick.AddListener(btnUp_Click);
         btnDown.onClick.AddListener(btnDown_Click);
+
+        btnTick = this.ButtonByName("btnTick");
+        btnTick.GetComponentInChildren<Text>().text = "Tick";
+        btnTick.onClick.AddListener(btnTick_Click);
+    }
+
+    private void btnTick_Click()
+    {
+        SimulationManager.Instance.TickManager.TickOnce = true;
     }
 
     private void btnDown_Click()

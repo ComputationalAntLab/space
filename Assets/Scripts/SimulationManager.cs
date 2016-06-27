@@ -29,6 +29,7 @@ public class SimulationManager : MonoBehaviour
 
     public float InitialScouts { get { return (Settings.ProportionActive.Value * Settings.ColonySize.Value) - 1 * Settings.QuorumThreshold.Value; } }
 
+    private bool _spawnOnlyScouts = true;
 
     //This spawns all the ants and starts the simulation
     void Start()
@@ -140,7 +141,7 @@ public class SimulationManager : MonoBehaviour
                 newAM.quorumThreshold = Settings.QuorumThreshold.Value;
                 newAnt.transform.parent = passive;
 
-                if (spawnedAnts < Settings.ColonySize.Value * Settings.ProportionActive.Value)
+                if (spawnedAnts < Settings.ColonySize.Value * Settings.ProportionActive.Value || Settings.ColonySize.Value <= 1 || _spawnOnlyScouts)
                 {
                     newAM.state = BehaviourState.Inactive;
                     newAM.passive = false;
@@ -150,7 +151,7 @@ public class SimulationManager : MonoBehaviour
                     ((SphereCollider)senses.GetComponent("SphereCollider")).radius = ((AntSenses)senses.GetComponent(Naming.Ants.SensesScript)).range;
                     ((AntSenses)senses.GetComponent(Naming.Ants.SensesScript)).enabled = true;
 
-                    if (spawnedAntScounts < InitialScouts || Settings.ColonySize.Value <= 1)
+                    if (spawnedAntScounts < InitialScouts || Settings.ColonySize.Value <= 1 || _spawnOnlyScouts)
                     {
                         newAM.nextAssesment = 1;
                         spawnedAntScounts++;
