@@ -70,7 +70,7 @@ public class RandomGenerator
 
     public float Range(float min, float max)
     {
-        return (float)NextDouble() * (max - min);
+        return ((float)NextDouble() * (max - min)) + min;
     }
     
     public float NormalRandom(float mean, float std)

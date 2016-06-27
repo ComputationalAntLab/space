@@ -150,7 +150,7 @@ public class SimulationManager : MonoBehaviour
                     ((SphereCollider)senses.GetComponent("SphereCollider")).radius = ((AntSenses)senses.GetComponent(Naming.Ants.SensesScript)).range;
                     ((AntSenses)senses.GetComponent(Naming.Ants.SensesScript)).enabled = true;
 
-                    if (spawnedAntScounts < InitialScouts)
+                    if (spawnedAntScounts < InitialScouts || Settings.ColonySize.Value <= 1)
                     {
                         newAM.nextAssesment = 1;
                         spawnedAntScounts++;

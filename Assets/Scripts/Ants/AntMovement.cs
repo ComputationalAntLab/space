@@ -22,7 +22,7 @@ public class AntMovement : MonoBehaviour, ITickable
     //Parameters
     public GameObject pheromonePrefab;      //the pheromone prefab
     public float maxVar = 40f;              //max amount this ant can turn at one time
-    public float maxDirChange_time = 5f;    //maximum time between direction changes
+    public float maxDirChange_time = 3f;//5f;    //maximum time between direction changes
 
     public float scoutSpeed;                //speed of an active ant while not tandem running or carrying
     public float tandemSpeed;               //speed of an ant while tandem running
@@ -31,7 +31,7 @@ public class AntMovement : MonoBehaviour, ITickable
     public float assessingSpeedFirstVisit;  //speed of an ant in the assessing state (first visit)
     public float assessingSpeedSecondVisit; //speed of an ant in the assessing state (second visit)
 
-    public float doorSenseRange = 5f;       //distance from which an ant can sense the presence of a door
+    public float doorSenseRange = 50;//5f;       //distance from which an ant can sense the presence of a door
 
     public bool usePheromones;              //this dictates wether or not the ant uses pheromones
     public float pheromoneRange = 10f;      //maximum distance that pheromones can be sensed from
@@ -127,11 +127,11 @@ public class AntMovement : MonoBehaviour, ITickable
         //This statements makes assessors in the nest change direction more frequently than those outside the nest.
 
 
-        if (ant.state == BehaviourState.Assessing && !ant.inNest && ant.assessmentStage == 0)
+        if (ant.state == BehaviourState.Assessing && !ant.inNest && ant.assessmentStage == NestAssessmentStage.Assessing)
         {
             ChangeDirection();
         }
-        else if (ant.state == BehaviourState.Assessing && ant.inNest && ant.assessmentStage == 0)
+        else if (ant.state == BehaviourState.Assessing && ant.inNest && ant.assessmentStage == NestAssessmentStage.Assessing)
         {
             frameNumber++;
             if ((frameNumber) % assessorChangeDirectionPerFrame == 0)
@@ -340,37 +340,37 @@ public class AntMovement : MonoBehaviour, ITickable
         //move ant at appropriate speed
         if (ant.state == BehaviourState.Inactive)
         {
-            MoveAtSpeed(inactiveSpeed , elapsed);
+            MoveAtSpeed(inactiveSpeed, elapsed);
         }
         else if (ant.state == BehaviourState.Reversing)
         {
-            MoveAtSpeed(tandemSpeed , elapsed);
+            MoveAtSpeed(tandemSpeed, elapsed);
         }
         else if (ant.IsTransporting())
         {
-            MoveAtSpeed(carrySpeed , elapsed);
+            MoveAtSpeed(carrySpeed, elapsed);
         }
         else if (ant.IsTandemRunning())
         {
-            MoveAtSpeed(tandemSpeed , elapsed);
+            MoveAtSpeed(tandemSpeed, elapsed);
         }
         else if (ant.state == BehaviourState.Assessing)
         {
 
             if (ant.nestAssessmentVisitNumber == 1)
             {
-                MoveAtSpeed(assessingSpeedFirstVisit , elapsed);
+                MoveAtSpeed(assessingSpeedFirstVisit, elapsed);
             }
             else
             {
                 // if this.ant.nestAssessmentVisitNumber == 2 -> second visit
-                MoveAtSpeed(assessingSpeedSecondVisit , elapsed);
+                MoveAtSpeed(assessingSpeedSecondVisit, elapsed);
             }
 
         }
         else
         {
-            MoveAtSpeed(scoutSpeed , elapsed);
+            MoveAtSpeed(scoutSpeed, elapsed);
         }
     }
 
@@ -712,12 +712,15 @@ public class AntMovement : MonoBehaviour, ITickable
     {
         foreach (GameObject door in simulation.doors)
         {
-            if (Vector3.Distance(door.transform.position, transform.position) < doorSenseRange && transform.InverseTransformPoint(door.transform.position).z >= 0)
+            if (Vector3.Distance(door.transform.position, transform.position) < doorSenseRange)
             {
-                if (!ant.inNest)
-                    return door.transform.parent.gameObject;
-                else
-                    return door;
+                if (transform.InverseTransformPoint(door.transform.position).z >= 0)
+                {
+                    if (!ant.inNest)
+                        return door.transform.parent.gameObject;
+                    else
+                        return door;
+                }
             }
         }
         return null;
@@ -729,10 +732,11 @@ public class AntMovement : MonoBehaviour, ITickable
         //if stuck then wait less time till next change as it may take a few random rotations to get unstuck
         if (Vector3.Distance(transform.position, lastTurn) > 0)
         {
-            if (ant.state == BehaviourState.Assessing)
-                nextDirChange_time = simulation.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time * 2f;
-            else
-                nextDirChange_time = simulation.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time;
+            // Assessing applies to a wide range of behaviours - doubleing the time taken here just confuses things
+            //if (ant.state == BehaviourState.Assessing)
+            //    nextDirChange_time = simulation.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time * 2f;
+            //else
+            nextDirChange_time = simulation.TickManager.TotalElapsedSimulatedSeconds + RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time;
         }
         else
             nextDirChange_time = simulation.TickManager.TotalElapsedSimulatedSeconds + (RandomGenerator.Instance.Range(0, 1f) * maxDirChange_time) / 10f;
