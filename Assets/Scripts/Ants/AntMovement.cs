@@ -63,6 +63,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
     public bool ShouldBeRemoved { get { return false; } }
 
+    private bool _skipMove;
 
     private float obstructionCheckRaycastLength = 1;
 
@@ -340,6 +341,14 @@ public class AntMovement : MonoBehaviour, ITickable
     {
         //check for obstructions, turn to avoid if there are
         ObstructionCheck();
+        
+        // We have just performed an obstruction check but we might have rotated into another obstacle
+        // Don't keep rotating, just stop the ant from moving this step
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.forward, out hit, obstructionCheckRaycastLength))
+        {
+            return;
+        }
 
         //move ant at appropriate speed
         if (ant.state == BehaviourState.Inactive)
@@ -797,8 +806,7 @@ public class AntMovement : MonoBehaviour, ITickable
     //turn ant to this face this direction (around y axis)
     private void Turn(float newDir)
     {
-        dir = -dir;
-        //dir = NewDirectionCheck(PheromoneDirection(newDir));
+        dir = NewDirectionCheck(PheromoneDirection(newDir));
         transform.rotation = Quaternion.Euler(0, dir, 0);
     }
 
@@ -886,7 +894,7 @@ public class AntMovement : MonoBehaviour, ITickable
     //helps and to avoid obstructions and returns true if action was taken and false otherwise
     private bool ObstructionCheck()
     {
-        RaycastHit hit = new RaycastHit();
+        RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward, out hit, obstructionCheckRaycastLength))
         {
             //if there is an ant directly in front of this ant then randomly turn otherwise must be a wall so follow it
