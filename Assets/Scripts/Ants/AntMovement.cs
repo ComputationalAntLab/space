@@ -805,7 +805,9 @@ public class AntMovement : MonoBehaviour, ITickable
             currentAngle -= 360;
 
         float newDir = RandomGenerator.Instance.NormalRandom((((goalAngle + currentAngle) / 2f) % 360f), maxVar);
-        Turn(newDir);
+        //Turn(newDir);
+
+        Turn(goalAngle);// + currentAngle);
     }
 
     private void RandomWalk()

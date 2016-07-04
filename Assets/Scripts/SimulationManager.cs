@@ -29,7 +29,7 @@ public class SimulationManager : MonoBehaviour
 
     public float InitialScouts { get { return (Settings.ProportionActive.Value * Settings.ColonySize.Value) - 1 * Settings.QuorumThreshold.Value; } }
 
-    private bool _spawnOnlyScouts = true;
+    private bool _spawnOnlyScouts = false;
 
     //This spawns all the ants and starts the simulation
     void Start()
