@@ -14,5 +14,10 @@ namespace Assets.Scripts.Extensions
         {
             return uiScript.transform.ComponentFromChild<Button>(name);
         }
+
+        public static void SetText(this Button button, string text)
+        {
+            button.GetComponentInChildren<Text>().text = text;
+        }
     }
 }

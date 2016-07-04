@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 using Assets.Scripts.Extensions;
 using UnityEngine.UI;
-using System;
 
 public class CameraControl : MonoBehaviour
 {
@@ -32,11 +30,11 @@ public class CameraControl : MonoBehaviour
 
         if (_isFreeCamera)
         {
-            btnToggle.GetComponentInChildren<Text>().text = "Free Cam";
+            btnToggle.SetText("Free Cam");
         }
         else
         {
-            btnToggle.GetComponentInChildren<Text>().text = "Fixed Cam";
+            btnToggle.SetText("Fixed Cam");
         }
     }
 

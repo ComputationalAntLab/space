@@ -25,14 +25,14 @@ public class TimeControl : MonoBehaviour
         btnUp = this.ButtonByName("btnUp");
         btnDown = this.ButtonByName("btnDown");
 
-        btnUp.GetComponentInChildren<Text>().text = "+";
-        btnDown.GetComponentInChildren<Text>().text = "-";
+        btnUp.SetText("+");
+        btnDown.SetText("-");
 
         btnUp.onClick.AddListener(btnUp_Click);
         btnDown.onClick.AddListener(btnDown_Click);
 
         btnTick = this.ButtonByName("btnTick");
-        btnTick.GetComponentInChildren<Text>().text = "Tick";
+        btnTick.SetText("Tick");
         btnTick.onClick.AddListener(btnTick_Click);
     }
 
