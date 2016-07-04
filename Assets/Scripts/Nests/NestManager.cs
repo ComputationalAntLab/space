@@ -21,7 +21,7 @@ public class NestManager : MonoBehaviour
 		
 		//let the ant know it has entered the nest
 		AntManager ant = (AntManager)other.transform.GetComponent(Naming.Ants.Controller);
-		ant.EnteredNest(gameObject);
+		ant.EnteredNest(this);
 	}
 	
 	
@@ -41,7 +41,7 @@ public class NestManager : MonoBehaviour
 	
 	public int GetQuorum()
 	{
-		int id = simulation.GetNestID(gameObject);
+		int id = simulation.GetNestID(this);
 		int total = GameObject.Find("P" + id).transform.childCount;
 		Transform a = GameObject.Find("A" + id).transform;
 
@@ -66,6 +66,6 @@ public class NestManager : MonoBehaviour
 	
 	public int GetPassive()
 	{
-		return GameObject.Find("P" + simulation.GetNestID(gameObject)).transform.childCount;
+		return GameObject.Find("P" + simulation.GetNestID(this)).transform.childCount;
 	}
 }

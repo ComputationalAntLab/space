@@ -512,18 +512,37 @@ public class AntMovement : MonoBehaviour, ITickable
 
     private void AssessingDirectionChange()
     {
-        if (ant.assessmentStage == NestAssessmentStage.ReturningToHomeNest)
+        if (ant.assessmentStage == NestAssessmentStage.ReturningToHomeNestDoor)
         {
-            WalkToGameObject(ant.oldNest);
-            if (Vector3.Distance(transform.position, ant.oldNest.transform.position) < 20f)
+            WalkToGameObject(ant.oldNest.door);
+            if (Vector3.Distance(transform.position, ant.oldNest.door.transform.position) < 10f)
             {
-                ant.assessmentStage = NestAssessmentStage.ReturningToPotentialNest;
+                ant.assessmentStage = NestAssessmentStage.ReturningToHomeNestMiddle;
             }
             return;
         }
-        else if (ant.assessmentStage == NestAssessmentStage.ReturningToPotentialNest)
+        else if (ant.assessmentStage == NestAssessmentStage.ReturningToPotentialNestDoor)
         {
-            WalkToGameObject(ant.nestToAssess);
+            WalkToGameObject(ant.nestToAssess.door);
+            if (Vector3.Distance(transform.position, ant.nestToAssess.door.transform.position) < 10f)
+            {
+                ant.assessmentStage = NestAssessmentStage.ReturningToPotentialNestMiddle;
+            }
+            return;
+        }
+       else  if (ant.assessmentStage == NestAssessmentStage.ReturningToHomeNestMiddle)
+        {
+            WalkToGameObject(ant.oldNest.gameObject);
+            if (Vector3.Distance(transform.position, ant.oldNest.transform.position) < 20f)
+            {
+                ant.assessmentStage = NestAssessmentStage.ReturningToPotentialNestDoor;
+                ant.ChangeColour(AntColours.NestAssessment.ReturningToPotentialNest);
+            }
+            return;
+        }
+        else if (ant.assessmentStage == NestAssessmentStage.ReturningToPotentialNestMiddle)
+        {
+            WalkToGameObject(ant.nestToAssess.gameObject);
             if (Vector3.Distance(transform.position, ant.nestToAssess.transform.position) < 40f)
             {
                 if (ant.inNest)
@@ -553,7 +572,7 @@ public class AntMovement : MonoBehaviour, ITickable
             }
             else
             {
-                WalkToGameObject(ant.nestToAssess);
+                WalkToGameObject(ant.nestToAssess.gameObject);
             }
         }
         else
@@ -612,17 +631,17 @@ public class AntMovement : MonoBehaviour, ITickable
 
         //if this is a passive ant then always direct them towards center of their nest (because they are either carried or lead between)
         if (ant.passive || ant.state == BehaviourState.Inactive)
-            return ant.myNest;
+            return ant.myNest.gameObject;
 
         if (ant.state == BehaviourState.Assessing)
         {
             if (ant.assessTime > 0)
             {
-                return ant.nestToAssess;
+                return ant.nestToAssess.gameObject;
             }
             else
             {
-                return ant.nestToAssess.Nest().door;
+                return ant.nestToAssess.door;
             }
         }
 
@@ -636,16 +655,16 @@ public class AntMovement : MonoBehaviour, ITickable
                 if (!ant.IsTandemRunning())
                 {
                     //Find an ant to carry
-                    return ant.myNest;
+                    return ant.myNest.gameObject;
                 }
                 else
                 {
                     //Head for exit
-                    NestManager my = ant.myNest.Nest();
+                    NestManager my = ant.myNest;
                     if (my.door != null)
                         return my.door;
                     else
-                        return ant.myNest;
+                        return ant.myNest.gameObject;
                 }
             }
             else
@@ -653,15 +672,15 @@ public class AntMovement : MonoBehaviour, ITickable
                 //Go to old nest
                 if (!ant.inNest)
                 {
-                    NestManager old = ant.oldNest.Nest();
+                    NestManager old = ant.oldNest;
                     if (old.door != null)
                         return old.door;
                     else
-                        return ant.oldNest;
+                        return ant.oldNest.gameObject;
                 }
                 else
                 {
-                    return ant.oldNest;
+                    return ant.oldNest.gameObject;
                 }
             }
         }
@@ -672,16 +691,16 @@ public class AntMovement : MonoBehaviour, ITickable
             //if in the nest they are recruiting FROM but want to leave then return the position of the nest's door (if this has been marked)
             if (nearerOld)
             {
-                NestManager old = ant.oldNest.Nest();
+                NestManager old = ant.oldNest;
                 if (old.door != null)
                     return old.door;
                 else
-                    return ant.myNest;
+                    return ant.myNest.gameObject;
             }
             //if in the nest that they are recruiting TO and don't want to leave returns the position of it's center 
             else
             {
-                return ant.myNest;
+                return ant.myNest.gameObject;
             }
         }
         //if in nest and going to towards nest that they are recruiting FROM
@@ -690,35 +709,35 @@ public class AntMovement : MonoBehaviour, ITickable
             //in nest that they recruit TO but trying to leave then return the position of the nest's door (if this has been marked)
             if (!nearerOld)
             {
-                NestManager my = ant.myNest.Nest();
+                NestManager my = ant.myNest;
                 if (my.door != null)
                     return my.door;
                 else
-                    return ant.oldNest;
+                    return ant.oldNest.gameObject;
             }
             //if in nest that recruiting FROM and are looking for ant to recruit then head towards center
             else
             {
-                return ant.oldNest;
+                return ant.oldNest.gameObject;
             }
         }
         //if not in a nest and heading to nest that they recruit TO then return position of door to that nest (if possible)
         else if (!ant.newToOld)
         {
-            NestManager my = ant.myNest.Nest();
+            NestManager my = ant.myNest;
             if (my.door != null)
                 return my.door;
             else
-                return ant.myNest;
+                return ant.myNest.gameObject;
         }
         //if not in a nest and heading towards nest that they recruit FROM then return position of that nest's door (if possible)
         else
         {
-            NestManager old = ant.oldNest.Nest();
+            NestManager old = ant.oldNest;
             if (old.door != null)
                 return old.door;
             else
-                return ant.oldNest;
+                return ant.oldNest.gameObject;
         }
     }
 
@@ -920,8 +939,6 @@ public class AntMovement : MonoBehaviour, ITickable
     //this will only work well on right angle corners, randomness included so ant may not always follow round corner but might turn around
     private void FollowWall()
     {
-        GetComponent<Renderer>().material.color = Color.cyan;
-
         //find it if there are obstructions infront, behind and to either side of ant
         bool[] rays = new bool[4];
         rays[0] = Physics.Raycast(transform.position, Vector3.forward, obstructionCheckRaycastLength);

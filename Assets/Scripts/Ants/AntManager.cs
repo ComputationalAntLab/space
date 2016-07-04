@@ -15,9 +15,9 @@ public class AntManager : MonoBehaviour, ITickable
     Transform carryPosition;                //where to carry ant 
     public BehaviourState state;                     //which state the ant is currently in
     BehaviourState previousState;                    //the state which the ant was in prior to assessing
-    public GameObject myNest;               //recruit to this nest
-    public GameObject oldNest;              //recruit from this nest
-    public GameObject nestToAssess;         //nest that the ant is currently assessing
+    public NestManager myNest;               //recruit to this nest
+    public NestManager oldNest;              //recruit from this nest
+    public NestManager nestToAssess;         //nest that the ant is currently assessing
     public AntManager leader, follower;     //the ants that are leading or following this ant
     public bool inNest;                     //true when this ant is in a nest (needed for direction
     public bool newToOld;                   //true when this ant is heading towards the nest they are recruiting TO from the nest they're recruiting to FROM
@@ -80,11 +80,13 @@ public class AntManager : MonoBehaviour, ITickable
     //Other	
     public bool ShouldBeRemoved { get { return false; } }
 
+    public int PerceivedTicks { get; set; }
+
 
     // Use this for initialization
     void Start()
     {
-        oldNest = GameObject.Find(Naming.World.InitialNest);
+        oldNest = GameObject.Find(Naming.World.InitialNest).Nest();
         carryPosition = transform.Find(Naming.Ants.CarryPosition);
         sensesCol = (Collider)transform.Find(Naming.Ants.SensesArea).GetComponent("Collider");
         move = gameObject.AntMovement();
@@ -102,6 +104,8 @@ public class AntManager : MonoBehaviour, ITickable
     private float _elapsed;
     public void Tick(float elapsedSimulationMS)
     {
+        PerceivedTicks++;
+
         if (Ticker.Should(elapsedSimulationMS, ref _elapsed, 1000))
         {
             WriteHistory();
@@ -117,7 +121,7 @@ public class AntManager : MonoBehaviour, ITickable
 
         //BUGFIX: occasionly when followers enter a nest there enterednest function doesn't get called, this forces that
         if (state == BehaviourState.Following && Vector3.Distance(LeadersNest().transform.position, transform.position) < LeadersNest().transform.localScale.x / 2f)
-            EnteredNest(LeadersNest());
+            EnteredNest(LeadersNest().Nest());
 
         //makes Inactive and !passive ants assess nest that they are in every so often
         if (!passive && state == BehaviourState.Inactive && nextAssesment > 0 && simulation.TickManager.TotalElapsedSimulatedSeconds >= nextAssesment)
@@ -234,7 +238,7 @@ public class AntManager : MonoBehaviour, ITickable
 
     }
 
-    private void AssignParent(GameObject nest, string prefix, Color? colour)
+    private void AssignParentFromNest(NestManager nest, string prefix, Color? colour)
     {
         if (nest != null)
         {
@@ -244,7 +248,7 @@ public class AntManager : MonoBehaviour, ITickable
         {
             transform.parent = GameObject.Find(prefix).transform;
             if (colour.HasValue)
-                GetComponent<Renderer>().material.color = colour.Value;
+                this.ChangeColour(colour.Value);
         }
     }
 
@@ -255,23 +259,23 @@ public class AntManager : MonoBehaviour, ITickable
             return;
         else if (state == BehaviourState.Recruiting)
         {
-            AssignParent(myNest, Naming.Ants.BehavourState.Recruiting, Color.blue);
+            AssignParentFromNest(myNest, Naming.Ants.BehavourState.Recruiting, AntColours.States.Recruiting);
         }
         else if (state == BehaviourState.Inactive)
         {
-            AssignParent(myNest, Naming.Ants.BehavourState.Inactive, Color.black);
+            AssignParentFromNest(myNest, Naming.Ants.BehavourState.Inactive, AntColours.States.Inactive);
         }
         else if (state == BehaviourState.Scouting && transform.parent.name != "S")
         {
-            AssignParent(null, Naming.Ants.BehavourState.Scouting, Color.white);
+            AssignParentFromNest(null, Naming.Ants.BehavourState.Scouting, AntColours.States.Scouting);
         }
         else if (state == BehaviourState.Assessing)
         {
-            AssignParent(nestToAssess, Naming.Ants.BehavourState.Assessing, Color.red);
+            AssignParentFromNest(nestToAssess, Naming.Ants.BehavourState.Assessing, AntColours.States.Assessing);
         }
         else if (state == BehaviourState.Reversing)
         {
-            AssignParent(myNest, Naming.Ants.BehavourState.Reversing, Color.yellow);
+            AssignParentFromNest(myNest, Naming.Ants.BehavourState.Reversing, AntColours.States.Reversing);
         }
     }
 
@@ -295,7 +299,7 @@ public class AntManager : MonoBehaviour, ITickable
 
     private GameObject LeadersNest()
     {
-        return leader.gameObject.AntManager().myNest;
+        return leader.gameObject.AntManager().myNest.gameObject;
     }
 
     //tell this ant to lead 'follower' to preffered nest
@@ -476,7 +480,7 @@ public class AntManager : MonoBehaviour, ITickable
     }
 
     //lets this ant know that it has been put down, sets it upright and turns senses back on 
-    public void Dropped(GameObject nest)
+    public void Dropped(NestManager nest)
     {
         //turn the right way up 
         transform.rotation = Quaternion.identity;
@@ -526,7 +530,7 @@ public class AntManager : MonoBehaviour, ITickable
     }
 
     //this is called whenever an ant enters a nest
-    public void EnteredNest(GameObject nest)
+    public void EnteredNest(NestManager nest)
     {
         if (failedTandemLeader == true && state == BehaviourState.Recruiting && nest != oldNest)
         {
@@ -617,10 +621,8 @@ public class AntManager : MonoBehaviour, ITickable
 
         if (state == BehaviourState.Recruiting && nest == oldNest)
         {
-            NestManager nestM = nest.Nest();
-
             //if no passive ants left in old nest then turn around and return home
-            if (finishedRecruiting || nestM.GetPassive() == 0)
+            if (finishedRecruiting || nest.GetPassive() == 0)
             {
                 newToOld = false;
                 finishedRecruiting = true;
@@ -637,9 +639,7 @@ public class AntManager : MonoBehaviour, ITickable
 
         if (state == BehaviourState.Reversing && nest == oldNest)
         {
-            NestManager nestM = nest.Nest();
-
-            if (nestM.GetPassive() == 0)
+            if (nest.GetPassive() == 0)
             {
                 newToOld = false;
                 ChangeState(BehaviourState.Recruiting);
@@ -676,7 +676,8 @@ public class AntManager : MonoBehaviour, ITickable
             // store lenght of first visit and reset length to zero
             assessmentFirstLengthHistory = move.assessingDistance;
             move.assessingDistance = 0f;
-            assessmentStage =NestAssessmentStage.ReturningToHomeNest;
+            assessmentStage = NestAssessmentStage.ReturningToHomeNestDoor;
+            this.ChangeColour(AntColours.NestAssessment.ReturningToHomeNest);
             print("finished assessment");
             return;
         }
@@ -691,7 +692,7 @@ public class AntManager : MonoBehaviour, ITickable
 
     public void NestAssessmentSecondVisit()
     {
-        GetComponent<Renderer>().material.color = Color.grey;
+        this.ChangeColour(AntColours.NestAssessment.SecondVisit);
         assessmentStage = 0;
         nestAssessmentVisitNumber = 2;
         assessTime = GetAssessTime();
@@ -733,7 +734,7 @@ public class AntManager : MonoBehaviour, ITickable
     //
 
     //assesses nest and takes appropriate action
-    private void AssessNest(GameObject nest)
+    private void AssessNest(NestManager nest)
     {
         move.usePheromones = false;
 
@@ -748,8 +749,7 @@ public class AntManager : MonoBehaviour, ITickable
         currentNestArea = 0f;
 
         // Old nest quality measurement
-        NestManager nestM = nest.Nest();
-        float q = RandomGenerator.Instance.NormalRandom(nestM.quality, assessmentNoise);
+        float q = RandomGenerator.Instance.NormalRandom(nest.quality, assessmentNoise);
         if (q < 0f)
             q = 0f;
         else if (q > 1f)
@@ -860,7 +860,7 @@ public class AntManager : MonoBehaviour, ITickable
     {
         if (state == BehaviourState.Assessing)
         {
-            ChangeStateAssessing();
+            ChangeToAssessingState();
         }
         if (this.state != BehaviourState.Following && this.state != BehaviourState.Assessing)
         {
@@ -870,7 +870,7 @@ public class AntManager : MonoBehaviour, ITickable
         AssignParent();
     }
 
-    private void ChangeStateAssessing()
+    private void ChangeToAssessingState()
     {
 
         // make this nest assessment their first visit
@@ -894,7 +894,8 @@ public class AntManager : MonoBehaviour, ITickable
             //greg edit			averageAssessTime = 142;
             averageAssessTime = 28;
         }
-        else {
+        else
+        {
             //greg edit			averageAssessTime = 80;
             averageAssessTime = 16;
         }
@@ -906,7 +907,8 @@ public class AntManager : MonoBehaviour, ITickable
         {
             assessmentFirstTimeHistory = duration;
         }
-        else {
+        else
+        {
             assessmentSecondTimeHistory = duration;
         }
         return duration;
@@ -914,7 +916,7 @@ public class AntManager : MonoBehaviour, ITickable
     //
 
     //switches ants allegiance to this nest and sends them back to their old one to recruit some more
-    private void RecruitToNest(GameObject nest)
+    private void RecruitToNest(NestManager nest)
     {
         int nestID = simulation.GetNestID(nest) - 1;
         if (nestID >= 0)
@@ -926,7 +928,6 @@ public class AntManager : MonoBehaviour, ITickable
         }
         newToOld = true;
         myNest = nest;
-        NestManager nestM = nest.Nest();
         //check the qourum of this nest until quorum is met once.
         if (IsQuorumReached())
         {
@@ -934,14 +935,14 @@ public class AntManager : MonoBehaviour, ITickable
         }
         else
         {
-            percievedQourum = Mathf.Round(RandomGenerator.Instance.NormalRandom(nestM.GetQuorum(), qourumAssessNoise));
+            percievedQourum = Mathf.Round(RandomGenerator.Instance.NormalRandom(nest.GetQuorum(), qourumAssessNoise));
         }
 
         recTime = recTryTime;
         ChangeState(BehaviourState.Recruiting);
     }
 
-    private void Reverse(GameObject nest)
+    private void Reverse(NestManager nest)
     {
         ChangeState(BehaviourState.Reversing);
         revTime = revTryTime;
@@ -1038,7 +1039,8 @@ public class AntManager : MonoBehaviour, ITickable
         {
             newToOld = true;
         }
-        else {
+        else
+        {
             newToOld = false;
         }
     }

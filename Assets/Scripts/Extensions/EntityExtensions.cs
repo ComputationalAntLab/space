@@ -36,5 +36,10 @@ namespace Assets.Scripts.Extensions
         {
             return transform.FindChild(childName).GetComponent<T>();
         }
+
+        public static void ChangeColour(this Component component, Color colour)
+        {
+            component.GetComponent<Renderer>().material.color = colour;
+        }
     }
 }

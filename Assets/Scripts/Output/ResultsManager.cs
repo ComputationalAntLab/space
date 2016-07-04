@@ -54,9 +54,9 @@ namespace Assets
             results = new List<Results>
             {
                 new NestResults(Simulation, experimentPath),
-                //new AntDetailedResults(Simulation, experimentPath),
                 new AntDeltaResults(Simulation, experimentPath)
-
+                //new AntDetailedResults(Simulation, experimentPath),
+                //new AntDebugResults(Simulation, experimentPath),
             };
         }
 

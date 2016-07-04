@@ -134,8 +134,9 @@ public class SimulationManager : MonoBehaviour
                 Ants.Add(newAM);
 
                 newAM.AntId = spawnedAnts;
-                newAM.myNest = initialNest;
-                newAM.myNest = initialNest;
+                newAM.myNest = initialNest.Nest();
+                // why is there 2 of this here? is it meant to be old nest or something
+                // newAM.myNest = initialNest;
                 newAM.simulation = this;
                 newAM.inNest = true;
                 newAM.quorumThreshold = Settings.QuorumThreshold.Value;
@@ -194,7 +195,7 @@ public class SimulationManager : MonoBehaviour
     }
 
     //returns the ID of the nest that is passed in
-    public int GetNestID(GameObject nest)
+    public int GetNestID(NestManager nest)
     {
         return nests.IndexOf(nest.transform);
     }

@@ -19,7 +19,7 @@ public class TimeControl : MonoBehaviour
     void Start()
     {
         txtFPS = this.TextByName("txtFPS");
-        txtSpeed= this.TextByName("txtSpeed");
+        txtSpeed = this.TextByName("txtSpeed");
         txtTime = this.TextByName("txtTime");
 
         btnUp = this.ButtonByName("btnUp");
@@ -70,6 +70,13 @@ public class TimeControl : MonoBehaviour
         UpdateFPS();
     }
 
+    private void UpdateTime()
+    {
+        var time = SimulationManager.Instance.TickManager.TotalElapsedSimulatedTime;
+
+        txtTime.text = String.Format("{0:00}:{1:00}.{2:00}", time.TotalHours, time.Minutes, time.Seconds);
+    }
+
     private void UpdateFPS()
     {
         if (_timeCounter < _refreshTime)
@@ -84,7 +91,7 @@ public class TimeControl : MonoBehaviour
             _frameCounter = 0;
             _timeCounter = 0.0f;
 
-            txtTime.text = SimulationManager.Instance.TickManager.TotalElapsedSimulatedTime.ToString();
+            UpdateTime();
         }
     }
 }

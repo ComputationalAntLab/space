@@ -21,7 +21,9 @@ namespace Assets.Scripts.Ants
     public enum NestAssessmentStage
     {
         Assessing,
-        ReturningToHomeNest,
-        ReturningToPotentialNest
+        ReturningToHomeNestDoor,
+        ReturningToHomeNestMiddle,
+        ReturningToPotentialNestDoor,
+        ReturningToPotentialNestMiddle
     }
 }
