@@ -10,11 +10,11 @@ namespace Assets.Scripts.Ants
     {
         public static class States
         {
-            public static Color Inactive {  get { return Color.black; } }
+            public static Color Inactive { get { return Color.black; } }
 
             public static Color Recruiting { get { return Color.blue; } }
 
-            public static Color Scouting {  get {                    return Color.white;                } }
+            public static Color Scouting { get { return Color.white; } }
 
             public static Color Assessing { get { return Color.red; } }
 

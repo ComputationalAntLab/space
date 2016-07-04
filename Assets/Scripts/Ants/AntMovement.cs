@@ -465,7 +465,7 @@ public class AntMovement : MonoBehaviour, ITickable
             // first time follower moves "estimateNextLocationOfLeader()" not called 
             // therefore move ant to leader on first move
             Debug.Log("Got here");
-            if (ant.estimateNewLeaderPos == new Vector3(0, 0, 0))
+            if (ant.estimateNewLeaderPos == Vector3.zero)
             {
                 ant.estimateNewLeaderPos = ant.leader.transform.position;
             }
@@ -804,10 +804,8 @@ public class AntMovement : MonoBehaviour, ITickable
         if (Mathf.Abs(goalAngle - currentAngle) > 180)
             currentAngle -= 360;
 
-        float newDir = RandomGenerator.Instance.NormalRandom((((goalAngle + currentAngle) / 2f) % 360f), maxVar);
-        //Turn(newDir);
-
-        Turn(goalAngle);// + currentAngle);
+        float newDir = RandomGenerator.Instance.NormalRandom(goalAngle, maxVar);
+        Turn(newDir);
     }
 
     private void RandomWalk()
