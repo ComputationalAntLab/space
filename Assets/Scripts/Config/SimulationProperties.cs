@@ -49,6 +49,22 @@
         }
     }
 
+    public class StartingTickRate: SimulationIntProperty
+    {
+        public override int? MaxValue { get { return null; } }
+
+        public override int? MinValue { get { return 0; } }
+
+        public override string Name { get { return "Starting Tick Rate"; } }
+
+        public override string Description { get { return "The starting simulated tick rate at which the simulation will run."; } }
+
+        public StartingTickRate()
+        {
+            Value = 1;
+        }
+    }
+
     public class ProportionActive : SimulationFloatProperty
     {
         public override float? MaxValue { get { return 1; } }

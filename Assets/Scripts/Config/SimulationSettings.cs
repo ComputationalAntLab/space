@@ -24,6 +24,9 @@ namespace Assets.Scripts.Config
         [SerializeField]
         public ProportionActive ProportionActive { get; set; }
 
+        [SerializeField]
+        public StartingTickRate StartingTickRate { get; set; }
+
         [XmlIgnore]
         public List<SimulationPropertyBase> AllProperties { get { return _allProperties.Value; } }
 
@@ -41,6 +44,7 @@ namespace Assets.Scripts.Config
             ColonySize = new ColonySize();
             QuorumThreshold = new QuorumThreshold();
             ProportionActive = new ProportionActive();
+            StartingTickRate = new StartingTickRate();
 
             _allProperties = new Lazy<List<SimulationPropertyBase>>(() =>
              {
@@ -49,34 +53,10 @@ namespace Assets.Scripts.Config
                     RandomSeed,
                     ColonySize,
                     QuorumThreshold,
-                    ProportionActive
+                    ProportionActive,
+                    StartingTickRate
                };
              });
-        }
-
-        private void Validate(string param, float value, float? min, float? max)
-        {
-            bool error = false;
-
-            if (min.HasValue && value < min.Value)
-                error = true;
-            if (max.HasValue && value > max.Value)
-                error = true;
-
-            if (error)
-            {
-
-                string message = string.Empty;
-
-                if (!min.HasValue && max.HasValue)
-                    message = string.Format("Must be less than \"{0}\"", max);
-                else if (min.HasValue && !max.HasValue)
-                    message = string.Format("Must be greater than \"{0}\"", min);
-                else if (min.HasValue && max.HasValue)
-                    message = string.Format("Must be greater than \"{0}\" and less than \"{1}\"", min, max);
-
-                throw new ArgumentOutOfRangeException(param, message);
-            }
         }
     }
 }

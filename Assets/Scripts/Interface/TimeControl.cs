@@ -5,7 +5,7 @@ using System;
 
 public class TimeControl : MonoBehaviour
 {
-    private Text txtFPS, txtSpeed;
+    private Text txtFPS, txtSpeed, txtTime;
 
     private Button btnUp, btnDown, btnTick;
 
@@ -20,6 +20,7 @@ public class TimeControl : MonoBehaviour
     {
         txtFPS = this.TextByName("txtFPS");
         txtSpeed= this.TextByName("txtSpeed");
+        txtTime = this.TextByName("txtTime");
 
         btnUp = this.ButtonByName("btnUp");
         btnDown = this.ButtonByName("btnDown");
@@ -82,6 +83,8 @@ public class TimeControl : MonoBehaviour
             _lastFramerate = (float)_frameCounter / _timeCounter;
             _frameCounter = 0;
             _timeCounter = 0.0f;
+
+            txtTime.text = SimulationManager.Instance.TickManager.TotalElapsedSimulatedTime.ToString();
         }
     }
 }

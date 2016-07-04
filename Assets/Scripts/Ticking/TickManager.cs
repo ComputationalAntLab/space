@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Assets.Scripts.Ticking
 {
@@ -16,6 +17,8 @@ namespace Assets.Scripts.Ticking
         /// Set to true to perform a single tick, even if the speed is set to zero
         /// </summary>
         public bool TickOnce { get; set; }
+
+        public TimeSpan TotalElapsedSimulatedTime { get { return TimeSpan.FromMilliseconds(TotalElapsedSimulatedMilliseconds); } }
 
         private List<ITickable> _entities = new List<ITickable>();
 
