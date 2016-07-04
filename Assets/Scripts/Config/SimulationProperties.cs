@@ -45,7 +45,7 @@
 
         public QuorumThreshold()
         {
-            Value = 5;
+            Value = 10;
         }
     }
 

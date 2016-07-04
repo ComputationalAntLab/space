@@ -670,7 +670,6 @@ public class AntManager : MonoBehaviour, ITickable
 
     private void NestAssessmentVisit()
     {
-
         if (nestAssessmentVisitNumber == 1)
         {
             // store lenght of first visit and reset length to zero
@@ -678,7 +677,6 @@ public class AntManager : MonoBehaviour, ITickable
             move.assessingDistance = 0f;
             assessmentStage = NestAssessmentStage.ReturningToHomeNestDoor;
             this.ChangeColour(AntColours.NestAssessment.ReturningToHomeNest);
-            print("finished assessment");
             return;
         }
         assessmentSecondLengthHistory = move.assessingDistance;

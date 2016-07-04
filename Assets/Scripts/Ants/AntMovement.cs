@@ -414,7 +414,8 @@ public class AntMovement : MonoBehaviour, ITickable
         }
         else if (ant.state == BehaviourState.Following)
         {
-            maxVar = 20f;
+            //maxVar = 20f;
+            maxVar = 10f;
             FollowingDirectionChange();
         }
         else if (ant.state == BehaviourState.Inactive)
@@ -464,14 +465,17 @@ public class AntMovement : MonoBehaviour, ITickable
         {
             // first time follower moves "estimateNextLocationOfLeader()" not called 
             // therefore move ant to leader on first move
-            Debug.Log("Got here");
             if (ant.estimateNewLeaderPos == Vector3.zero)
             {
                 ant.estimateNewLeaderPos = ant.leader.transform.position;
             }
-            float predictedLeaderAngle = GetAngleBetweenPositions(transform.position, ant.estimateNewLeaderPos);
+
+            var posToUse = Vector3.Lerp(ant.estimateNewLeaderPos, ant.leader.transform.position, (float)RandomGenerator.Instance.NextDouble());
+            float predictedLeaderAngle = GetAngleBetweenPositions(transform.position, posToUse);
             float newDir = RandomGenerator.Instance.NormalRandom(predictedLeaderAngle, maxVar);
             Turn(newDir);
+
+            //Debug.DrawLine(ant.transform.position, ant.estimateNewLeaderPos, Color.red, 1);
         }
         else
         {
