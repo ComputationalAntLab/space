@@ -24,5 +24,14 @@ public class SimulationUI : MonoBehaviour
     private void UpdateToggle()
     {
         btnToggle.SetText(_uiVisible ? ">" : "<");
+
+        foreach(var child in transform)
+        {
+            if (child == btnToggle.transform)
+                continue;
+
+            var ct = child as Transform;
+            ct.gameObject.SetActive(_uiVisible);
+        }
     }
 }
