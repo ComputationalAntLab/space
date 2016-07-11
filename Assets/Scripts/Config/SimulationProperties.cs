@@ -1,4 +1,6 @@
-﻿namespace Assets.Scripts.Config
+﻿using System;
+
+namespace Assets.Scripts.Config
 {
     public class RandomSeed : SimulationIntProperty
     {
@@ -49,7 +51,7 @@
         }
     }
 
-    public class StartingTickRate: SimulationIntProperty
+    public class StartingTickRate : SimulationIntProperty
     {
         public override int? MaxValue { get { return null; } }
 
@@ -78,6 +80,53 @@
         public ProportionActive()
         {
             Value = 0.5f;
+        }
+    }
+
+    public class OutputAntDelta : SimulationBoolProperty
+    {
+        public override string Name { get { return "Output Ant Deltas"; } }
+
+        public override string Description { get { return "Whether to output ant state and position information whenever their state changes."; } }
+
+        public OutputAntDelta()
+        {
+            Value = true;
+        }
+    }
+
+    public class OutputAntDetail : SimulationBoolProperty
+    {
+        public override string Name { get { return "Output Ant Detail"; } }
+
+        public override string Description { get { return "Whether to output ant state and position information at each simulated step."; } }
+
+        public OutputAntDetail()
+        {
+            Value = false;
+        }
+    }
+
+    public class OutputAntDebug : SimulationBoolProperty
+    {
+        public override string Name { get { return "Output Ant Debug"; } }
+
+        public override string Description { get { return "Whether to output ant debug information."; } }
+
+        public OutputAntDebug()
+        {
+            Value = false;
+        }
+    }
+    public class OutputColonyData : SimulationBoolProperty
+    {
+        public override string Name { get { return "Output Colony Data"; } }
+
+        public override string Description { get { return "Whether to output the distributions of ants among nests at each simulated step."; } }
+
+        public OutputColonyData()
+        {
+            Value = false;
         }
     }
 }

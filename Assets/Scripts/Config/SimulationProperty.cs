@@ -27,6 +27,19 @@ namespace Assets.Scripts.Config
         }
     }
 
+    public abstract class SimulationBoolProperty : SimulationProperty<bool>
+    {
+        public override string SetValue(string newValue)
+        {
+            bool v;
+            if (!bool.TryParse(newValue, out v))
+                return newValue;
+
+            Value = v;
+            return v.ToString();
+        }
+    }
+
     public abstract class SimulationFloatProperty : SimulationProperty<float>
     {
         public abstract float? MinValue { get; }

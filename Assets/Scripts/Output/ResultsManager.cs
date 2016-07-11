@@ -41,7 +41,7 @@ namespace Assets
 
                 experimentPath = experimentPath + "_" + suffix;
             }
-            
+
             Directory.CreateDirectory(experimentPath);
 
             using (StreamWriter sw = new StreamWriter(Path.Combine(experimentPath, "settings.xml")))
@@ -51,13 +51,16 @@ namespace Assets
                 xml.Serialize(sw, Simulation.Settings);
             }
 
-            results = new List<Results>
-            {
-                new NestResults(Simulation, experimentPath),
-                new AntDeltaResults(Simulation, experimentPath),
-                //new AntDetailedResults(Simulation, experimentPath),
-                new AntDebugResults(Simulation, experimentPath),
-            };
+            results = new List<Results>();
+
+            if (Simulation.Settings.OutputColonyData.Value)
+                new NestResults(Simulation, experimentPath);
+            if (Simulation.Settings.OutputAntDelta.Value)
+                new AntDeltaResults(Simulation, experimentPath);
+            if (Simulation.Settings.OutputAntDetail.Value)
+                new AntDetailedResults(Simulation, experimentPath);
+            if (Simulation.Settings.OutputAntDebug.Value)
+                new AntDebugResults(Simulation, experimentPath);
         }
 
         public void Dispose()

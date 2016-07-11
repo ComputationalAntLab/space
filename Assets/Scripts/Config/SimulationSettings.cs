@@ -27,6 +27,18 @@ namespace Assets.Scripts.Config
         [SerializeField]
         public StartingTickRate StartingTickRate { get; set; }
 
+        [SerializeField]
+        public OutputColonyData OutputColonyData { get; set; }
+
+        [SerializeField]
+        public OutputAntDelta OutputAntDelta { get; set; }
+
+        [SerializeField]
+        public OutputAntDetail OutputAntDetail { get; set; }
+
+        [SerializeField]
+        public OutputAntDebug OutputAntDebug { get; set; }
+
         [XmlIgnore]
         public List<SimulationPropertyBase> AllProperties { get { return _allProperties.Value; } }
 
@@ -46,6 +58,11 @@ namespace Assets.Scripts.Config
             ProportionActive = new ProportionActive();
             StartingTickRate = new StartingTickRate();
 
+            OutputColonyData = new OutputColonyData();
+            OutputAntDelta = new OutputAntDelta();
+            OutputAntDetail = new OutputAntDetail();
+            OutputAntDebug = new OutputAntDebug();
+
             _allProperties = new Lazy<List<SimulationPropertyBase>>(() =>
              {
                  return new List<SimulationPropertyBase>
@@ -54,7 +71,11 @@ namespace Assets.Scripts.Config
                     ColonySize,
                     QuorumThreshold,
                     ProportionActive,
-                    StartingTickRate
+                    StartingTickRate,
+                    OutputColonyData,
+                    OutputAntDelta,
+                    OutputAntDetail,
+                    OutputAntDebug
                };
              });
         }

@@ -42,23 +42,22 @@ public class ConfigMenu : MonoBehaviour
     {
         var file = EditorUtility.OpenFilePanel("Load File", string.Empty, "xml");
 
-        using(var sr = new StreamReader(file))
+        using (var sr = new StreamReader(file))
         {
             var xml = new XmlSerializer(typeof(SimulationSettings));
 
             var settings = xml.Deserialize(sr) as SimulationSettings;
 
-            if(settings != null)
+            if (settings != null)
             {
                 Load(settings);
             }
         }
-        
     }
 
     private void Save_Clicked()
     {
-        var file = EditorUtility.SaveFilePanel("Save File", string.Empty,"space.xml", "xml");
+        var file = EditorUtility.SaveFilePanel("Save File", string.Empty, "space.xml", "xml");
 
         using (var sr = new StreamWriter(file))
         {
@@ -80,7 +79,7 @@ public class ConfigMenu : MonoBehaviour
     {
         Transform content = GetPropertiesContentArea();
 
-        var inputControl = Resources.Load("InputPrefab") as GameObject;
+        var inputControl = (property is SimulationBoolProperty ? Resources.Load("InputBool") : Resources.Load("InputText")) as GameObject;
 
         var a = GameObject.Instantiate(inputControl);
 
@@ -91,12 +90,22 @@ public class ConfigMenu : MonoBehaviour
         a.GetComponent<RectTransform>().anchoredPosition = new Vector2(-230, 137 + -(num * 35));
 
         a.transform.Find("Label").GetComponent<Text>().text = property.Name;
-        var input = a.GetComponentInChildren<InputField>();
 
-        input.text = property.GetValue();
-        input.onValueChanged.AddListener(new InputWrapper(input, property).OnChange);
+        if (property is SimulationBoolProperty)
+        {
+            var toggle = a.GetComponentInChildren<Toggle>();
 
+            toggle.isOn = ((SimulationBoolProperty)property).Value;
+            toggle.GetComponentInChildren<Text>().text = string.Empty;
+            toggle.onValueChanged.AddListener((v) => ((SimulationBoolProperty)property).Value = v);
+        }
+        else
+        {
+            var input = a.GetComponentInChildren<InputField>();
 
+            input.text = property.GetValue();
+            input.onValueChanged.AddListener(new InputWrapper(input, property).OnChange);
+        }
         num++;
     }
 
