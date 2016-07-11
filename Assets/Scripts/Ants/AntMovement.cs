@@ -345,7 +345,7 @@ public class AntMovement : MonoBehaviour, ITickable
         // We have just performed an obstruction check but we might have rotated into another obstacle
         // Don't keep rotating, just stop the ant from moving this step
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, obstructionCheckRaycastLength))
+        if (Physics.Raycast(transform.position, transform.forward, out hit, obstructionCheckRaycastLength, PhysicsLayers.Walls))
         {
             return;
         }
@@ -599,16 +599,16 @@ public class AntMovement : MonoBehaviour, ITickable
             newDir += 360;
 
         //checks forwards, backwards and both sides to see if there is a wall there
-        if (Physics.Raycast(transform.position, Vector3.forward, out hit, 1))
+        if (Physics.Raycast(transform.position, Vector3.forward, out hit, 1, PhysicsLayers.Walls))
             if (hit.collider.tag != Naming.Ants.Tag)
                 f = true;
-        if (Physics.Raycast(transform.position, -Vector3.forward, out hit, 1))
+        if (Physics.Raycast(transform.position, -Vector3.forward, out hit, 1, PhysicsLayers.Walls))
             if (hit.collider.tag != Naming.Ants.Tag)
                 b = true;
-        if (Physics.Raycast(transform.position, Vector3.right, out hit, 1))
+        if (Physics.Raycast(transform.position, Vector3.right, out hit, 1, PhysicsLayers.Walls))
             if (hit.collider.tag != Naming.Ants.Tag)
                 r = true;
-        if (Physics.Raycast(transform.position, -Vector3.right, out hit, 1))
+        if (Physics.Raycast(transform.position, -Vector3.right, out hit, 1, PhysicsLayers.Walls))
             if (hit.collider.tag != Naming.Ants.Tag)
                 l = true;
 
@@ -918,7 +918,7 @@ public class AntMovement : MonoBehaviour, ITickable
     private bool ObstructionCheck()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, obstructionCheckRaycastLength))
+        if (Physics.Raycast(transform.position, transform.forward, out hit, obstructionCheckRaycastLength, PhysicsLayers.AntsAndWalls))
         {
             //if there is an ant directly in front of this ant then randomly turn otherwise must be a wall so follow it
             if (hit.collider.transform.tag == Naming.Ants.Tag)
@@ -945,10 +945,10 @@ public class AntMovement : MonoBehaviour, ITickable
     {
         //find it if there are obstructions infront, behind and to either side of ant
         bool[] rays = new bool[4];
-        rays[0] = Physics.Raycast(transform.position, Vector3.forward, obstructionCheckRaycastLength);
-        rays[1] = Physics.Raycast(transform.position, Vector3.right, obstructionCheckRaycastLength);
-        rays[2] = Physics.Raycast(transform.position, -Vector3.forward, obstructionCheckRaycastLength);
-        rays[3] = Physics.Raycast(transform.position, -Vector3.right, obstructionCheckRaycastLength);
+        rays[0] = Physics.Raycast(transform.position, Vector3.forward, obstructionCheckRaycastLength,PhysicsLayers.Walls);
+        rays[1] = Physics.Raycast(transform.position, Vector3.right, obstructionCheckRaycastLength, PhysicsLayers.Walls);
+        rays[2] = Physics.Raycast(transform.position, -Vector3.forward, obstructionCheckRaycastLength, PhysicsLayers.Walls);
+        rays[3] = Physics.Raycast(transform.position, -Vector3.right, obstructionCheckRaycastLength, PhysicsLayers.Walls);
         float a = Mathf.Round(transform.rotation.eulerAngles.y);
 
         //get direction of ant (0 = forwards, 1 = right, 2 = backwards, 3 = left)
