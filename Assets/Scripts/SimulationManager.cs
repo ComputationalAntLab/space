@@ -181,7 +181,7 @@ public class SimulationManager : MonoBehaviour
         //return string.Format("{0}{1}", Naming.Entities.AntPrefix, antNumber);
     }
 
-    void Update()
+    void FixedUpdate()
     {
         TickManager.Process();
     }
