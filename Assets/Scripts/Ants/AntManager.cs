@@ -84,6 +84,8 @@ public class AntManager : MonoBehaviour, ITickable
 
     public int PerceivedTicks { get; set; }
 
+    private bool _wasColourOn = false;
+    private float _colourFlashTime = 0;
     private Color? _temporaryColour;
     private Color _primaryColour;
 
@@ -103,6 +105,27 @@ public class AntManager : MonoBehaviour, ITickable
             nestThreshold = 1;
         else if (nestThreshold < 0)
             nestThreshold = 0;
+    }
+
+    void Update()
+    {
+        // Flashing colour doesn't actually make it easier to see
+        //if (_temporaryColour.HasValue)
+        //{
+        //    if (_colourFlashTime <= 0)
+        //    {
+        //        if (!_wasColourOn)
+        //            this.ChangeColour(_temporaryColour.Value);
+        //        else
+        //            this.ChangeColour(Color.grey);
+        //        _wasColourOn = !_wasColourOn;
+        //        _colourFlashTime = .25f;
+        //    }
+        //    else
+        //    {
+        //        _colourFlashTime -= Time.deltaTime;
+        //    }
+        //}
     }
 
     private float _elapsed;
@@ -1082,6 +1105,8 @@ public class AntManager : MonoBehaviour, ITickable
     public void SetTemporaryColour(Color temporary)
     {
         _temporaryColour = temporary;
+        _wasColourOn = false;
+        _colourFlashTime = 0;
         this.ChangeColour(_temporaryColour.Value);
     }
 }

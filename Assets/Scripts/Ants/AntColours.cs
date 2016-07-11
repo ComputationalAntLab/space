@@ -30,7 +30,7 @@ namespace Assets.Scripts.Ants
         {
             public static Color None { get { return Color.black; } }
 
-            public static Color Old { get { return Color.gray; } }
+            public static Color Old { get { return Color.yellow; } }
 
             public static Color Home { get { return Color.white; } }
 
