@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts.Ticking
 {
@@ -26,7 +27,8 @@ namespace Assets.Scripts.Ticking
 
         public TickManager()
         {
-            SetTicksPerSimulatedSecond(60);
+            // We will run at fixed update so use that time to calculate how often we should tick
+            SetTicksPerSimulatedSecond((int)(1f / Time.fixedDeltaTime));
             TicksPerFrame = 1;
         }
 
