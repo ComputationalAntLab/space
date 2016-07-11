@@ -7,7 +7,7 @@ public class TimeControl : MonoBehaviour
 {
     private Text txtFPS, txtSpeed;
 
-    private Button btnUp, btnDown, btnTick, btnTime;
+    private Button btnUp, btnDown, btnTick, btnTime, btnPause;
 
     int _frameCounter = 0;
     float _timeCounter = 0.0f;
@@ -37,6 +37,21 @@ public class TimeControl : MonoBehaviour
 
         btnTime = this.ButtonByName("btnTime");
         btnTime.onClick.AddListener(btnTime_Click);
+
+        btnPause = this.ButtonByName("btnPause");
+        btnPause.onClick.AddListener(btnPause_Click);
+        UpdatePause(SimulationManager.Instance.TickManager.IsPaused);
+    }
+
+    private void btnPause_Click()
+    {
+        SimulationManager.Instance.TickManager.IsPaused = !SimulationManager.Instance.TickManager.IsPaused;
+        UpdatePause(SimulationManager.Instance.TickManager.IsPaused);
+    }
+
+    private void UpdatePause(bool paused)
+    {
+        btnPause.SetText(!paused ? "||" : "|>");
     }
 
     private void btnTime_Click()

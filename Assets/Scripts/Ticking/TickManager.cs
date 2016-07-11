@@ -20,6 +20,8 @@ namespace Assets.Scripts.Ticking
 
         public TimeSpan TotalElapsedSimulatedTime { get { return TimeSpan.FromMilliseconds(TotalElapsedSimulatedMilliseconds); } }
 
+        public bool IsPaused { get; set; }
+
         private List<ITickable> _entities = new List<ITickable>();
 
         public TickManager()
@@ -48,6 +50,9 @@ namespace Assets.Scripts.Ticking
 
         public void Process()
         {
+            if (IsPaused)
+                return;
+
             if (TicksPerFrame <= 0 && TickOnce)
             {
                 TickOnce = false;
