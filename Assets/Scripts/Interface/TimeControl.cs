@@ -5,9 +5,9 @@ using System;
 
 public class TimeControl : MonoBehaviour
 {
-    private Text txtFPS, txtSpeed, txtTime;
+    private Text txtFPS, txtSpeed;
 
-    private Button btnUp, btnDown, btnTick;
+    private Button btnUp, btnDown, btnTick, btnTime;
 
     int _frameCounter = 0;
     float _timeCounter = 0.0f;
@@ -15,12 +15,12 @@ public class TimeControl : MonoBehaviour
     public float _refreshTime = 0.5f; //Refresh FPS every .5 seconds
 
     private int _currentSpeed = 1;
+    private bool _drawTime = true;
 
     void Start()
     {
         txtFPS = this.TextByName("txtFPS");
         txtSpeed = this.TextByName("txtSpeed");
-        txtTime = this.TextByName("txtTime");
 
         btnUp = this.ButtonByName("btnUp");
         btnDown = this.ButtonByName("btnDown");
@@ -34,6 +34,14 @@ public class TimeControl : MonoBehaviour
         btnTick = this.ButtonByName("btnTick");
         btnTick.SetText("Tick");
         btnTick.onClick.AddListener(btnTick_Click);
+
+        btnTime = this.ButtonByName("btnTime");
+        btnTime.onClick.AddListener(btnTime_Click);
+    }
+
+    private void btnTime_Click()
+    {
+        _drawTime = !_drawTime;
     }
 
     private void btnTick_Click()
@@ -72,9 +80,16 @@ public class TimeControl : MonoBehaviour
 
     private void UpdateTime()
     {
-        var time = SimulationManager.Instance.TickManager.TotalElapsedSimulatedTime;
+        if (_drawTime)
+        {
+            var time = SimulationManager.Instance.TickManager.TotalElapsedSimulatedTime;
 
-        txtTime.text = String.Format("{0:00}:{1:00}.{2:00}", time.TotalHours, time.Minutes, time.Seconds);
+            btnTime.SetText(String.Format("{0:00}:{1:00}.{2:00}", time.TotalHours, time.Minutes, time.Seconds));
+        }
+        else
+        {
+            btnTime.SetText(SimulationManager.Instance.TickManager.CurrentTick.ToString());
+        }
     }
 
     private void UpdateFPS()
