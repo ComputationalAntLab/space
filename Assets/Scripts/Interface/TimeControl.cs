@@ -93,6 +93,11 @@ public class TimeControl : MonoBehaviour
         UpdateFPS();
     }
 
+    void FixedUpdate()
+    {
+        UpdateTime();
+    }
+
     private void UpdateTime()
     {
         if (_drawTime)
@@ -120,8 +125,6 @@ public class TimeControl : MonoBehaviour
             _lastFramerate = (float)_frameCounter / _timeCounter;
             _frameCounter = 0;
             _timeCounter = 0.0f;
-
-            UpdateTime();
         }
     }
 }
