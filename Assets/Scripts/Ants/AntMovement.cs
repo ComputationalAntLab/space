@@ -540,7 +540,7 @@ public class AntMovement : MonoBehaviour, ITickable
             if (Vector3.Distance(transform.position, ant.oldNest.transform.position) < 20f)
             {
                 ant.assessmentStage = NestAssessmentStage.ReturningToPotentialNestDoor;
-                ant.ChangeColour(AntColours.NestAssessment.ReturningToPotentialNest);
+                ant.SetPrimaryColour(AntColours.NestAssessment.ReturningToPotentialNest);
             }
             return;
         }

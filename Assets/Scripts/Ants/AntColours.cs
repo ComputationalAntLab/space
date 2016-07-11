@@ -25,5 +25,16 @@ namespace Assets.Scripts.Ants
 
             public static Color ReturningToPotentialNest { get { return Color.magenta; } }
         }
+
+        public static class NestHighlight
+        {
+            public static Color None { get { return Color.black; } }
+
+            public static Color Old { get { return Color.gray; } }
+
+            public static Color Home { get { return Color.white; } }
+
+            public static Color Assessing { get { return Color.red; } }
+        }
     }
 }

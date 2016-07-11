@@ -3,6 +3,7 @@ using Assets.Scripts;
 using Assets.Scripts.Extensions;
 using Assets.Scripts.Ticking;
 using Assets.Scripts.Ants;
+using System;
 
 public class AntManager : MonoBehaviour, ITickable
 {
@@ -47,6 +48,7 @@ public class AntManager : MonoBehaviour, ITickable
     public float LGUT = 0.0f;
     public Vector3 estimateNewLeaderPos;
     public bool failedTandemLeader = false;
+
     public Vector3 leaderPositionContact;
 
     // buffon needle
@@ -82,6 +84,8 @@ public class AntManager : MonoBehaviour, ITickable
 
     public int PerceivedTicks { get; set; }
 
+    private Color? _temporaryColour;
+    private Color _primaryColour;
 
     // Use this for initialization
     void Start()
@@ -248,7 +252,9 @@ public class AntManager : MonoBehaviour, ITickable
         {
             transform.parent = GameObject.Find(prefix).transform;
             if (colour.HasValue)
-                this.ChangeColour(colour.Value);
+            {
+                SetPrimaryColour(colour.Value);
+            }
         }
     }
 
@@ -676,7 +682,7 @@ public class AntManager : MonoBehaviour, ITickable
             assessmentFirstLengthHistory = move.assessingDistance;
             move.assessingDistance = 0f;
             assessmentStage = NestAssessmentStage.ReturningToHomeNestDoor;
-            this.ChangeColour(AntColours.NestAssessment.ReturningToHomeNest);
+            SetPrimaryColour(AntColours.NestAssessment.ReturningToHomeNest);
             return;
         }
         assessmentSecondLengthHistory = move.assessingDistance;
@@ -690,7 +696,7 @@ public class AntManager : MonoBehaviour, ITickable
 
     public void NestAssessmentSecondVisit()
     {
-        this.ChangeColour(AntColours.NestAssessment.SecondVisit);
+        SetPrimaryColour(AntColours.NestAssessment.SecondVisit);
         assessmentStage = 0;
         nestAssessmentVisitNumber = 2;
         assessTime = GetAssessTime();
@@ -1058,6 +1064,25 @@ public class AntManager : MonoBehaviour, ITickable
         {
             ChangeState(BehaviourState.Inactive);
         }
+    }
+
+    public void SetPrimaryColour(Color primary)
+    {
+        _primaryColour = primary;
+        if (!_temporaryColour.HasValue)
+            this.ChangeColour(_primaryColour);
+    }
+
+    public void ClearTemporaryColour()
+    {
+        _temporaryColour = null;
+        this.ChangeColour(_primaryColour);
+    }
+
+    public void SetTemporaryColour(Color temporary)
+    {
+        _temporaryColour = temporary;
+        this.ChangeColour(_temporaryColour.Value);
     }
 }
 

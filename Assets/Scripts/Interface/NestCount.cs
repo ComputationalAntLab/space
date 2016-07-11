@@ -1,7 +1,10 @@
 ﻿using Assets.Common;
 using System.Collections.Generic;
+using Assets.Scripts.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
+using Assets.Scripts.Ants;
 
 public class NestCount : MonoBehaviour
 {
@@ -14,6 +17,8 @@ public class NestCount : MonoBehaviour
     public SimulationManager Simulation { get; private set; }
 
     private Lazy<List<NestCountControl>> _nestCountControls;
+
+    private int? _highlightedNestIndex = null;
 
     void Start()
     {
@@ -35,15 +40,11 @@ public class NestCount : MonoBehaviour
 
             return nestCountControls;
         });
-        //txtNestId = GameObject.Find("txtNestId").GetComponent<Text>();
-        //txtPassive = GameObject.Find("txtPassive").GetComponent<Text>();
-        //txtAssessing = GameObject.Find("txtAssessing").GetComponent<Text>();
-        //txtRecruiting = GameObject.Find("txtRecruiting").GetComponent<Text>();
-        //txtReversing = GameObject.Find("txtReversing").GetComponent<Text>();
     }
 
     void Update()
     {
+        int? newHighlight = null;
         for (int i = 0; i < _nestCountControls.Value.Count; i++)
         {
             _nestCountControls.Value[i].SetData(
@@ -53,26 +54,51 @@ public class NestCount : MonoBehaviour
                 Simulation.NestInfo[i].AntsRecruiting.transform.childCount,
                 Simulation.NestInfo[i].AntsReversing.transform.childCount
                 );
+
+            if (_nestCountControls.Value[i].HasPointer)
+                newHighlight = i;
         }
-        //string id = "Nest:\t\t\t\t";
-        //string passive = "Inactive:\t\t";
-        //string assessing = "Assessing:\t\t";
-        //string recruiting = "Recruiting:\t\t";
-        //string reversing = "Reversing:\t\t";
 
-        //foreach (var n in Simulation.NestInfo)
-        //{
-        //    id += n.NestId + "\t\t";
-        //    passive += n.AntsInactive.transform.childCount + "\t\t";
-        //    assessing += n.AntsAssessing.transform.childCount + "\t\t";
-        //    recruiting += n.AntsRecruiting.transform.childCount + "\t\t";
-        //    reversing += n.AntsReversing.transform.childCount + "\t\t";
-        //}
+        if (!newHighlight.HasValue && _highlightedNestIndex.HasValue)
+        {
+            _highlightedNestIndex = null;
+            ResetAntNestHighlight();
+        }
+        else if (_highlightedNestIndex != newHighlight)
+        {
+            _highlightedNestIndex = newHighlight;
+            SetAntNestHighlight(_highlightedNestIndex.Value);
+        }
+    }
 
-        //txtNestId.text = id;
-        //txtAssessing.text = assessing;
-        //txtPassive.text = passive;
-        //txtRecruiting.text = recruiting;
-        //txtReversing.text = reversing;
+    private void SetAntNestHighlight(int value)
+    {
+        var nest = Simulation.nests[value].gameObject.Nest();
+
+        foreach (var ant in Simulation.Ants)
+        {
+            if (ant.myNest == nest)
+            {
+                ant.SetTemporaryColour(AntColours.NestHighlight.Home);
+            }
+            else if (ant.nestToAssess == nest)
+            {
+                ant.SetTemporaryColour(AntColours.NestHighlight.Assessing);
+            }
+            else if (ant.oldNest == nest)
+            {
+                ant.SetTemporaryColour(AntColours.NestHighlight.Old);
+            }
+            else
+            {
+                ant.SetTemporaryColour(AntColours.NestHighlight.None);
+            }
+        }
+    }
+
+    private void ResetAntNestHighlight()
+    {
+        foreach (var ant in Simulation.Ants)
+            ant.ClearTemporaryColour();
     }
 }
