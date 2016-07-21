@@ -83,6 +83,18 @@ namespace Assets.Scripts.Config
         }
     }
 
+    public class AntsLayPheromones: SimulationBoolProperty
+    {
+        public override string Name { get { return "Ants Lay Pheromones"; } }
+
+        public override string Description { get { return "Whether ants will lay pheromones."; } }
+
+        public AntsLayPheromones()
+        {
+            Value = false;
+        }
+    }
+    
     public class OutputAntDelta : SimulationBoolProperty
     {
         public override string Name { get { return "Output Ant Deltas"; } }

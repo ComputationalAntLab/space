@@ -28,6 +28,9 @@ namespace Assets.Scripts.Config
         public StartingTickRate StartingTickRate { get; set; }
 
         [SerializeField]
+        public AntsLayPheromones AntsLayPheromones { get; set; }
+
+        [SerializeField]
         public OutputColonyData OutputColonyData { get; set; }
 
         [SerializeField]
@@ -57,6 +60,7 @@ namespace Assets.Scripts.Config
             QuorumThreshold = new QuorumThreshold();
             ProportionActive = new ProportionActive();
             StartingTickRate = new StartingTickRate();
+            AntsLayPheromones = new AntsLayPheromones();
 
             OutputColonyData = new OutputColonyData();
             OutputAntDelta = new OutputAntDelta();
@@ -72,6 +76,7 @@ namespace Assets.Scripts.Config
                     QuorumThreshold,
                     ProportionActive,
                     StartingTickRate,
+                    AntsLayPheromones,
                     OutputColonyData,
                     OutputAntDelta,
                     OutputAntDetail,

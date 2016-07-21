@@ -34,6 +34,8 @@ public class SimulationManager : MonoBehaviour
     //This spawns all the ants and starts the simulation
     void Start()
     {
+        Debug.Log(System.Environment.Version);
+
         Instance = this;
 
         Ants = new List<AntManager>();
