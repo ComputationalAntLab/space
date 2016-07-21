@@ -91,7 +91,7 @@ namespace Assets.Scripts.Config
 
         public AntsLayPheromones()
         {
-            Value = false;
+            Value = true;
         }
     }
     
