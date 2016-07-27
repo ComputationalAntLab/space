@@ -10,7 +10,8 @@ public class AntMovement : MonoBehaviour, ITickable
 {
 	public AntManager ant;
 	public SimulationManager simulation;
-	CharacterController cont;
+	//CharacterController cont;
+	BoxCollider cont;
 
 	float dir;                              //current direction
 	float nextDirChange_dist;               //max distance to be moved before next direction change
@@ -18,9 +19,7 @@ public class AntMovement : MonoBehaviour, ITickable
 	Vector3 lastTurn;                       //position of last direction change 
 	Transform pheromoneParent;              //this will be the parent of the pheromones in the gameobject heirachy
 	float nextPheromoneCheck;
-
-    public bool _disablePheromones = true;
-
+	
 	//Parameters
 	public GameObject pheromonePrefab;      //the pheromone prefab
 	public float maxVar = 40f;              //max amount this ant can turn at one time
@@ -69,12 +68,17 @@ public class AntMovement : MonoBehaviour, ITickable
 
 	private float obstructionCheckRaycastLength = 1;
 
+	private int _sinceCheck = 0;
+
 	// Use this for initialization
 	void Start()
 	{
+		_sinceCheck = (int)RandomGenerator.Instance.Range(0, 5);
+
 		pheromonePrefab = Resources.Load("Pheromone") as GameObject;
 		ant = (AntManager)transform.GetComponent(Naming.Ants.Controller);
-		cont = (CharacterController)transform.GetComponent("CharacterController");
+		//cont = (CharacterController)transform.GetComponent("CharacterController");
+		cont = (BoxCollider)transform.GetComponent("BoxCollider");
 		lastTurn = transform.position;
 		dir = RandomGenerator.Instance.Range(0, 360);
 		nextDirChange_time = simulation.TickManager.TotalElapsedSimulatedSeconds + maxDirChange_time;
@@ -341,9 +345,14 @@ public class AntMovement : MonoBehaviour, ITickable
 	//move ant forwards
 	public void ProcessMovement(float elapsed)
 	{
-		//check for obstructions, turn to avoid if there are
-		ObstructionCheck();
-		
+		_sinceCheck--;
+		if (_sinceCheck <= 0)
+		{
+			//check for obstructions, turn to avoid if there are
+			ObstructionCheck();
+			_sinceCheck = 5;
+		}
+
 		// We have just performed an obstruction check but we might have rotated into another obstacle
 		// Don't keep rotating, just stop the ant from moving this step
 		RaycastHit hit;
@@ -536,7 +545,7 @@ public class AntMovement : MonoBehaviour, ITickable
 			}
 			return;
 		}
-	   else  if (ant.assessmentStage == NestAssessmentStage.ReturningToHomeNestMiddle)
+		else if (ant.assessmentStage == NestAssessmentStage.ReturningToHomeNestMiddle)
 		{
 			WalkToGameObject(ant.oldNest.gameObject);
 			if (Vector3.Distance(transform.position, ant.oldNest.transform.position) < 20f)
@@ -848,7 +857,7 @@ public class AntMovement : MonoBehaviour, ITickable
 	//this returns direction when pheromones are taken into account (using antbox algorithm)
 	private float PheromoneDirection(float direction)
 	{
-        if (direction < 0)
+		if (direction < 0)
 			direction += 360;
 
 		if (simulation.TickManager.TotalElapsedSimulatedSeconds < nextPheromoneCheck)
@@ -859,11 +868,11 @@ public class AntMovement : MonoBehaviour, ITickable
 		if (ant.inNest || (ant.state != BehaviourState.Following && ant.state != BehaviourState.Scouting))
 			return direction;
 
-        if (!simulation.Settings.AntsLayPheromones.Value)
-            return direction;
+		if (!simulation.Settings.AntsLayPheromones.Value)
+			return direction;
 
-        //get pheromones in range
-        ArrayList pheromones = PheromonesInRange();
+		//get pheromones in range
+		ArrayList pheromones = PheromonesInRange();
 
 		//if none then just use direction
 		if (pheromones.Count == 0)
@@ -920,9 +929,9 @@ public class AntMovement : MonoBehaviour, ITickable
 	}
 
 	//helps and to avoid obstructions and returns true if action was taken and false otherwise
+	RaycastHit hit;
 	private bool ObstructionCheck()
 	{
-		RaycastHit hit;
 		if (Physics.Raycast(transform.position, transform.forward, out hit, obstructionCheckRaycastLength, PhysicsLayers.AntsAndWalls))
 		{
 			//if there is an ant directly in front of this ant then randomly turn otherwise must be a wall so follow it
@@ -950,7 +959,7 @@ public class AntMovement : MonoBehaviour, ITickable
 	{
 		//find it if there are obstructions infront, behind and to either side of ant
 		bool[] rays = new bool[4];
-		rays[0] = Physics.Raycast(transform.position, Vector3.forward, obstructionCheckRaycastLength,PhysicsLayers.Walls);
+		rays[0] = Physics.Raycast(transform.position, Vector3.forward, obstructionCheckRaycastLength, PhysicsLayers.Walls);
 		rays[1] = Physics.Raycast(transform.position, Vector3.right, obstructionCheckRaycastLength, PhysicsLayers.Walls);
 		rays[2] = Physics.Raycast(transform.position, -Vector3.forward, obstructionCheckRaycastLength, PhysicsLayers.Walls);
 		rays[3] = Physics.Raycast(transform.position, -Vector3.right, obstructionCheckRaycastLength, PhysicsLayers.Walls);
@@ -1008,8 +1017,8 @@ public class AntMovement : MonoBehaviour, ITickable
 
 	private void LayPheromoneScouting()
 	{
-        if (!simulation.Settings.AntsLayPheromones.Value)
-            return;
+		if (!simulation.Settings.AntsLayPheromones.Value)
+			return;
 
 		GameObject pheromone = (GameObject)Instantiate(pheromonePrefab, transform.position, Quaternion.identity);
 		pheromone.transform.parent = pheromoneParent;
@@ -1021,10 +1030,10 @@ public class AntMovement : MonoBehaviour, ITickable
 
 	private void LayPheromoneFTR()
 	{
-        if (!simulation.Settings.AntsLayPheromones.Value)
-            return;
+		if (!simulation.Settings.AntsLayPheromones.Value)
+			return;
 
-        if (!(ant.state == BehaviourState.Leading || ant.state == BehaviourState.Recruiting) || usePheromones == false || ant.inNest)
+		if (!(ant.state == BehaviourState.Leading || ant.state == BehaviourState.Recruiting) || usePheromones == false || ant.inNest)
 		{
 			return;
 		}
@@ -1039,10 +1048,10 @@ public class AntMovement : MonoBehaviour, ITickable
 
 	private void LayPheromoneRTR()
 	{
-        if (!simulation.Settings.AntsLayPheromones.Value)
-            return;
+		if (!simulation.Settings.AntsLayPheromones.Value)
+			return;
 
-        if (!(ant.state == BehaviourState.Reversing) || usePheromones == false || ant.inNest)
+		if (!(ant.state == BehaviourState.Reversing) || usePheromones == false || ant.inNest)
 		{
 			return;
 		}
@@ -1056,10 +1065,10 @@ public class AntMovement : MonoBehaviour, ITickable
 
 	private void LayPheromoneAssessing()
 	{
-        if (!simulation.Settings.AntsLayPheromones.Value)
-            return;
+		if (!simulation.Settings.AntsLayPheromones.Value)
+			return;
 
-        if (ant.state != BehaviourState.Assessing || usePheromones == false || !ant.inNest)
+		if (ant.state != BehaviourState.Assessing || usePheromones == false || !ant.inNest)
 		{
 			return;
 		}
