@@ -35,6 +35,8 @@ namespace Assets.Scripts.Ants
             public static Color Home { get { return Color.white; } }
 
             public static Color Assessing { get { return Color.red; } }
+
+            public static Color Recruiting { get { return Color.blue; } }
         }
     }
 }

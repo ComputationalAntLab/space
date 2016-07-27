@@ -79,7 +79,10 @@ public class NestCount : MonoBehaviour
         {
             if (ant.myNest == nest)
             {
-                ant.SetTemporaryColour(AntColours.NestHighlight.Home);
+                if (ant.state == BehaviourState.Recruiting || ant.state == BehaviourState.ReversingLeading)
+                    ant.SetTemporaryColour(AntColours.NestHighlight.Recruiting);
+                else
+                    ant.SetTemporaryColour(AntColours.NestHighlight.Home);
             }
             else if (ant.nestToAssess == nest)
             {
