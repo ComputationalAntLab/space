@@ -403,10 +403,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
         speed /= 1000f / 30f;
         speed /= 40;
-
-        //var newPosition = transform.position + ( transform.forward * speed * elapsed);
-        //transform.position = new Vector3(Mathf.Round(newPosition.x), Mathf.Round(newPosition.y), Mathf.Round(newPosition.z));
-        //transform.position += (transform.forward * speed * elapsed);
+        
         cont.transform.position += (transform.forward * speed * elapsed);
     }
 
@@ -597,6 +594,8 @@ public class AntMovement : MonoBehaviour, ITickable
     //if running along wall this checks that new direction doesn't push ant into it
     float NewDirectionCheck(float newDir)
     {
+        return newDir;
+
         RaycastHit hit;
         bool f, r, l, b;
         f = r = l = b = false;
@@ -838,6 +837,7 @@ public class AntMovement : MonoBehaviour, ITickable
     //turn ant to this face this direction (around y axis)
     private void Turn(float newDir)
     {
+        _requiresObstructionCheck = true;
         dir = NewDirectionCheck(PheromoneDirection(newDir));
         transform.rotation = Quaternion.Euler(0, dir, 0);
     }
