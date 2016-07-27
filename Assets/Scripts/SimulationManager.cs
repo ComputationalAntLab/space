@@ -13,6 +13,8 @@ public class SimulationManager : MonoBehaviour
 {
     public static SimulationManager Instance { get; private set; }
 
+    public bool SimulationRunning { get; private set; }
+
     public List<Transform> nests = new List<Transform>();
     public List<NestInfo> NestInfo { get; private set; }
     public GameObject[] doors;
@@ -97,6 +99,8 @@ public class SimulationManager : MonoBehaviour
         TickManager = new TickManager();
         TickManager.AddEntities(Ants.Cast<ITickable>());
         TickManager.AddEntity(ResultsManager);
+
+        SimulationRunning = true;
     }
 
     private void SpawnColony(Transform ants)
@@ -185,7 +189,14 @@ public class SimulationManager : MonoBehaviour
 
     void FixedUpdate()
     {
-        TickManager.Process();
+        if (SimulationRunning)
+            TickManager.Process();
+
+        // Check if time is expired
+        if (Settings.MaximumSimulationRunTime.Value > 0 && TickManager.TotalElapsedSimulatedTime.TotalMinutes >= Settings.MaximumSimulationRunTime.Value)
+        {
+            SimulationRunning = false;
+        }
     }
 
     private GameObject MakeObject(string name, Transform parent)

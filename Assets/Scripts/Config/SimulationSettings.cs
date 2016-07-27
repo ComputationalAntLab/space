@@ -28,6 +28,9 @@ namespace Assets.Scripts.Config
         public StartingTickRate StartingTickRate { get; set; }
 
         [SerializeField]
+        public MaximumSimulationRunTime MaximumSimulationRunTime { get; set; }
+
+        [SerializeField]
         public AntsLayPheromones AntsLayPheromones { get; set; }
 
         [SerializeField]
@@ -67,10 +70,11 @@ namespace Assets.Scripts.Config
             ProportionActive = new ProportionActive();
             StartingTickRate = new StartingTickRate();
             AntsLayPheromones = new AntsLayPheromones();
+            MaximumSimulationRunTime = new MaximumSimulationRunTime();
 
             OutputTickRate = new OutputTickRate();
             OutputColonyData = new OutputColonyData();
-            OutputAntStateDistribution = new Config.OutputAntStateDistribution();
+            OutputAntStateDistribution = new OutputAntStateDistribution();
             OutputAntDelta = new OutputAntDelta();
             OutputAntDetail = new OutputAntDetail();
             OutputAntDebug = new OutputAntDebug();
@@ -84,6 +88,7 @@ namespace Assets.Scripts.Config
                     QuorumThreshold,
                     ProportionActive,
                     StartingTickRate,
+                    MaximumSimulationRunTime,
                     AntsLayPheromones,
                     OutputTickRate,
                     OutputColonyData,

@@ -67,6 +67,23 @@ namespace Assets.Scripts.Config
         }
     }
 
+    public class MaximumSimulationRunTime : SimulationIntProperty
+    {
+        public override int? MaxValue { get { return null; } }
+
+        public override int? MinValue { get { return null; } }
+
+        public override string Name { get { return "Maximum Simulation Run Time (minutes)"; } }
+
+        public override string Description { get { return "The maximum simulated minutes the simulation should be allowed to run for. Zero for no limit."; } }
+
+        public MaximumSimulationRunTime()
+        {
+            Value = 0;
+        }
+    }
+
+
     public class ProportionActive : SimulationFloatProperty
     {
         public override float? MaxValue { get { return 1; } }
