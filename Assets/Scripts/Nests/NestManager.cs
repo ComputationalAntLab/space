@@ -11,6 +11,7 @@ public class NestManager : MonoBehaviour
     void Start()
     {
         door = transform.FindChild("Door").gameObject;
+        simulation = GameObject.FindObjectOfType<SimulationManager>();
     }
 
 	void OnTriggerEnter(Collider other) 

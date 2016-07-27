@@ -68,6 +68,8 @@ public class AntMovement : MonoBehaviour, ITickable
 
     private float obstructionCheckRaycastLength = 1;
 
+    private bool _enabled = true;
+
     private bool _requiresObstructionCheck = false;
 
     // Use this for initialization
@@ -83,6 +85,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
         pheromoneParent = GameObject.Find(Naming.ObjectGroups.Pheromones).transform;
         nextPheromoneCheck = simulation.TickManager.TotalElapsedSimulatedSeconds;
+
         //passive ants laying in centre of nests makes ants gravitate towards nest centers to much
 
         // set the speeds
@@ -403,10 +406,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
         speed /= 1000f / 30f;
         speed /= 40;
-
-        //var newPosition = transform.position + ( transform.forward * speed * elapsed);
-        //transform.position = new Vector3(Mathf.Round(newPosition.x), Mathf.Round(newPosition.y), Mathf.Round(newPosition.z));
-        //transform.position += (transform.forward * speed * elapsed);
+        
         cont.transform.position += (transform.forward * speed * elapsed);
     }
 
@@ -597,6 +597,8 @@ public class AntMovement : MonoBehaviour, ITickable
     //if running along wall this checks that new direction doesn't push ant into it
     float NewDirectionCheck(float newDir)
     {
+        return newDir;
+
         RaycastHit hit;
         bool f, r, l, b;
         f = r = l = b = false;
@@ -791,17 +793,17 @@ public class AntMovement : MonoBehaviour, ITickable
 
     public void Enable()
     {
-        cont.enabled = true;
+        _enabled = true;
     }
 
     public void Disable()
     {
-        cont.enabled = false;
+        _enabled = false;
     }
 
     public bool IsEnabled()
     {
-        return cont.enabled;
+        return _enabled;
     }
 
     /*this finds mid point (angle wise) between current direction and direction of given object
@@ -838,6 +840,7 @@ public class AntMovement : MonoBehaviour, ITickable
     //turn ant to this face this direction (around y axis)
     private void Turn(float newDir)
     {
+        _requiresObstructionCheck = true;
         dir = NewDirectionCheck(PheromoneDirection(newDir));
         transform.rotation = Quaternion.Euler(0, dir, 0);
     }
