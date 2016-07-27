@@ -68,6 +68,8 @@ public class AntMovement : MonoBehaviour, ITickable
 
     private float obstructionCheckRaycastLength = 1;
 
+    private bool _enabled = true;
+
     private bool _requiresObstructionCheck = false;
 
     // Use this for initialization
@@ -83,6 +85,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
         pheromoneParent = GameObject.Find(Naming.ObjectGroups.Pheromones).transform;
         nextPheromoneCheck = simulation.TickManager.TotalElapsedSimulatedSeconds;
+
         //passive ants laying in centre of nests makes ants gravitate towards nest centers to much
 
         // set the speeds
@@ -790,17 +793,17 @@ public class AntMovement : MonoBehaviour, ITickable
 
     public void Enable()
     {
-        cont.enabled = true;
+        _enabled = true;
     }
 
     public void Disable()
     {
-        cont.enabled = false;
+        _enabled = false;
     }
 
     public bool IsEnabled()
     {
-        return cont.enabled;
+        return _enabled;
     }
 
     /*this finds mid point (angle wise) between current direction and direction of given object
