@@ -79,7 +79,8 @@ namespace Assets.Scripts.Config
 
         public ProportionActive()
         {
-            Value = 0.5f;
+            // Approximately what is seen in the literature
+            Value = 0.25f;
         }
     }
 
