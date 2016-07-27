@@ -17,7 +17,7 @@ namespace Assets.Scripts.Output
 
             foreach(var state in grouped)
             {
-                Write(string.Format("{0},{1},{2},{3},{4},{5}", step, state.Key, state.Count()));
+                Write(string.Format("{0},{1},{2}", step, state.Key, state.Count()));
             }
         }
     }
