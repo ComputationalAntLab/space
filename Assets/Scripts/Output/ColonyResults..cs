@@ -15,7 +15,7 @@ namespace Assets.Scripts.Output
             foreach(var nest in Simulation.NestInfo)
             {
                 Write(string.Format("{0},{1},{2},{3},{4},{5}", step, nest.NestId,
-                    nest.AntsInactive.transform.childCount,
+                    nest.AntsPassive.transform.childCount,
                     nest.AntsAssessing.transform.childCount,
                     nest.AntsRecruiting.transform.childCount,
                     nest.AntsReversing.transform.childCount));

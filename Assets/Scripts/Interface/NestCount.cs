@@ -49,7 +49,7 @@ public class NestCount : MonoBehaviour
         {
             _nestCountControls.Value[i].SetData(
                 Simulation.NestInfo[i].NestId,
-                Simulation.NestInfo[i].AntsInactive.transform.childCount,
+                Simulation.NestInfo[i].AntsPassive.transform.childCount,
                 Simulation.NestInfo[i].AntsAssessing.transform.childCount,
                 Simulation.NestInfo[i].AntsRecruiting.transform.childCount,
                 Simulation.NestInfo[i].AntsReversing.transform.childCount

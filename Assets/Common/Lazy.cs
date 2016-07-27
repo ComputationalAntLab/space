@@ -7,6 +7,8 @@ namespace Assets.Common
         private T _val;
         public bool LoadedValue { get; set; }
 
+        public bool ReloadValue { get; set; }
+
         public T Value
         {
             get
@@ -18,9 +20,10 @@ namespace Assets.Common
 
         public void Load()
         {
-            if (!LoadedValue)
+            if (!LoadedValue || ReloadValue)
             {
                 _val = _get();
+                ReloadValue = false;
                 LoadedValue = true;
             }
         }

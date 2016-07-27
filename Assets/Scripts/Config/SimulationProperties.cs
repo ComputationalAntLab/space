@@ -178,6 +178,19 @@ namespace Assets.Scripts.Config
         }
     }
 
+    public class OutputEmigrationData : SimulationBoolProperty
+    {
+        public override string Name { get { return "Output Emigration Data"; } }
+
+        public override string Description { get { return "Whether to output information about the emigration at set intervals."; } }
+
+        public OutputEmigrationData()
+        {
+            Value = true;
+        }
+    }
+
+
     public class OutputAntDebug : SimulationBoolProperty
     {
         public override string Name { get { return "Output Ant Debug"; } }

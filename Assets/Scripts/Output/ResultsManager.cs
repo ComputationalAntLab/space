@@ -53,6 +53,8 @@ namespace Assets
 
             results = new List<Results>();
 
+            if (Simulation.Settings.OutputEmigrationData.Value)
+                results.Add(new EmigrationResults(Simulation, experimentPath));
             if (Simulation.Settings.OutputColonyData.Value)
                 results.Add(new ColonyResults(Simulation, experimentPath));
             if (Simulation.Settings.OutputAntDelta.Value)

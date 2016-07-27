@@ -26,6 +26,8 @@ public class SimulationManager : MonoBehaviour
 
     public SimulationSettings Settings { get; private set; }
 
+    public EmigrationInformation EmigrationInformation { get; private set; }
+
     //Parameters
     private GameObject initialNest;
 
@@ -78,7 +80,7 @@ public class SimulationManager : MonoBehaviour
 
             int id = i + 1;
 
-            NestInfo.Add(new NestInfo(id, false,
+            NestInfo.Add(new NestInfo(newNests[i].Nest(), id, false,
                 MakeObject(Naming.Ants.BehavourState.Assessing + id, antHolder),
                 MakeObject(Naming.Ants.BehavourState.Recruiting + id, antHolder),
                 MakeObject(Naming.Ants.BehavourState.Inactive + id, antHolder),
@@ -95,9 +97,11 @@ public class SimulationManager : MonoBehaviour
         }
 
         ResultsManager = new ResultsManager(this);
+        EmigrationInformation = new EmigrationInformation(this);
 
         TickManager = new TickManager();
         TickManager.AddEntities(Ants.Cast<ITickable>());
+        TickManager.AddEntity(EmigrationInformation);
         TickManager.AddEntity(ResultsManager);
 
         SimulationRunning = true;
@@ -109,7 +113,7 @@ public class SimulationManager : MonoBehaviour
 
         Transform passive = MakeObject("P0", ants).transform;
 
-        NestInfo.Add(new NestInfo(0, true,
+        NestInfo.Add(new NestInfo(initialNest.Nest(), 0, true,
                MakeObject(Naming.Ants.BehavourState.Assessing + "0", ants),
                MakeObject(Naming.Ants.BehavourState.Recruiting + "0", ants),
                 passive.gameObject,

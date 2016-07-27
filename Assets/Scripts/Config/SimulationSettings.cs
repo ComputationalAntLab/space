@@ -37,6 +37,9 @@ namespace Assets.Scripts.Config
         public OutputTickRate OutputTickRate { get; set; }
 
         [SerializeField]
+        public OutputEmigrationData OutputEmigrationData { get; set; }
+
+        [SerializeField]
         public OutputColonyData OutputColonyData { get; set; }
 
         [SerializeField]
@@ -73,6 +76,7 @@ namespace Assets.Scripts.Config
             MaximumSimulationRunTime = new MaximumSimulationRunTime();
 
             OutputTickRate = new OutputTickRate();
+            OutputEmigrationData = new OutputEmigrationData();
             OutputColonyData = new OutputColonyData();
             OutputAntStateDistribution = new OutputAntStateDistribution();
             OutputAntDelta = new OutputAntDelta();
@@ -91,6 +95,7 @@ namespace Assets.Scripts.Config
                     MaximumSimulationRunTime,
                     AntsLayPheromones,
                     OutputTickRate,
+                    OutputEmigrationData,
                     OutputColonyData,
                     OutputAntDelta,
                     OutputAntStateDistribution,
