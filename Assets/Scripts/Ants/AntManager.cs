@@ -28,7 +28,7 @@ public class AntManager : MonoBehaviour, ITickable
     public float percievedQourum;           //the qourum that this ant percieves this.myNest to have
     public float nestThreshold;             //this individual's threshold for nest quality
     public int quorumThreshold;             //qourum threshold where recruiting ant carries rather than tandem runs
-    public SimData History;
+    //public SimData History;
     public int revTime;
     public int recTime;
     public int assessTime;
@@ -99,7 +99,6 @@ public class AntManager : MonoBehaviour, ITickable
         nestThreshold = RandomGenerator.Instance.NormalRandom(qualityThreshMean, qualityThreshNoise);
         percievedQuality = float.MinValue;
         finishedRecruiting = false;
-        History = gameObject.AntData();
         //make sure the value is within contraints
         if (nestThreshold > 1)
             nestThreshold = 1;
@@ -179,7 +178,6 @@ public class AntManager : MonoBehaviour, ITickable
             // update history with social carry and social carry speed
             if (socialCarrying == true)
             {
-                History.carryingTimeSteps.Add(TRSpeed);
                 socialCarrying = false;
             }
             Reverse(myNest);
@@ -231,38 +229,6 @@ public class AntManager : MonoBehaviour, ITickable
     {
         //Update timestep
         timeStep++;
-        if (state == BehaviourState.Recruiting)
-        {
-            if (IsTransporting())
-            {
-                History.StateHistory.Add(BehaviourState.Carrying);
-            }
-            else if (IsTandemRunning())
-            {
-                History.StateHistory.Add(BehaviourState.Leading);
-            }
-            else
-            {
-                History.StateHistory.Add(BehaviourState.Recruiting);
-            }
-        }
-        else if (state == BehaviourState.Reversing)
-        {
-            if (IsTandemRunning())
-            {
-                History.StateHistory.Add(BehaviourState.ReversingLeading);
-                //				this.History.StateHistory.Add(AntManager.State.Reversing);
-            }
-            else
-            {
-                History.StateHistory.Add(BehaviourState.Reversing);
-            }
-        }
-        else
-        {
-            History.StateHistory.Add(state);
-        }
-
     }
 
     private void AssignParentFromNest(NestManager nest, string prefix, Color? colour)
@@ -337,7 +303,6 @@ public class AntManager : MonoBehaviour, ITickable
         if (failedTandemLeader == true && state == BehaviourState.Recruiting)
         {
             failedTandemLeader = false;
-            History.failedLeaderFoundFollowerAdd();
         }
 
         startTandemRunSeconds = simulation.TickManager.TotalElapsedSimulatedSeconds;
@@ -359,13 +324,6 @@ public class AntManager : MonoBehaviour, ITickable
 
         //turn this ant around to face towards chosen nest
         transform.LookAt(myNest.transform);
-
-        //Update History
-        if (History.firstTandem == 0)
-        {
-            History.firstTandem = timeStep;
-        }
-        History.numTandem++;
     }
 
     public void ReverseLead(AntManager follower)
@@ -388,13 +346,6 @@ public class AntManager : MonoBehaviour, ITickable
         //turn this ant around to face towards chosen nest
         transform.LookAt(oldNest.transform);
 
-        //Update History
-        if (History.firstRev == 0)
-        {
-            History.firstRev = timeStep;
-        }
-        History.numRev++;
-
     }
 
     public void StopLeading()
@@ -416,14 +367,10 @@ public class AntManager : MonoBehaviour, ITickable
         // update forward / reverse tandem run speed and successful tandem run
         if (forwardTandemRun)
         {
-            History.forwardTandemTimeSteps.Add(TRSpeed);
-            History.completeFTR();
             forwardTandemRun = false;
         }
         else if (reverseTandemRun)
         {
-            History.reverseTandemTimeSteps.Add(TRSpeed);
-            History.completeRTR();
             reverseTandemRun = false;
         }
 
@@ -484,12 +431,6 @@ public class AntManager : MonoBehaviour, ITickable
         otherAnt.PickedUp(transform);
         newToOld = false;
         transform.LookAt(myNest.transform);
-
-        if (History.firstCarry == 0)
-        {
-            History.firstCarry = timeStep;
-        }
-        History.numCarry++;
     }
 
     //lets this ant know that it has been picked up by carrier
@@ -532,14 +473,6 @@ public class AntManager : MonoBehaviour, ITickable
         //turns senses on if non passive ant
         if (!passive)
             sensesCol.enabled = true;
-
-        //Store history
-        int nestID = simulation.GetNestID(nest) - 1;
-        if (nestID >= 0)
-        {
-            History.NestDiscoveryType[nestID] = SimData.DiscoveryType.Lead;
-            History.NestDiscoveryTime[nestID] = timeStep;
-        }
     }
 
     //returns true if ant is within certain range of nest centre and there are no more passive ants ro recruit there
@@ -564,28 +497,9 @@ public class AntManager : MonoBehaviour, ITickable
         if (failedTandemLeader == true && state == BehaviourState.Recruiting && nest != oldNest)
         {
             failedTandemLeader = false;
-            History.failedLeaderNewNestAdd();
         }
 
         inNest = true;
-
-        //Deal with History
-        int nestID = simulation.GetNestID(nest) - 1;
-        if (nestID >= 0)
-        {
-            if (History.NestDiscoveryTime[nestID] == 0)
-            {
-                History.NestDiscoveryTime[nestID] = timeStep;
-                if (state == BehaviourState.Following)
-                {
-                    History.NestDiscoveryType[nestID] = SimData.DiscoveryType.Lead;
-                }
-                else
-                {
-                    History.NestDiscoveryType[nestID] = SimData.DiscoveryType.Found;
-                }
-            }
-        }
 
         //ignore ants that have just been dropped here
         if (nest == myNest && state == BehaviourState.Inactive)
@@ -733,20 +647,11 @@ public class AntManager : MonoBehaviour, ITickable
             return;
         }
 
-        // store history once assessment finished
-        History.assessmentFirstLength.Add(assessmentFirstLengthHistory);
-        History.assessmentSecondLength.Add(assessmentSecondLengthHistory);
-        History.assessmentFirstTime.Add(assessmentFirstTimeHistory);
-        History.assessmentSecondTime.Add(assessmentSecondTimeHistory);
-
         if (move.intersectionNumber != 0f)
         {
 
             float area = (2.0f * assessmentFirstLengthHistory * assessmentSecondLengthHistory) / (3.14159265359f * move.intersectionNumber);
             currentNestArea = area;
-
-            int ID = simulation.nests.IndexOf(nestToAssess.transform);
-            History.assessmentAreaResult.Add("nest_" + ID + "\":'" + area);
 
         }
 
@@ -767,11 +672,7 @@ public class AntManager : MonoBehaviour, ITickable
 
         //make assessment of this nest's quality
         int nestID = simulation.GetNestID(nest) - 1;
-        if (nestID >= 0 && nest != myNest)
-        {
-            History.numAssessments[nestID]++;
-        }
-
+        
         //reset current nest area
         currentNestArea = 0f;
 
@@ -809,14 +710,6 @@ public class AntManager : MonoBehaviour, ITickable
                 }
                 percievedQuality = q;
                 RecruitToNest(nest);
-                if (nestID >= 0)
-                {
-                    History.numAcceptance[nestID]++;
-                }
-                if (myNest != null)
-                {
-                    History.numSwitch++;
-                }
             }
             //if not using comparison then check if this reaches threshold and is better than previous nest
             else if (comparisonAssess && q >= nestThreshold && (myNest == null || q > percievedQuality))
@@ -824,15 +717,6 @@ public class AntManager : MonoBehaviour, ITickable
                 if (nest != myNest)
                 {
                     oldNest = myNest;
-                    if (nestID >= 0)
-                    {
-                        History.numAcceptance[nestID]++;
-                    }
-
-                    if (myNest != null)
-                    {
-                        History.numSwitch++;
-                    }
                 }
 
                 if (follower != null)
@@ -873,12 +757,6 @@ public class AntManager : MonoBehaviour, ITickable
                 NestAssessmentVisit();
             }
 
-        }
-
-        //Update Emigration History Data
-        if (History.LeftOld == 0)
-        {
-            History.LeftOld = timeStep;
         }
     }
 
@@ -945,14 +823,6 @@ public class AntManager : MonoBehaviour, ITickable
     //switches ants allegiance to this nest and sends them back to their old one to recruit some more
     private void RecruitToNest(NestManager nest)
     {
-        int nestID = simulation.GetNestID(nest) - 1;
-        if (nestID >= 0)
-        {
-            if (History.NestRecruitTime[nestID] == 0)
-            {
-                History.NestRecruitTime[nestID] = timeStep;
-            }
-        }
         newToOld = true;
         myNest = nest;
         //check the qourum of this nest until quorum is met once.
@@ -1043,12 +913,10 @@ public class AntManager : MonoBehaviour, ITickable
         // log failed tandem run in history
         if (forwardTandemRun == true)
         {
-            History.failedFTR();
             forwardTandemRun = false;
         }
         else if (reverseTandemRun == true)
         {
-            History.failedRTR();
             reverseTandemRun = false;
         }
         // reset tandem variables
