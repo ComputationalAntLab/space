@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Assets.Scripts.Output
 {
-    public class AntDeltaResults : Results
+    public class AntDeltaResults : DeltaResults
     {
         private Dictionary<int, BehaviourState> _stateHistory = new Dictionary<int, BehaviourState>();
 

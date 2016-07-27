@@ -54,13 +54,15 @@ namespace Assets
             results = new List<Results>();
 
             if (Simulation.Settings.OutputColonyData.Value)
-                new NestResults(Simulation, experimentPath);
+                results.Add(new ColonyResults(Simulation, experimentPath));
             if (Simulation.Settings.OutputAntDelta.Value)
-                new AntDeltaResults(Simulation, experimentPath);
+                results.Add(new AntDeltaResults(Simulation, experimentPath));
             if (Simulation.Settings.OutputAntDetail.Value)
-                new AntDetailedResults(Simulation, experimentPath);
+                results.Add(new AntDetailedResults(Simulation, experimentPath));
             if (Simulation.Settings.OutputAntDebug.Value)
-                new AntDebugResults(Simulation, experimentPath);
+                results.Add(new AntDebugResults(Simulation, experimentPath));
+            if (Simulation.Settings.OutputAntStateDistribution.Value)
+                results.Add(new AntStateDistributionResults(Simulation, experimentPath));
         }
 
         public void Dispose()

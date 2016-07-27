@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Assets.Scripts.Output
 {
-    public class AntDebugResults : Results
+    public class AntDebugResults : FixedTickResults
     {
         private Dictionary<int, BehaviourState> _stateHistory = new Dictionary<int, BehaviourState>();
 
@@ -14,11 +14,11 @@ namespace Assets.Scripts.Output
             Write("Step,AntId,PerceivedTicks");
         }
 
-        public override void Step(long step)
+        protected override void OutputData(long step)
         {
             foreach (var ant in Simulation.Ants)
             {
-                    Write(string.Format("{0},{1},{2}", step, ant.AntId, ant.PerceivedTicks));
+                Write(string.Format("{0},{1},{2}", step, ant.AntId, ant.PerceivedTicks));
             }
         }
     }

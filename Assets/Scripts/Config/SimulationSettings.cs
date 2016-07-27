@@ -31,10 +31,16 @@ namespace Assets.Scripts.Config
         public AntsLayPheromones AntsLayPheromones { get; set; }
 
         [SerializeField]
+        public OutputTickRate OutputTickRate { get; set; }
+
+        [SerializeField]
         public OutputColonyData OutputColonyData { get; set; }
 
         [SerializeField]
         public OutputAntDelta OutputAntDelta { get; set; }
+
+        [SerializeField]
+        public OutputAntStateDistribution OutputAntStateDistribution { get; set; }
 
         [SerializeField]
         public OutputAntDetail OutputAntDetail { get; set; }
@@ -62,7 +68,9 @@ namespace Assets.Scripts.Config
             StartingTickRate = new StartingTickRate();
             AntsLayPheromones = new AntsLayPheromones();
 
+            OutputTickRate = new OutputTickRate();
             OutputColonyData = new OutputColonyData();
+            OutputAntStateDistribution = new Config.OutputAntStateDistribution();
             OutputAntDelta = new OutputAntDelta();
             OutputAntDetail = new OutputAntDetail();
             OutputAntDebug = new OutputAntDebug();
@@ -77,8 +85,10 @@ namespace Assets.Scripts.Config
                     ProportionActive,
                     StartingTickRate,
                     AntsLayPheromones,
+                    OutputTickRate,
                     OutputColonyData,
                     OutputAntDelta,
+                    OutputAntStateDistribution,
                     OutputAntDetail,
                     OutputAntDebug
                };

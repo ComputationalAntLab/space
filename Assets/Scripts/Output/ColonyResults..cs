@@ -2,15 +2,15 @@
 
 namespace Assets.Scripts.Output
 {
-    public class NestResults : Results
+    public class ColonyResults : FixedTickResults
     {
-        public NestResults(SimulationManager simulation, string basePath)
+        public ColonyResults(SimulationManager simulation, string basePath)
             : base(simulation, Path.Combine(basePath, "colony"))
         {
             Write("Step,NestId,Inactive,Assessing,Recruiting,Reversing");
         }
 
-        public override void Step(long step)
+        protected override void OutputData(long step)
         {
             foreach(var nest in Simulation.NestInfo)
             {

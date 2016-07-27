@@ -2,7 +2,7 @@
 
 namespace Assets.Scripts.Output
 {
-    public class AntDetailedResults : Results
+    public class AntDetailedResults : FixedTickResults
     {
         public AntDetailedResults(SimulationManager simulation, string basePath)
             : base(simulation, Path.Combine(basePath, "ants_detail"))
@@ -10,7 +10,7 @@ namespace Assets.Scripts.Output
             Write("Step,AntId,State,Position");
         }
 
-        public override void Step(long step)
+        protected override void OutputData(long step)
         {
             foreach (var ant in Simulation.Ants)
                 Write(string.Format("{0},{1},{2},{3}", step, ant.AntId, ant.state, ant.transform.position));

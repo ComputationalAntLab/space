@@ -1,0 +1,34 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Assets.Scripts.Output
+{
+    public abstract class FixedTickResults : Results
+    {
+        public override bool IsDelta { get { return false; } }
+
+        private int _tickRate;
+        private int _untilTick = 0;
+
+        public FixedTickResults(SimulationManager simulation, string fileNameWithoutExtension) :
+            base(simulation, fileNameWithoutExtension)
+        {
+            _tickRate = simulation.Settings.OutputTickRate.Value;
+        }
+
+        public override void Step(long step)
+        {
+            _untilTick--;
+
+            if(_untilTick <= 0)
+            {
+                _untilTick = _tickRate;
+                OutputData(step);
+            }
+        }
+
+        protected abstract void OutputData(long step);
+    }
+}

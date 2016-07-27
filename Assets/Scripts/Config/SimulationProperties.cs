@@ -95,7 +95,24 @@ namespace Assets.Scripts.Config
             Value = true;
         }
     }
-    
+
+    public class OutputTickRate : SimulationIntProperty
+    {
+        public override int? MaxValue { get { return null; } }
+
+        public override int? MinValue { get { return 1; } }
+
+        public override string Name { get { return "Output Tick Rate"; } }
+
+        public override string Description { get { return "How often (in ticks) to output simulation data. 50 is approximately once a second."; } }
+
+        public OutputTickRate()
+        {
+            // Approximately every 10 seconds
+            Value = 500;
+        }
+    }
+
     public class OutputAntDelta : SimulationBoolProperty
     {
         public override string Name { get { return "Output Ant Deltas"; } }
@@ -112,11 +129,35 @@ namespace Assets.Scripts.Config
     {
         public override string Name { get { return "Output Ant Detail"; } }
 
-        public override string Description { get { return "Whether to output ant state and position information at each simulated step."; } }
+        public override string Description { get { return "Whether to output ant state and position information at set intervals."; } }
 
         public OutputAntDetail()
         {
-            Value = false;
+            Value = true;
+        }
+    }
+
+    public class OutputAntStateDistribution: SimulationBoolProperty
+    {
+        public override string Name { get { return "Output Ant State Distribution"; } }
+
+        public override string Description { get { return "Whether to output the distributions of ants among states at set intervals."; } }
+
+        public OutputAntStateDistribution()
+        {
+            Value = true;
+        }
+    }
+
+    public class OutputColonyData : SimulationBoolProperty
+    {
+        public override string Name { get { return "Output Colony Data"; } }
+
+        public override string Description { get { return "Whether to output the distributions of ants among nests at set intervals."; } }
+
+        public OutputColonyData()
+        {
+            Value = true;
         }
     }
 
@@ -127,17 +168,6 @@ namespace Assets.Scripts.Config
         public override string Description { get { return "Whether to output ant debug information."; } }
 
         public OutputAntDebug()
-        {
-            Value = false;
-        }
-    }
-    public class OutputColonyData : SimulationBoolProperty
-    {
-        public override string Name { get { return "Output Colony Data"; } }
-
-        public override string Description { get { return "Whether to output the distributions of ants among nests at each simulated step."; } }
-
-        public OutputColonyData()
         {
             Value = false;
         }
