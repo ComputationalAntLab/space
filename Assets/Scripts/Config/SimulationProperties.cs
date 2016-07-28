@@ -108,6 +108,54 @@ namespace Assets.Scripts.Config
         }
     }
 
+    public class StartingNestQuality : SimulationFloatProperty
+    {
+        public override float? MaxValue { get { return 1; } }
+
+        public override float? MinValue { get { return 0; } }
+
+        public override string Name { get { return "Starting Nest Quality"; } }
+
+        public override string Description { get { return "The quality of the starting nest."; } }
+
+        public StartingNestQuality()
+        {
+            Value = 0.1f;
+        }
+    }
+
+    public class FirstNewNestQuality : SimulationFloatProperty
+    {
+        public override float? MaxValue { get { return 1; } }
+
+        public override float? MinValue { get { return 0; } }
+
+        public override string Name { get { return "First New Nest Quality"; } }
+
+        public override string Description { get { return "The quality of the first new nest."; } }
+
+        public FirstNewNestQuality()
+        {
+            Value = 0.3f;
+        }
+    }
+
+    public class SecondNewNestQuality : SimulationFloatProperty
+    {
+        public override float? MaxValue { get { return 1; } }
+
+        public override float? MinValue { get { return 0; } }
+
+        public override string Name { get { return "Second New Nest Quality"; } }
+
+        public override string Description { get { return "The quality of the second new nest."; } }
+
+        public SecondNewNestQuality()
+        {
+            Value = 0.6f;
+        }
+    }
+
     public class AntsLayPheromones : SimulationBoolProperty
     {
         public override string Name { get { return "Ants Lay Pheromones"; } }

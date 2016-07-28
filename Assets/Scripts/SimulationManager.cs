@@ -56,6 +56,7 @@ public class SimulationManager : MonoBehaviour
 
         initialNest = GameObject.Find(Naming.World.InitialNest);
         initialNest.Nest().simulation = this;
+        initialNest.Nest().quality = Settings.StartingNestQuality.Value;
         nests.Add(initialNest.transform);
 
         GameObject[] newNests = GameObject.FindGameObjectsWithTag(Naming.World.NewNests);
@@ -77,6 +78,11 @@ public class SimulationManager : MonoBehaviour
 
             this.nests.Add(t.transform);
             newNests[i].Nest().simulation = this;
+
+            if (i == 0)
+                newNests[i].Nest().quality = Settings.FirstNewNestQuality.Value;
+            else if(i==1)
+                newNests[i].Nest().quality = Settings.SecondNewNestQuality.Value;
 
             int id = i + 1;
 
