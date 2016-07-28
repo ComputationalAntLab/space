@@ -191,15 +191,26 @@ public class SimulationManager : MonoBehaviour
         //return string.Format("{0}{1}", Naming.Entities.AntPrefix, antNumber);
     }
 
+    int _sinceEmigrationCheck = 5;
     void FixedUpdate()
     {
         if (SimulationRunning)
             TickManager.Process();
+        else
+            return;
 
         // Check if time is expired
         if (Settings.MaximumSimulationRunTime.Value > 0 && TickManager.TotalElapsedSimulatedTime.TotalMinutes >= Settings.MaximumSimulationRunTime.Value)
         {
             SimulationRunning = false;
+        }
+        // Check if emigration complete
+        _sinceEmigrationCheck--;
+        if (_sinceEmigrationCheck <= 0)
+        {
+            _sinceEmigrationCheck = 5;
+            if (EmigrationInformation.Data.PassivesInOldNest == 0)
+                SimulationRunning = false;
         }
     }
 
