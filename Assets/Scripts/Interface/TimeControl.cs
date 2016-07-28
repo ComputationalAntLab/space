@@ -104,7 +104,7 @@ public class TimeControl : MonoBehaviour
         {
             var time = SimulationManager.Instance.TickManager.TotalElapsedSimulatedTime;
 
-            btnTime.SetText(String.Format("{0:00}:{1:00}.{2:00}", time.TotalHours, time.Minutes, time.Seconds));
+            btnTime.SetText(time.ToOutputString());
         }
         else
         {
@@ -121,6 +121,7 @@ public class TimeControl : MonoBehaviour
         }
         else
         {
+            txtSpeed.text = SimulationManager.Instance.TickManager.TicksPerFrame.ToString() + "x";
             txtFPS.text = string.Format("FPS: {0}", _frameCounter);
             _lastFramerate = (float)_frameCounter / _timeCounter;
             _frameCounter = 0;

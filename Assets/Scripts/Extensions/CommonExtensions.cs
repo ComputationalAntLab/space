@@ -4,12 +4,9 @@ namespace Assets.Scripts.Extensions
 {
     public static class CommonExtensions
     {
-        public static string ToOutputString(this TimeSpan timeSpan)
+        public static string ToOutputString(this TimeSpan time)
         {
-            if (timeSpan.TotalHours < 1)
-                return string.Format("0:{0}:{1}", timeSpan.Minutes, timeSpan.Seconds);
-            else
-                return string.Format("{0}:{1}:{2}", timeSpan.TotalHours, timeSpan.Minutes, timeSpan.Seconds);
+            return string.Format("{0:00}:{1:00}.{2:00}", time.TotalHours, time.Minutes, time.Seconds)
         }
     }
 }

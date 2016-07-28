@@ -32,6 +32,9 @@ public class ConfigMenu : MonoBehaviour, IDisposable
     private void RunInBatchMode(string batchPath)
     {
         DontDestroyOnLoad(this);
+
+        transform.DetachChildren();
+
         _batchExperimentPaths = new List<string>();
         var experiments = Directory.GetFiles(batchPath, "*.xml");
 
