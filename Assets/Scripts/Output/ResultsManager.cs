@@ -29,7 +29,10 @@ namespace Assets
             if (!Directory.Exists(outDir))
                 Directory.CreateDirectory(outDir);
 
-            var experimentName = DateTime.Now.ToString("yyyyMMddHHmm");
+            var experimentName = Simulation.Settings.ExperimentName.Value;
+
+            if (string.IsNullOrEmpty(experimentName))
+                experimentName = DateTime.Now.ToString("yyyyMMddHHmm");
 
             var experimentPath = Path.Combine(outDir, experimentName);
 

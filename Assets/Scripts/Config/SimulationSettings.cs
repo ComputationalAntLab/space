@@ -10,7 +10,7 @@ namespace Assets.Scripts.Config
     public class SimulationSettings
     {
         [SerializeField]
-        public string ExperimentName { get; set; }
+        public ExperimentName ExperimentName { get; set; }
 
         [SerializeField]
         public RandomSeed RandomSeed { get; set; }
@@ -65,7 +65,7 @@ namespace Assets.Scripts.Config
 
         public SimulationSettings()
         {
-            ExperimentName = "Experiment1";
+            ExperimentName = new ExperimentName();
 
             RandomSeed = new RandomSeed();
             ColonySize = new ColonySize();
@@ -87,6 +87,7 @@ namespace Assets.Scripts.Config
              {
                  return new List<SimulationPropertyBase>
                 {
+                    ExperimentName,
                     RandomSeed,
                     ColonySize,
                     QuorumThreshold,

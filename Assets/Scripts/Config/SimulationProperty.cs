@@ -40,6 +40,15 @@ namespace Assets.Scripts.Config
         }
     }
 
+    public abstract class SimulationStringProperty : SimulationProperty<string>
+    {
+        public override string SetValue(string newValue)
+        {
+            Value = newValue;
+            return newValue;
+        }
+    }
+
     public abstract class SimulationFloatProperty : SimulationProperty<float>
     {
         public abstract float? MinValue { get; }

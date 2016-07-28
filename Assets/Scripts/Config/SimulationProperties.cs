@@ -1,5 +1,14 @@
-﻿namespace Assets.Scripts.Config
+﻿using System;
+
+namespace Assets.Scripts.Config
 {
+    public class ExperimentName : SimulationStringProperty
+    {
+        public override string Name { get { return "Experiment Name"; } }
+
+        public override string Description { get { return "The name of the experiment. Leave blank for an auto-generated one."; } }
+    }
+
     public class RandomSeed : SimulationIntProperty
     {
         public override int? MaxValue { get { return null; } }
@@ -99,7 +108,7 @@
         }
     }
 
-    public class AntsLayPheromones: SimulationBoolProperty
+    public class AntsLayPheromones : SimulationBoolProperty
     {
         public override string Name { get { return "Ants Lay Pheromones"; } }
 
@@ -152,7 +161,7 @@
         }
     }
 
-    public class OutputAntStateDistribution: SimulationBoolProperty
+    public class OutputAntStateDistribution : SimulationBoolProperty
     {
         public override string Name { get { return "Output Ant State Distribution"; } }
 
