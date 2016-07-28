@@ -21,7 +21,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
     //Parameters
     public GameObject pheromonePrefab;      //the pheromone prefab
-    public float maxVar = 40f;              //max amount this ant can turn at one time
+    public float maxVar = 22.5f;              //max amount this ant can turn at one time
     public float maxDirChange_time = 3f;//5f;    //maximum time between direction changes
 
     public float scoutSpeed;                //speed of an active ant while not tandem running or carrying
