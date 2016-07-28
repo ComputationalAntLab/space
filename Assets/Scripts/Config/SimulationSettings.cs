@@ -9,6 +9,8 @@ namespace Assets.Scripts.Config
     [Serializable]
     public class SimulationSettings
     {
+        public string ArenaName { get; set; }
+
         [SerializeField]
         public ExperimentName ExperimentName { get; set; }
 
@@ -65,6 +67,8 @@ namespace Assets.Scripts.Config
 
         public SimulationSettings()
         {
+            ArenaName = "Equidistant";
+
             ExperimentName = new ExperimentName();
 
             RandomSeed = new RandomSeed();

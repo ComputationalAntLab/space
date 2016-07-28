@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEditor;
 using System.IO;
 using System.Xml.Serialization;
+using System;
 
 public class ConfigMenu : MonoBehaviour
 {
@@ -28,10 +29,20 @@ public class ConfigMenu : MonoBehaviour
         load.onClick.AddListener(Load_Clicked);
         load.GetComponentInChildren<Text>().text = "Load";
     }
-
+    
     private void Load(SimulationSettings settings)
     {
         Settings = settings;
+        
+        try
+        {
+            var dropDown = GameObject.Find("LevelSelect").GetComponent<Dropdown>();
+            foreach (var option in dropDown.options)
+                if (option.text == Settings.ArenaName)
+                    dropDown.value = dropDown.options.IndexOf(option);
+        }
+        catch { }
+
         num = 0;
         GetPropertiesContentArea().DetachChildren();
         foreach (var v in Settings.AllProperties)
@@ -71,7 +82,9 @@ public class ConfigMenu : MonoBehaviour
     {
         var level = GameObject.Find("LevelSelect").GetComponent<Dropdown>();
 
-        SceneManager.LoadScene(level.options[level.value].text);
+        Settings.ArenaName = level.options[level.value].text;
+
+        SceneManager.LoadScene(Settings.ArenaName);
     }
 
     int num = 0;
