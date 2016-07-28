@@ -26,8 +26,14 @@ namespace Assets.Scripts.Output
 
         public void Dispose()
         {
+            BeforeDispose();
+
             if (_writer != null)
                 _writer.Close();
+        }
+
+        protected virtual void BeforeDispose()
+        {
         }
     }
 }
