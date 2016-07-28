@@ -13,6 +13,62 @@ public class ConfigMenu : MonoBehaviour
 
     void Start()
     {
+        var batchPath = @"C:\Users\andos\git\space\Batches\Test";
+
+        if (string.IsNullOrEmpty(batchPath))
+        {
+            RunInRegularMode();
+        }
+        else
+        {
+            RunInBatchMode(batchPath);
+        }
+    }
+
+    private void RunInBatchMode(string batchPath)
+    {
+        var experiments = Directory.GetFiles(batchPath, "*.xml");
+
+        using (var sw = new StreamWriter(Path.Combine(batchPath, "log.txt")))
+        {
+            sw.WriteLine("Found " + experiments.Length + " experiments");
+
+            foreach (var experiment in experiments)
+            {
+                SimulationSettings settings = null;
+
+                try
+                {
+                    using (StreamReader sr = new StreamReader(experiment))
+                    {
+                        XmlSerializer xml = new XmlSerializer(typeof(SimulationSettings));
+
+                        settings = xml.Deserialize(sr) as SimulationSettings;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    sw.WriteLine("Error loading " + experiment + " - " + ex.Message);
+                }
+
+                if (settings == null)
+                {
+                    sw.WriteLine("Unable to load " + experiment + " - skipping");
+                }
+                else
+                {
+                    sw.WriteLine("Running " + experiment );
+
+                    sw.WriteLine("Done");
+                }
+            }
+
+            sw.WriteLine("Finished batch");
+        }
+    }
+
+    private void RunInRegularMode()
+    {
         //DontDestroyOnLoad(this);
         Load(new SimulationSettings());
 
@@ -29,11 +85,11 @@ public class ConfigMenu : MonoBehaviour
         load.onClick.AddListener(Load_Clicked);
         load.GetComponentInChildren<Text>().text = "Load";
     }
-    
+
     private void Load(SimulationSettings settings)
     {
         Settings = settings;
-        
+
         try
         {
             var dropDown = GameObject.Find("LevelSelect").GetComponent<Dropdown>();
