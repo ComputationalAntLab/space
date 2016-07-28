@@ -99,7 +99,7 @@ public class SimulationManager : MonoBehaviour
         ResultsManager = new ResultsManager(this);
         EmigrationInformation = new EmigrationInformation(this);
 
-        TickManager = new TickManager();
+        TickManager = new TickManager(this);
         TickManager.AddEntities(Ants.Cast<ITickable>());
         TickManager.AddEntity(EmigrationInformation);
         TickManager.AddEntity(ResultsManager);

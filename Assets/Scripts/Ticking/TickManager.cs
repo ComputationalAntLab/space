@@ -25,11 +25,11 @@ namespace Assets.Scripts.Ticking
 
         private List<ITickable> _entities = new List<ITickable>();
 
-        public TickManager()
+        public TickManager(SimulationManager simulation)
         {
             // We will run at fixed update so use that time to calculate how often we should tick
             SetTicksPerSimulatedSecond((int)(1f / Time.fixedDeltaTime));
-            TicksPerFrame = 1;
+            TicksPerFrame = simulation.Settings.StartingTickRate.Value;
         }
 
         private void SetTicksPerSimulatedSecond(int ticks)
@@ -55,7 +55,7 @@ namespace Assets.Scripts.Ticking
             if (IsPaused)
                 return;
 
-            if (TicksPerFrame <= 0 && TickOnce)
+            if ((IsPaused || TicksPerFrame <= 0) && TickOnce)
             {
                 TickOnce = false;
                 Tick();

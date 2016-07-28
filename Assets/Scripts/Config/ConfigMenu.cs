@@ -6,10 +6,14 @@ using UnityEditor;
 using System.IO;
 using System.Xml.Serialization;
 using System;
+using System.Collections.Generic;
 
-public class ConfigMenu : MonoBehaviour
+public class ConfigMenu : MonoBehaviour, IDisposable
 {
     public static SimulationSettings Settings { get; set; }
+
+    private List<string> _batchExperimentPaths;
+    private StreamWriter _batchLog;
 
     void Start()
     {
@@ -27,44 +31,15 @@ public class ConfigMenu : MonoBehaviour
 
     private void RunInBatchMode(string batchPath)
     {
+        DontDestroyOnLoad(this);
+        _batchExperimentPaths = new List<string>();
         var experiments = Directory.GetFiles(batchPath, "*.xml");
 
-        using (var sw = new StreamWriter(Path.Combine(batchPath, "log.txt")))
-        {
-            sw.WriteLine("Found " + experiments.Length + " experiments");
+        _batchLog = new StreamWriter(Path.Combine(batchPath, "log.txt"));
 
-            foreach (var experiment in experiments)
-            {
-                SimulationSettings settings = null;
+        _batchLog.WriteLine("Found " + experiments.Length + " experiments");
 
-                try
-                {
-                    using (StreamReader sr = new StreamReader(experiment))
-                    {
-                        XmlSerializer xml = new XmlSerializer(typeof(SimulationSettings));
-
-                        settings = xml.Deserialize(sr) as SimulationSettings;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    sw.WriteLine("Error loading " + experiment + " - " + ex.Message);
-                }
-
-                if (settings == null)
-                {
-                    sw.WriteLine("Unable to load " + experiment + " - skipping");
-                }
-                else
-                {
-                    sw.WriteLine("Running " + experiment );
-
-                    sw.WriteLine("Done");
-                }
-            }
-
-            sw.WriteLine("Finished batch");
-        }
+        _batchExperimentPaths.AddRange(experiments);
     }
 
     private void RunInRegularMode()
@@ -204,6 +179,62 @@ public class ConfigMenu : MonoBehaviour
 
     void Update()
     {
+        if (_batchExperimentPaths != null)
+        {
+            if (_batchExperimentPaths.Count == 0)
+            {
+                _batchLog.WriteLine("Finished batch");
+                Application.Quit();
+            }
+            else
+            {
+                // If there is no running simulation then load the next one
+                if (SimulationManager.Instance == null || !SimulationManager.Instance.SimulationRunning)
+                {
+                    if (SimulationManager.Instance != null)
+                        _batchLog.WriteLine("Done");
 
+                    var experiment = _batchExperimentPaths[0];
+                    _batchExperimentPaths.RemoveAt(0);
+                    SimulationSettings settings = null;
+
+                    try
+                    {
+                        using (StreamReader sr = new StreamReader(experiment))
+                        {
+                            XmlSerializer xml = new XmlSerializer(typeof(SimulationSettings));
+
+                            settings = xml.Deserialize(sr) as SimulationSettings;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _batchLog.WriteLine("Error loading " + experiment + " - " + ex.Message);
+                    }
+
+                    if (settings == null)
+                    {
+                        _batchLog.WriteLine("Unable to load " + experiment + " - skipping");
+                    }
+                    else
+                    {
+                        _batchLog.WriteLine("Running " + experiment);
+
+                        var batchPath = Path.GetFileName(Path.GetDirectoryName(experiment));
+
+                        settings.ExperimentName.Value = Path.Combine(batchPath, settings.ExperimentName.Value);
+                        
+                        Settings = settings;
+                        SceneManager.LoadScene(Settings.ArenaName);
+                    }
+                }
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        if (_batchLog != null)
+            _batchLog.Close();
     }
 }
