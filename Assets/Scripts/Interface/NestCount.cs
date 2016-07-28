@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Assets.Scripts.Extensions;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
 using Assets.Scripts.Ants;
 
 public class NestCount : MonoBehaviour

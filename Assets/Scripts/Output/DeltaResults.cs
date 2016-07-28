@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Assets.Scripts.Output
+﻿namespace Assets.Scripts.Output
 {
     public abstract class DeltaResults : Results
     {

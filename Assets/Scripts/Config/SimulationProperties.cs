@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Assets.Scripts.Config
+﻿namespace Assets.Scripts.Config
 {
     public class RandomSeed : SimulationIntProperty
     {

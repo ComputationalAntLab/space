@@ -3,7 +3,6 @@ using Assets.Scripts;
 using Assets.Scripts.Extensions;
 using Assets.Scripts.Ticking;
 using Assets.Scripts.Ants;
-using System;
 
 public class AntManager : MonoBehaviour, ITickable
 {

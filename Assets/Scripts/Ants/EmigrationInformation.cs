@@ -1,9 +1,7 @@
 ﻿using Assets.Common;
 using Assets.Scripts.Ticking;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Assets.Scripts.Ants
 {

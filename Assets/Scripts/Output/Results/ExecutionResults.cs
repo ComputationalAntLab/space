@@ -1,7 +1,5 @@
-﻿using Assets.Scripts.Ants;
-using Assets.Scripts.Extensions;
+﻿using Assets.Scripts.Extensions;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace Assets.Scripts.Output
