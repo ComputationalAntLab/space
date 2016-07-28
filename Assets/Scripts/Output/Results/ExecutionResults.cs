@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Ants;
+using Assets.Scripts.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,8 +28,8 @@ namespace Assets.Scripts.Output
             var simDuration = Simulation.TickManager.TotalElapsedSimulatedTime;
 
             Write("End: " + end.ToString("dd/MM/yyyy HH:mm:ss"));
-            Write("Execution Duration: " + string.Format("{0}:{1}:{2}", duration.TotalHours, duration.Minutes, duration.Seconds));
-            Write("Simulation Duration: " + string.Format("{0}:{1}:{2}", simDuration.TotalHours, simDuration.Minutes, simDuration.Seconds));
+            Write("Execution Duration: " + duration.ToOutputString());
+            Write("Simulation Duration: " + simDuration.ToOutputString());
         }
     }
 }
