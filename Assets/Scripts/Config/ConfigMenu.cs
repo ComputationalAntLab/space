@@ -18,6 +18,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
     void Start()
     {
         var batchPath = @"C:\Users\andos\git\space\Batches\Test";
+        batchPath = null;
 
         if (string.IsNullOrEmpty(batchPath))
         {
@@ -48,7 +49,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
     private void RunInRegularMode()
     {
         //DontDestroyOnLoad(this);
-        Load(new SimulationSettings());
+        LoadSimulationSettings(new SimulationSettings());
 
         var start = GameObject.Find("Start").GetComponent<Button>();
 
@@ -64,7 +65,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
         load.GetComponentInChildren<Text>().text = "Load";
     }
 
-    private void Load(SimulationSettings settings)
+    private void LoadSimulationSettings(SimulationSettings settings)
     {
         Settings = settings;
 
@@ -81,6 +82,9 @@ public class ConfigMenu : MonoBehaviour, IDisposable
         GetPropertiesContentArea().DetachChildren();
         foreach (var v in Settings.AllProperties)
             CreateInput(v);
+
+        var rect = GetPropertiesContentArea().GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(rect.rect.width, 35 * Settings.AllProperties.Count);
     }
 
     private void Load_Clicked()
@@ -95,7 +99,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
             if (settings != null)
             {
-                Load(settings);
+                LoadSimulationSettings(settings);
             }
         }
     }
@@ -134,7 +138,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
         //a.transform.position = new Vector3(-240, 45 + -(0 + (num * 35)), 0);
         //a.transform.position = new Vector3(-240, 45 + (0 + (num * 35)), 0);
-        a.GetComponent<RectTransform>().anchoredPosition = new Vector2(-230, 137 + -(num * 35));
+        a.GetComponent<RectTransform>().anchoredPosition = new Vector2(165, -((num * 35) + 13));
 
         a.transform.Find("Label").GetComponent<Text>().text = property.Name;
 
@@ -226,7 +230,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
                         var batchPath = Path.GetFileName(Path.GetDirectoryName(experiment));
 
                         settings.ExperimentName.Value = Path.Combine(batchPath, settings.ExperimentName.Value);
-                        
+
                         Settings = settings;
                         SceneManager.LoadScene(Settings.ArenaName);
                     }
