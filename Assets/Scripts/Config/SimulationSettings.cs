@@ -11,6 +11,8 @@ namespace Assets.Scripts.Config
     {
         public string ArenaName { get; set; }
 
+        public string ArenaFilename { get; set; }
+
         [SerializeField]
         public ExperimentName ExperimentName { get; set; }
 
