@@ -63,7 +63,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
         loadExperiment.onClick.AddListener(LoadExperiment_Clicked);
 
         var loadArena = GameObject.Find("pnlArena").ButtonByName("Load");
-        loadExperiment.onClick.AddListener(LoadArena_Clicked);
+        loadArena.onClick.AddListener(LoadArena_Clicked);
 
         ValidateArena();
     }
