@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class FreeCamera : MonoBehaviour
 {
@@ -12,10 +13,7 @@ public class FreeCamera : MonoBehaviour
     float accelerationAmount = 30;
     float accelerationRatio = 3;
     float slowDownRatio = 0.2f;
-
-
-
-
+    
     // http://forum.unity3d.com/threads/a-free-simple-smooth-mouselook.73117/
     Vector2 _mouseAbsolute;
     Vector2 _smoothMouse;
@@ -36,7 +34,7 @@ public class FreeCamera : MonoBehaviour
     {
         _camera = GetComponent<Camera>();
 
-        targetDirection = transform.localRotation.eulerAngles;
+        ResetView();
 
 
         // Set target direction for the character body to its inital state.
@@ -96,6 +94,7 @@ public class FreeCamera : MonoBehaviour
                 var yRotation = Quaternion.AngleAxis(_mouseAbsolute.x, transform.InverseTransformDirection(Vector3.up));
                 transform.localRotation *= yRotation;
             }
+            Debug.Log("Camera position: " + transform.position);
         }
 
         //use shift to speed up flight
@@ -144,5 +143,10 @@ public class FreeCamera : MonoBehaviour
         {
             transform.Translate(Vector3.down * flySpeed);
         }
+    }
+
+    public void ResetView()
+    {
+        targetDirection = transform.localRotation.eulerAngles;
     }
 }

@@ -15,21 +15,22 @@ namespace Assets.Scripts.Arenas
         private bool _instantiated;
         private SimulationSettings _settings;
         private Arena _arena;
+        private Vector3 _worldSize;
 
         public void Load(SimulationSettings settings)
         {
             _settings = settings;
-            
-            using(var sr = new StreamReader(_settings.ArenaFilename))
+
+            using (var sr = new StreamReader(_settings.ArenaFilename))
             {
                 var xml = new XmlSerializer(typeof(Arena));
 
                 _arena = xml.Deserialize(sr) as Arena;
             }
-            
+
             SceneManager.LoadScene("FromFile");
         }
-        
+
         void Update()
         {
             if (!_instantiated)
@@ -42,6 +43,7 @@ namespace Assets.Scripts.Arenas
         private void InstantiateArena()
         {
             CreateTerrain();
+            MoveCameras();
         }
 
         private void CreateTerrain()
@@ -50,7 +52,7 @@ namespace Assets.Scripts.Arenas
 
             var data = new TerrainData();
 
-            data.size = new Vector3(_arena.Width, 10, _arena.Height);
+            data.size = new Vector3(_arena.Width / 16, 10, _arena.Height / 16);
             data.heightmapResolution = 512;
             data.baseMapResolution = 1024;
             data.SetDetailResolution(1024, 16);
@@ -70,6 +72,35 @@ namespace Assets.Scripts.Arenas
 
             collider.terrainData = data;
             terrain.terrainData = data;
+
+            _worldSize = data.size;
+        }
+
+        private void MoveCameras()
+        {
+            var freeCamera = GameObject.FindGameObjectWithTag("FreeCamera").GetComponent<Camera>();
+            var mainCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
+
+            MoveCamera(mainCamera);
+            MoveCamera(freeCamera);
+        }
+
+        private void MoveCamera(Camera camera)
+        {
+            var offset = (_worldSize.x + _worldSize.z) / 10;
+
+            camera.transform.position = new Vector3(0, (_worldSize.x + _worldSize.z) / 8, 0);
+            camera.transform.LookAt(new Vector3(_worldSize.x / 4.5f, 0, _worldSize.z / 4.5f));
+
+            try
+            {
+                var freeCamera = camera.GetComponent<FreeCamera>();
+                freeCamera.ResetView();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }
