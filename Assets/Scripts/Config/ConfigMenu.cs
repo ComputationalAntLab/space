@@ -55,10 +55,18 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
     private void RunInRegularMode()
     {
-        //DontDestroyOnLoad(this);
-        LoadSimulationSettings(new SimulationSettings());
+        var file = PlayerPrefs.GetString("ExperimentFile");
 
-        var saveExperiment = GameObject.Find("pnlSaveLoad").ButtonByName("Save") ;
+        if (!string.IsNullOrEmpty(file))
+        {
+            LoadExperimentFromFile(file);
+        }
+        else
+        {
+            LoadSimulationSettings(new SimulationSettings());
+        }
+
+        var saveExperiment = GameObject.Find("pnlSaveLoad").ButtonByName("Save");
         saveExperiment.onClick.AddListener(SaveExperiment_Clicked);
         var loadExperiment = GameObject.Find("pnlSaveLoad").ButtonByName("Load");
         loadExperiment.onClick.AddListener(LoadExperiment_Clicked);
@@ -115,6 +123,12 @@ public class ConfigMenu : MonoBehaviour, IDisposable
     private void LoadExperiment_Clicked()
     {
         var file = EditorUtility.OpenFilePanel("Load File", string.Empty, "xml");
+        LoadExperimentFromFile(file);
+    }
+
+    private void LoadExperimentFromFile(string file)
+    {
+        PlayerPrefs.SetString("ExperimentFile", file);
 
         GameObject.Find("pnlSaveLoad").gameObject.TextByName("txtFile").text = Path.GetFileName(file);
 
@@ -130,7 +144,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
             }
         }
     }
-    
+
     private void SaveExperiment_Clicked()
     {
         var file = EditorUtility.SaveFilePanel("Save File", string.Empty, "space.xml", "xml");
