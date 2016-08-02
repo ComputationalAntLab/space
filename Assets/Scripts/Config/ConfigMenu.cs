@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 using System;
 using System.Collections.Generic;
 using Assets.Scripts.Extensions;
+using Assets.Scripts.Arenas;
 
 public class ConfigMenu : MonoBehaviour, IDisposable
 {
@@ -152,11 +153,10 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
     private void Start_Clicked()
     {
-        var level = GameObject.Find("LevelSelect").GetComponent<Dropdown>();
-
-        Settings.ArenaName = level.options[level.value].text;
-
-        SceneManager.LoadScene(Settings.ArenaName);
+        var go = new GameObject();
+        GameObject.DontDestroyOnLoad(go);
+        go.AddComponent<ArenaLoader>();
+        go.GetComponent<ArenaLoader>().Load(Settings);
     }
 
     int num = 0;
