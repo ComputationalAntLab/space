@@ -12,7 +12,7 @@ using Assets.Scripts.Arenas;
 
 public class ConfigMenu : MonoBehaviour, IDisposable
 {
-    public static SimulationSettings Settings { get; set; }
+    public SimulationSettings Settings { get; set; }
 
     private List<string> _batchExperimentPaths;
     private StreamWriter _batchLog;

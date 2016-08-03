@@ -47,6 +47,7 @@ namespace Assets.Scripts.Arenas
             CreateWalls();
             CreateNests();
             MoveCameras();
+            StartSimulation();
         }
 
         private void CreateTerrain()
@@ -162,6 +163,13 @@ namespace Assets.Scripts.Arenas
 
             light.transform.position = new Vector3(_worldSize.x / 2, _worldSize.x + _worldSize.z, _worldSize.z / 2);
             light.transform.LookAt(new Vector3(_worldSize.x / 2, 0, _worldSize.z / 2));
+        }
+
+        private void StartSimulation()
+        {
+            var gameObject = new GameObject("SimulationManager");
+
+            gameObject.AddComponent<SimulationManager>().Begin(_settings);
         }
     }
 }

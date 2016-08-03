@@ -8,6 +8,7 @@ using Assets;
 using Assets.Scripts.Ticking;
 using Assets.Scripts.Nests;
 using Assets.Scripts.Ants;
+using System;
 
 public class SimulationManager : MonoBehaviour
 {
@@ -34,19 +35,15 @@ public class SimulationManager : MonoBehaviour
     public float InitialScouts { get { return (Settings.ProportionActive.Value * Settings.ColonySize.Value) - 1 * Settings.QuorumThreshold.Value; } }
 
     private bool _spawnOnlyScouts = false;
-
-    //This spawns all the ants and starts the simulation
-    void Start()
+    
+    public void Begin(SimulationSettings settings)
     {
-        Debug.Log(System.Environment.Version);
-
         Instance = this;
 
         Ants = new List<AntManager>();
         NestInfo = new List<NestInfo>();
-
-        // TODO: load from file
-        Settings = ConfigMenu.Settings;
+        
+        Settings = settings;
         if (Settings == null)
             Settings = new SimulationSettings();
 
@@ -190,7 +187,7 @@ public class SimulationManager : MonoBehaviour
             }
         }
     }
-
+    
     private string CreateAntId(int colonySize, int antNumber)
     {
         return Naming.Ants.Tag;
