@@ -7,22 +7,22 @@
     <Depth>7.5</Depth>
     <PositionX>40</PositionX>
     <PositionZ>25</PositionZ>
-    <Quality>0</Quality>
+    <Quality>0.2</Quality>
   </StartingNest>
   <NewNests>
     <Nest>
-      <Width>0</Width>
-      <Depth>0</Depth>
-      <PositionX>0</PositionX>
-      <PositionZ>0</PositionZ>
-      <Quality>0</Quality>
+      <Width>5</Width>
+	  <Depth>7.5</Depth>
+      <PositionX>10</PositionX>
+      <PositionZ>10</PositionZ>
+      <Quality>0.3</Quality>
     </Nest>
     <Nest>
-      <Width>0</Width>
-      <Depth>0</Depth>
-      <PositionX>0</PositionX>
-      <PositionZ>0</PositionZ>
-      <Quality>0</Quality>
+      <Width>5</Width>
+      <Depth>7.5</Depth>
+      <PositionX>10</PositionX>
+      <PositionZ>40</PositionZ>
+      <Quality>0.6</Quality>
     </Nest>
   </NewNests>
 </Arena>

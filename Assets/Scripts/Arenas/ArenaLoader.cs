@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Config;
+using Assets.Scripts.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -85,22 +86,22 @@ namespace Assets.Scripts.Arenas
             var a = GameObject.Instantiate(wallPrefab);
 
             a.transform.position = new Vector3(_worldSize.x / 2, .5f, 0);
-            a.transform.localScale = new Vector3(_worldSize.x, 1, 1);
+            a.transform.localScale = new Vector3(_worldSize.x, 1, .5f);
 
             var b = GameObject.Instantiate(wallPrefab);
 
             b.transform.position = new Vector3(_worldSize.x / 2, .5f, _worldSize.z);
-            b.transform.localScale = new Vector3(_worldSize.x, 1, 1);
+            b.transform.localScale = new Vector3(_worldSize.x, 1, .5f);
 
             var c = GameObject.Instantiate(wallPrefab);
 
             c.transform.position = new Vector3(_worldSize.x, .5f, _worldSize.z / 2);
-            c.transform.localScale = new Vector3(1, 1, _worldSize.z);
+            c.transform.localScale = new Vector3(.5f, 1, _worldSize.z);
 
             var d = GameObject.Instantiate(wallPrefab);
 
             d.transform.position = new Vector3(0, .5f, _worldSize.z / 2);
-            d.transform.localScale = new Vector3(1, 1, _worldSize.z);
+            d.transform.localScale = new Vector3(.5f, 1, _worldSize.z);
         }
 
         private void CreateNests()
@@ -110,14 +111,22 @@ namespace Assets.Scripts.Arenas
                 var oldNestPrefab = Resources.Load(Naming.Resources.OldNestPrefab) as GameObject;
                 CreateNest(oldNestPrefab, _arena.StartingNest);
             }
+            if (_arena.NewNests != null)
+            {
+                var newNestPrefab = Resources.Load(Naming.Resources.NewNestPrefab) as GameObject;
+                foreach (var nest in _arena.NewNests)
+                    CreateNest(newNestPrefab, nest);
+            }
         }
 
         private void CreateNest(GameObject prefab, Nest nest)
         {
-            var oldNest = GameObject.Instantiate(prefab);
+            var nestGO = GameObject.Instantiate(prefab);
 
-            oldNest.transform.position = new Vector3(nest.PositionX, 0, nest.PositionZ);
-            oldNest.transform.localScale = new Vector3(nest.Width, .1f, nest.Depth);
+            nestGO.transform.position = new Vector3(nest.PositionX, 0, nest.PositionZ);
+            nestGO.transform.localScale = new Vector3(nest.Width, .1f, nest.Depth);
+
+            nestGO.Nest().quality = nest.Quality;
         }
 
         private void MoveCameras()
