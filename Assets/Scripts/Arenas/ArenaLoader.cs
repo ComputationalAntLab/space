@@ -43,7 +43,9 @@ namespace Assets.Scripts.Arenas
         private void InstantiateArena()
         {
             CreateTerrain();
+            CreateWalls();
             MoveCameras();
+            MoveLight();
         }
 
         private void CreateTerrain()
@@ -76,6 +78,31 @@ namespace Assets.Scripts.Arenas
             _worldSize = data.size;
         }
 
+        private void CreateWalls()
+        {
+            var wallPrefab = Resources.Load(Naming.Resources.WallPrefab) as GameObject;
+
+            var a = GameObject.Instantiate(wallPrefab);
+
+            a.transform.position = new Vector3(_worldSize.x / 2, .5f, 0);
+            a.transform.localScale = new Vector3(_worldSize.x, 1, 1);
+
+            var b = GameObject.Instantiate(wallPrefab);
+
+            b.transform.position = new Vector3(_worldSize.x / 2, .5f, _worldSize.z);
+            b.transform.localScale = new Vector3(_worldSize.x, 1, 1);
+
+            var c = GameObject.Instantiate(wallPrefab);
+
+            c.transform.position = new Vector3(_worldSize.x, .5f, _worldSize.z / 2);
+            c.transform.localScale = new Vector3(1, 1, _worldSize.z);
+
+            var d = GameObject.Instantiate(wallPrefab);
+
+            d.transform.position = new Vector3(0, .5f, _worldSize.z / 2);
+            d.transform.localScale = new Vector3(1, 1, _worldSize.z);
+        }
+
         private void MoveCameras()
         {
             var freeCamera = GameObject.FindGameObjectWithTag("FreeCamera").GetComponent<Camera>();
@@ -101,6 +128,14 @@ namespace Assets.Scripts.Arenas
             {
 
             }
+        }
+
+        private void MoveLight()
+        {
+            var light = GameObject.Find("Directional Light");
+
+            light.transform.position = new Vector3(_worldSize.x / 2, _worldSize.x + _worldSize.z, _worldSize.z / 2);
+            light.transform.LookAt(new Vector3(_worldSize.x / 2, 0, _worldSize.z / 2));
         }
     }
 }

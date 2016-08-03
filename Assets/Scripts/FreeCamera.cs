@@ -94,7 +94,6 @@ public class FreeCamera : MonoBehaviour
                 var yRotation = Quaternion.AngleAxis(_mouseAbsolute.x, transform.InverseTransformDirection(Vector3.up));
                 transform.localRotation *= yRotation;
             }
-            Debug.Log("Camera position: " + transform.position);
         }
 
         //use shift to speed up flight
