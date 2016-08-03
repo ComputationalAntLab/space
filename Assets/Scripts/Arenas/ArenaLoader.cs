@@ -110,20 +110,22 @@ namespace Assets.Scripts.Arenas
             if (_arena.StartingNest != null)
             {
                 var oldNestPrefab = Resources.Load(Naming.Resources.OldNestPrefab) as GameObject;
-                CreateNest(oldNestPrefab, _arena.StartingNest);
+                CreateNest(oldNestPrefab, _arena.StartingNest,Naming.World.InitialNest);
             }
             if (_arena.NewNests != null)
             {
                 var newNestPrefab = Resources.Load(Naming.Resources.NewNestPrefab) as GameObject;
+                var i = 0;
                 foreach (var nest in _arena.NewNests)
-                    CreateNest(newNestPrefab, nest);
+                    CreateNest(newNestPrefab, nest, Naming.World.NewNests + (i++));
             }
         }
 
-        private void CreateNest(GameObject prefab, Nest nest)
+        private void CreateNest(GameObject prefab, Nest nest, string name)
         {
             var nestGO = GameObject.Instantiate(prefab);
 
+            nestGO.name = name;
             nestGO.transform.position = new Vector3(nest.PositionX, 0, nest.PositionZ);
             nestGO.transform.localScale = new Vector3(nest.Width, .1f, nest.Depth);
 
