@@ -167,7 +167,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
     private void Start_Clicked()
     {
-        var go = new GameObject();
+        var go = new GameObject("Arena Loader");
         GameObject.DontDestroyOnLoad(go);
         go.AddComponent<ArenaLoader>();
         go.GetComponent<ArenaLoader>().Load(Settings);

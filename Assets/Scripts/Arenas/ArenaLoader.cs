@@ -44,8 +44,8 @@ namespace Assets.Scripts.Arenas
         {
             CreateTerrain();
             CreateWalls();
+            CreateNests();
             MoveCameras();
-            MoveLight();
         }
 
         private void CreateTerrain()
@@ -54,7 +54,7 @@ namespace Assets.Scripts.Arenas
 
             var data = new TerrainData();
 
-            data.size = new Vector3(_arena.Width / 16, 10, _arena.Height / 16);
+            data.size = new Vector3(_arena.Width / 16, 10, _arena.Depth / 16);
             data.heightmapResolution = 512;
             data.baseMapResolution = 1024;
             data.SetDetailResolution(1024, 16);
@@ -101,6 +101,23 @@ namespace Assets.Scripts.Arenas
 
             d.transform.position = new Vector3(0, .5f, _worldSize.z / 2);
             d.transform.localScale = new Vector3(1, 1, _worldSize.z);
+        }
+
+        private void CreateNests()
+        {
+            if (_arena.StartingNest != null)
+            {
+                var oldNestPrefab = Resources.Load(Naming.Resources.OldNestPrefab) as GameObject;
+                CreateNest(oldNestPrefab, _arena.StartingNest);
+            }
+        }
+
+        private void CreateNest(GameObject prefab, Nest nest)
+        {
+            var oldNest = GameObject.Instantiate(prefab);
+
+            oldNest.transform.position = new Vector3(nest.PositionX, 0, nest.PositionZ);
+            oldNest.transform.localScale = new Vector3(nest.Width, .1f, nest.Depth);
         }
 
         private void MoveCameras()

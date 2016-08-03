@@ -8,11 +8,11 @@ namespace Assets.Scripts.Arenas
     [Serializable]
     public class Arena
     {
-        public int Width { get; set; }
+        public float Width { get; set; }
 
-        public int Height { get; set; }
+        public float Depth { get; set; }
 
-        public int AveragedSize { get { return (Width + Height) / 2; } }
+        public float AveragedSize { get { return (Width + Depth) / 2; } }
 
         public Nest StartingNest { get; set; }
 
