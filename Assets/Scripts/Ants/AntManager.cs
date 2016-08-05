@@ -611,6 +611,12 @@ public class AntManager : MonoBehaviour, ITickable
                 if (state == BehaviourState.Recruiting && nest == myNest && follower == null)
                     RecruitToNest(myNest);
         }
+
+        // Assessing ant has entered a nest, make sure it updates the assement bit
+        if(state == BehaviourState.Assessing)
+        {
+            move.AssessingDirectionChange();
+        }
     }
 
     private void NestAssessmentVisit()

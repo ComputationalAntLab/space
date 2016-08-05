@@ -466,7 +466,7 @@ public class AntMovement : MonoBehaviour, ITickable
             WalkToGameObject(NextWaypoint());
     }
 
-    private void AssessingDirectionChange()
+    public void AssessingDirectionChange()
     {
         if (ant.assessmentStage == NestAssessmentStage.ReturningToHomeNestDoor)
         {
