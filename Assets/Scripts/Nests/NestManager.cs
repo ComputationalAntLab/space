@@ -17,7 +17,7 @@ public class NestManager : MonoBehaviour
 	void OnTriggerEnter(Collider other) 
 	{
 		//if other isn't an ant or an ants collider has intersected with nest collider in an area that isn't the entrance then ignore
-		if(other.tag != Naming.Ants.Tag || (door != null && Vector3.Distance(other.transform.position, door.transform.position) > 12)) 
+		if(other.tag != Naming.Ants.Tag || (door != null && Vector3.Distance(other.transform.position, door.transform.position) > AntScales.Distances.DoorEntry)) 
 			return;
 		
 		//let the ant know it has entered the nest
@@ -29,7 +29,7 @@ public class NestManager : MonoBehaviour
 	void OnTriggerExit(Collider other) 
 	{
 		//if other isn't an ant or an ants collider has intersected with nest collider in an area that isn't the entrance then ignore
-		if(other.tag != Naming.Ants.Tag || (door != null && Vector3.Distance(other.transform.position, door.transform.position) > 12)) 
+		if(other.tag != Naming.Ants.Tag || (door != null && Vector3.Distance(other.transform.position, door.transform.position) > AntScales.Distances.DoorEntry)) 
 			return;
 		AntManager ant = (AntManager)other.transform.GetComponent(Naming.Ants.Controller);
 		
