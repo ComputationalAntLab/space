@@ -41,8 +41,8 @@ namespace Assets.Scripts.Ants
 
             public const float TandemFollowerLagging = 0.95f; // The distance from the leader causing follower to change direction 
 
-            public const float AssessingDoor = 1;
-            public const float AssessingNestMiddle = 2;
+            public const float AssessingDoor = 1.5f;
+            public const float AssessingNestMiddle = 3f;
 
             public const float DoorEntry = 1.2f;
 

@@ -30,7 +30,7 @@
     <Value>1</Value>
   </StartingTickRate>
   <MaximumSimulationRunTime>
-    <Value>1</Value>
+    <Value>0</Value>
   </MaximumSimulationRunTime>
   <AntsLayPheromones>
     <Value>true</Value>

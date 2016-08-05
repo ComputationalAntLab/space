@@ -18,6 +18,7 @@ public class AntManager : MonoBehaviour, ITickable
     public NestManager myNest;               //recruit to this nest
     public NestManager oldNest;              //recruit from this nest
     public NestManager nestToAssess;         //nest that the ant is currently assessing
+    public NestManager currentNest;         // nest that the ant is inside
     public AntManager leader, follower;     //the ants that are leading or following this ant
     public bool inNest;                     //true when this ant is in a nest (needed for direction
     public bool newToOld;                   //true when this ant is heading towards the nest they are recruiting TO from the nest they're recruiting to FROM
@@ -127,6 +128,7 @@ public class AntManager : MonoBehaviour, ITickable
     }
 
     private float _elapsed;
+
     public void Tick(float elapsedSimulationMS)
     {
         PerceivedTicks++;
@@ -498,6 +500,7 @@ public class AntManager : MonoBehaviour, ITickable
             failedTandemLeader = false;
         }
 
+        currentNest= nest;
         inNest = true;
 
         //ignore ants that have just been dropped here
@@ -746,6 +749,7 @@ public class AntManager : MonoBehaviour, ITickable
     //called whenever an ant leaves a nest
     public void LeftNest()
     {
+        currentNest = null;
         inNest = false;
 
         //when an assessor leaves the nest then make decision about wether to recruit TO that nest

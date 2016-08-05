@@ -367,7 +367,6 @@ public class AntMovement : MonoBehaviour, ITickable
         }
         else if (ant.state == BehaviourState.Following)
         {
-            //maxVar = 20f;
             maxVar = 10f;
             FollowingDirectionChange();
         }
@@ -378,17 +377,17 @@ public class AntMovement : MonoBehaviour, ITickable
         }
         else if (ant.state == BehaviourState.Recruiting)
         {
-            maxVar = 40f;
+            maxVar = 20f;
             RecruitingDirectionChange();
         }
         else if (ant.state == BehaviourState.Reversing)
         {
-            maxVar = 40f;
+            maxVar = 20f;
             ReversingDirectionChange();
         }
         else
         {
-            //this.maxVar = 20f;
+            maxVar = 20f;
             AssessingDirectionChange();
         }
         Turned();
@@ -765,7 +764,28 @@ public class AntMovement : MonoBehaviour, ITickable
             currentAngle -= 360;
 
         float newDir = RandomGenerator.Instance.NormalRandom(goalAngle, maxVar);
+
+        if (ant.state == BehaviourState.Assessing)
+        {
+            // If the ant is just going to a nest then let them walk right to it, they can see it
+            if (ant.inNest &&
+            ((ant.assessmentStage == NestAssessmentStage.ReturningToHomeNestMiddle && ant.currentNest == ant.oldNest)
+             || (ant.assessmentStage == NestAssessmentStage.ReturningToPotentialNestMiddle && ant.currentNest == ant.nestToAssess)))
+                newDir = goalAngle;
+            // If they get close to the door then just walk in
+            else if (ant.assessmentStage == NestAssessmentStage.ReturningToHomeNestDoor || ant.assessmentStage == NestAssessmentStage.ReturningToPotentialNestDoor)
+            {
+                if (Vector3.Distance(transform.position, target.transform.position) <= AntScales.Distances.AssessingDoor * 2)
+                    newDir = goalAngle;
+            }
+        }
         Turn(newDir);
+
+        if (ant.state == BehaviourState.Assessing)
+        {
+            Debug.DrawLine(transform.position, target.transform.position, Color.white, 1);
+            Debug.DrawLine(transform.position, transform.position + (5 * transform.forward), Color.red, 1);
+        }
     }
 
     private void RandomWalk()
