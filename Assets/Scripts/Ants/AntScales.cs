@@ -1,4 +1,6 @@
-﻿namespace Assets.Scripts.Ants
+﻿using UnityEngine;
+
+namespace Assets.Scripts.Ants
 {
     public static class AntScales
     {
@@ -43,6 +45,10 @@
             public const float AssessingNestMiddle = 2;
 
             public const float DoorEntry = 1.2f;
+
+            public const float Spawning = 0.1f;
+
+            public const float SensesCollider = 3f;
         }
     }
 }

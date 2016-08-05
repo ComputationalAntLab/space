@@ -8,6 +8,7 @@ using Assets;
 using Assets.Scripts.Ticking;
 using Assets.Scripts.Nests;
 using Assets.Scripts.Ants;
+using System;
 
 public class SimulationManager : MonoBehaviour
 {
@@ -34,14 +35,14 @@ public class SimulationManager : MonoBehaviour
     public float InitialScouts { get { return (Settings.ProportionActive.Value * Settings.ColonySize.Value) - 1 * Settings.QuorumThreshold.Value; } }
 
     private bool _spawnOnlyScouts = false;
-    
+
     public void Begin(SimulationSettings settings)
     {
         Instance = this;
 
         Ants = new List<AntManager>();
         NestInfo = new List<NestInfo>();
-        
+
         Settings = settings;
         if (Settings == null)
             Settings = new SimulationSettings();
@@ -77,7 +78,7 @@ public class SimulationManager : MonoBehaviour
 
             if (i == 0)
                 newNests[i].Nest().quality = Settings.FirstNewNestQuality.Value;
-            else if(i==1)
+            else if (i == 1)
                 newNests[i].Nest().quality = Settings.SecondNewNestQuality.Value;
 
             int id = i + 1;
@@ -137,7 +138,9 @@ public class SimulationManager : MonoBehaviour
                 float row = Mathf.Floor(spawnedAnts / sqrt);
                 Vector3 pos = initialNest.transform.position;
 
-                GameObject newAnt = (GameObject)Instantiate(antPrefab, new Vector3(pos.x + row, 0, pos.z + column), Quaternion.identity);
+                GameObject newAnt = (GameObject)Instantiate(antPrefab, pos + (new Vector3(row, 0, column) * AntScales.Distances.Spawning), Quaternion.identity);
+
+                newAnt.transform.position += new Vector3(0, newAnt.transform.localScale.y, 0);
                 newAnt.name = CreateAntId(Settings.ColonySize.Value, spawnedAnts);
                 newAnt.AntMovement().simulation = this;
 
@@ -161,7 +164,7 @@ public class SimulationManager : MonoBehaviour
 
                     Transform senses = newAnt.transform.FindChild(Naming.Ants.SensesArea);
                     ((SphereCollider)senses.GetComponent("SphereCollider")).enabled = true;
-                    ((SphereCollider)senses.GetComponent("SphereCollider")).radius = ((AntSenses)senses.GetComponent(Naming.Ants.SensesScript)).range;
+                    ((SphereCollider)senses.GetComponent("SphereCollider")).radius = AntScales.Distances.SensesCollider;
                     ((AntSenses)senses.GetComponent(Naming.Ants.SensesScript)).enabled = true;
 
                     if (spawnedAntScounts < InitialScouts || Settings.ColonySize.Value <= 1 || _spawnOnlyScouts)
@@ -186,7 +189,7 @@ public class SimulationManager : MonoBehaviour
             }
         }
     }
-    
+
     private string CreateAntId(int colonySize, int antNumber)
     {
         return Naming.Ants.Tag;
