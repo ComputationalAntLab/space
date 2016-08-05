@@ -5,7 +5,6 @@ using Assets.Scripts.Ants;
 public class AntSenses : MonoBehaviour
 {
     AntManager ant;
-    public float range = 3f; //the range from which this ant can sense other ants
 
     void OnTriggerEnter(Collider other)
     {

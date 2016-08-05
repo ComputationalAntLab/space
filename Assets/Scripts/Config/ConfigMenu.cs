@@ -7,17 +7,25 @@ using System.IO;
 using System.Xml.Serialization;
 using System;
 using System.Collections.Generic;
+using Assets.Scripts.Extensions;
+using Assets.Scripts.Arenas;
 
 public class ConfigMenu : MonoBehaviour, IDisposable
 {
-    public static SimulationSettings Settings { get; set; }
+    public SimulationSettings Settings { get; set; }
 
     private List<string> _batchExperimentPaths;
     private StreamWriter _batchLog;
 
+    private Button _btnStart;
+
     void Start()
     {
+        _btnStart = this.ButtonByName("btnStart");
+        _btnStart.onClick.AddListener(Start_Clicked);
+
         var batchPath = @"C:\Users\andos\git\space\Batches\Test";
+        batchPath = null;
 
         if (string.IsNullOrEmpty(batchPath))
         {
@@ -47,24 +55,29 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
     private void RunInRegularMode()
     {
-        //DontDestroyOnLoad(this);
-        Load(new SimulationSettings());
+        var file = PlayerPrefs.GetString("ExperimentFile");
 
-        var start = GameObject.Find("Start").GetComponent<Button>();
+        if (!string.IsNullOrEmpty(file))
+        {
+            LoadExperimentFromFile(file);
+        }
+        else
+        {
+            LoadSimulationSettings(new SimulationSettings());
+        }
 
-        start.GetComponentInChildren<Text>().text = "Run Simulation";
+        var saveExperiment = GameObject.Find("pnlSaveLoad").ButtonByName("Save");
+        saveExperiment.onClick.AddListener(SaveExperiment_Clicked);
+        var loadExperiment = GameObject.Find("pnlSaveLoad").ButtonByName("Load");
+        loadExperiment.onClick.AddListener(LoadExperiment_Clicked);
 
-        start.onClick.AddListener(Start_Clicked);
+        var loadArena = GameObject.Find("pnlArena").ButtonByName("Load");
+        loadArena.onClick.AddListener(LoadArena_Clicked);
 
-        var save = GameObject.Find("Save").GetComponent<Button>();
-        save.onClick.AddListener(Save_Clicked);
-        save.GetComponentInChildren<Text>().text = "Save";
-        var load = GameObject.Find("Load").GetComponent<Button>();
-        load.onClick.AddListener(Load_Clicked);
-        load.GetComponentInChildren<Text>().text = "Load";
+        ValidateArena();
     }
 
-    private void Load(SimulationSettings settings)
+    private void LoadSimulationSettings(SimulationSettings settings)
     {
         Settings = settings;
 
@@ -81,11 +94,43 @@ public class ConfigMenu : MonoBehaviour, IDisposable
         GetPropertiesContentArea().DetachChildren();
         foreach (var v in Settings.AllProperties)
             CreateInput(v);
+
+        var rect = GetPropertiesContentArea().GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(rect.rect.width, 35 * Settings.AllProperties.Count);
+
+        ValidateArena();
     }
 
-    private void Load_Clicked()
+    private void ValidateArena()
+    {
+        var fileName = string.IsNullOrEmpty(Settings.ArenaFilename) ? "<None Loaded>" : Settings.ArenaFilename;
+
+        var txt = GameObject.Find("pnlArena").gameObject.TextByName("txtFile");
+        txt.text = fileName;
+
+        if (File.Exists(fileName))
+        {
+            _btnStart.interactable = true;
+            txt.color = Color.black;
+        }
+        else
+        {
+            _btnStart.interactable = false;
+            txt.color = Color.red;
+        }
+    }
+
+    private void LoadExperiment_Clicked()
     {
         var file = EditorUtility.OpenFilePanel("Load File", string.Empty, "xml");
+        LoadExperimentFromFile(file);
+    }
+
+    private void LoadExperimentFromFile(string file)
+    {
+        PlayerPrefs.SetString("ExperimentFile", file);
+
+        GameObject.Find("pnlSaveLoad").gameObject.TextByName("txtFile").text = Path.GetFileName(file);
 
         using (var sr = new StreamReader(file))
         {
@@ -95,12 +140,12 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
             if (settings != null)
             {
-                Load(settings);
+                LoadSimulationSettings(settings);
             }
         }
     }
 
-    private void Save_Clicked()
+    private void SaveExperiment_Clicked()
     {
         var file = EditorUtility.SaveFilePanel("Save File", string.Empty, "space.xml", "xml");
 
@@ -112,13 +157,20 @@ public class ConfigMenu : MonoBehaviour, IDisposable
         }
     }
 
+    private void LoadArena_Clicked()
+    {
+        var file = EditorUtility.OpenFilePanel("Load File", string.Empty, "xml");
+
+        Settings.ArenaFilename = file;
+        ValidateArena();
+    }
+
     private void Start_Clicked()
     {
-        var level = GameObject.Find("LevelSelect").GetComponent<Dropdown>();
-
-        Settings.ArenaName = level.options[level.value].text;
-
-        SceneManager.LoadScene(Settings.ArenaName);
+        var go = new GameObject("Arena Loader");
+        GameObject.DontDestroyOnLoad(go);
+        go.AddComponent<ArenaLoader>();
+        go.GetComponent<ArenaLoader>().Load(Settings);
     }
 
     int num = 0;
@@ -134,7 +186,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
         //a.transform.position = new Vector3(-240, 45 + -(0 + (num * 35)), 0);
         //a.transform.position = new Vector3(-240, 45 + (0 + (num * 35)), 0);
-        a.GetComponent<RectTransform>().anchoredPosition = new Vector2(-230, 137 + -(num * 35));
+        a.GetComponent<RectTransform>().anchoredPosition = new Vector2(165, -((num * 35) + 13));
 
         a.transform.Find("Label").GetComponent<Text>().text = property.Name;
 
@@ -226,7 +278,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
                         var batchPath = Path.GetFileName(Path.GetDirectoryName(experiment));
 
                         settings.ExperimentName.Value = Path.Combine(batchPath, settings.ExperimentName.Value);
-                        
+
                         Settings = settings;
                         SceneManager.LoadScene(Settings.ArenaName);
                     }

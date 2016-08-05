@@ -24,34 +24,9 @@ public class AntMovement : MonoBehaviour, ITickable
     public float maxVar = 22.5f;              //max amount this ant can turn at one time
     public float maxDirChange_time = 3f;//5f;    //maximum time between direction changes
 
-    public float scoutSpeed;                //speed of an active ant while not tandem running or carrying
-    public float tandemSpeed;               //speed of an ant while tandem running
-    public float carrySpeed;                //speed of an ant while carrying another ant
-    public float inactiveSpeed;             //speed of an ant in the inactive state
-    public float assessingSpeedFirstVisit;  //speed of an ant in the assessing state (first visit)
-    public float assessingSpeedSecondVisit; //speed of an ant in the assessing state (second visit)
-
-    public float doorSenseRange = 50;//5f;       //distance from which an ant can sense the presence of a door
-
-    public bool usePheromones;              //this dictates wether or not the ant uses pheromones
-    public float pheromoneRange = 10f;      //maximum distance that pheromones can be sensed from
-
-    // tandem run variables
-    public float averageAntennaReach = 2.0f;        // antenna reach value (1mm) => radius of ant is 0.5mm therefore to get 1mm gap between ants need to include 2*0.5mm 
-    public float leaderStopDistance = 2.0f;         // leader stops when gap between leader and follower is 2mm. => must be 3.0f as radius of ant is 0.5mm
-    public float pheromoneFrequencyFTR = 0.2664f;   // 1.8mm/s => 12.5f ! FTR 3 lay per 10mm => 12.5mm/s (speed) lay pheromone every 0.2664 secs 
-    public float pheromoneFrequencyRTR = 0.8f;      // 1.8mm/s => 12.5f ! FTR 1 lay per 10mm => 12.5mm/s (speed) lay pheromone every 0.8 secs
-
-
-    // buffon needle
-    // Eamonn B. Mallon and Nigel R. Franks - Ants estimate area using Buffon’s needle
-    // The speeds at intersections were noted when an ant was within one antenna’s length of its first visit path.
-    // one antenna lenght = 1mm. As pheromone range a radius around ant assessmentPheromoneRange = 0.5
-    public float assessmentPheromoneRange = 0.125f;
     public Vector3 lastPosition;
     public float assessingDistance = 0f;
     public float intersectionNumber = 0f;
-    public float pheromoneFrequencyBuffon = 0.0376f;        //the frequency that pheromones are laid for buffon needle
 
     private int frameNumber = 0;
     private int assessorChangeDirectionPerFrame = 3;
@@ -59,7 +34,6 @@ public class AntMovement : MonoBehaviour, ITickable
     //greg edit
     public static float gasterHeadDistance = 0f;
     public static float gasterHeadDistanceCount = 0f;
-    public float pheromoneFrequencyScouting = 0.125f;
 
     public bool ShouldBeRemoved { get { return false; } }
 
@@ -70,6 +44,10 @@ public class AntMovement : MonoBehaviour, ITickable
     private bool _enabled = true;
 
     private bool _requiresObstructionCheck = false;
+
+    private bool _isIntersectingAssessmentPheromones;
+
+    public bool usePheromones;
 
     // Use this for initialization
     void Start()
@@ -85,47 +63,23 @@ public class AntMovement : MonoBehaviour, ITickable
         pheromoneParent = GameObject.Find(Naming.ObjectGroups.Pheromones).transform;
         nextPheromoneCheck = simulation.TickManager.TotalElapsedSimulatedSeconds;
 
-        //passive ants laying in centre of nests makes ants gravitate towards nest centers to much
-
-        // set the speeds
-        scoutSpeed = 50f;                          // 7.2mm/s
-        tandemSpeed = 50f;                         // 1.8mm/s (slower due to stop and start)
-        carrySpeed = 37.5f;                        // 5.4mm/s
-        inactiveSpeed = 5f;
-        assessingSpeedFirstVisit = 26.595f;        // 5.107mm/s
-        assessingSpeedSecondVisit = 32.175f;       // 6.179mm/
-
         //greg edit
         gasterHeadDistance = 0f;
         gasterHeadDistanceCount = 0f;
-
-        // all active ants call the LayPheromone function reapeatedly (but only lay is usePheromones true)
-        usePheromones = false; // all pheromones are false (turned off if FTR or RTR leader)
-                               //greg edit
-        if (ant.state == BehaviourState.Scouting)
-        {
-            usePheromones = false;
-        }
-
-        //		if (!this.ant.passive) {
-        //			InvokeRepeating ("LayPheromoneScouting", 0, pheromoneFrequencyScouting);
-        //InvokeRepeating ("LayPheromoneAssessing", 0, pheromoneFrequencyBuffon);
-        //		}
     }
 
     private float _elapsedFTR = 0, _elapsedRTR = 0;
     public void Tick(float elapsedSimulatedMS)
     {
         // Mimic the InvokeRepeating for the tandem pheromones
-        if (Ticker.Should(elapsedSimulatedMS, ref _elapsedFTR, pheromoneFrequencyFTR))
+        if (Ticker.Should(elapsedSimulatedMS, ref _elapsedFTR, AntScales.Speeds.PheromoneFrequencyFTR))
         {
             LayPheromoneFTR();
         }
-        if (Ticker.Should(elapsedSimulatedMS, ref _elapsedRTR, pheromoneFrequencyRTR))
+        if (Ticker.Should(elapsedSimulatedMS, ref _elapsedRTR, AntScales.Speeds.PheromoneFrequencyRTR))
         {
             LayPheromoneRTR();
         }
-
 
         //if disabled then don't do anything
         if (!IsEnabled())
@@ -136,8 +90,6 @@ public class AntMovement : MonoBehaviour, ITickable
         // ensures that an assessor ant always keeps within the nest cavity 
         // if the assessor randomly leaves the nest it will turn back towards the nest centre 
         //This statements makes assessors in the nest change direction more frequently than those outside the nest.
-
-
         if (ant.state == BehaviourState.Assessing && !ant.inNest && ant.assessmentStage == NestAssessmentStage.Assessing)
         {
             ChangeDirection();
@@ -154,8 +106,7 @@ public class AntMovement : MonoBehaviour, ITickable
         // if tandem follower is waiting return and do not update movement
         if (ant.leader != null)
         {
-            tandemSpeed = 45f;
-            if (Vector3.Distance(transform.position, ant.estimateNewLeaderPos) > 9.5f)
+            if (Vector3.Distance(transform.position, ant.estimateNewLeaderPos) > AntScales.Distances.TandemFollowerLagging)
             {
                 ChangeDirection();
             }
@@ -168,7 +119,6 @@ public class AntMovement : MonoBehaviour, ITickable
         // if tandem leader is waiting return and do not update movement
         if (ant.follower != null)
         {
-            tandemSpeed = 50f;
             if (ShouldTandemLeaderWait())
             {
                 return;
@@ -212,9 +162,7 @@ public class AntMovement : MonoBehaviour, ITickable
                 p = (Pheromone)pheromones[i];
                 if (p.owner == this && p.assessingPheromoneCounted == false)
                 {
-                    // intersection speed
-                    // non-intersection 4.06 mm/s, intersection 2.72mm/s => intersection speed reduced to 2.72mm/s
-                    assessingSpeedSecondVisit = 16.05f;
+                    _isIntersectingAssessmentPheromones = true;
                     intersectionNumber += 1.0f;
                     for (int j = 0; j < pheromones.Count; j++)
                     {
@@ -228,7 +176,7 @@ public class AntMovement : MonoBehaviour, ITickable
                 }
                 else
                 {
-                    assessingSpeedSecondVisit = 32.175f;
+                    _isIntersectingAssessmentPheromones = false;
                 }
             }
         }
@@ -242,7 +190,7 @@ public class AntMovement : MonoBehaviour, ITickable
         if (ant.followerWait == true)
         {
             // if follower has lost tactile contact with leader -> begin to move (wait == false) 
-            if (Vector3.Distance(transform.position, ant.leader.transform.position) > (averageAntennaReach))
+            if (Vector3.Distance(transform.position, ant.leader.transform.position) > (AntScales.Distances.AverageAntenna))
             {
                 ant.followerWait = false;
             }
@@ -256,7 +204,7 @@ public class AntMovement : MonoBehaviour, ITickable
             return false;
         }
         // follower has made contact with leader -> reset tandem variables
-        if (Vector3.Distance(transform.position, ant.leader.transform.position) < averageAntennaReach &&
+        if (Vector3.Distance(transform.position, ant.leader.transform.position) < AntScales.Distances.AverageAntenna &&
             ant.LineOfSight(ant.leader.gameObject))
         {
             TandemRegainedContact();
@@ -290,7 +238,7 @@ public class AntMovement : MonoBehaviour, ITickable
         Vector3 leaderPos = ant.leader.transform.position;
         float angleToLeader = GetAngleBetweenPositions(transform.position, leaderPos);
         Vector3 directionToLeader = new Vector3(0, Mathf.Sin(angleToLeader), Mathf.Cos(angleToLeader));
-        ant.estimateNewLeaderPos = leaderPos + (directionToLeader.normalized * leaderStopDistance);
+        ant.estimateNewLeaderPos = leaderPos + (directionToLeader.normalized * AntScales.Distances.LeaderStopping);
     }
 
     // checks what movement the tandem leader should take
@@ -305,7 +253,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
         // if leader is > 2mm away from follower she stops and waits
         // Richardson & Franks, Teaching in Tandem Running
-        if (Vector3.Distance(ant.follower.transform.position, transform.position) < (2 * leaderStopDistance))
+        if (Vector3.Distance(ant.follower.transform.position, transform.position) < (2 * AntScales.Distances.LeaderStopping))
         {
             return false;
         }
@@ -363,37 +311,35 @@ public class AntMovement : MonoBehaviour, ITickable
         //move ant at appropriate speed
         if (ant.state == BehaviourState.Inactive)
         {
-            MoveAtSpeed(inactiveSpeed, elapsed);
+            MoveAtSpeed(AntScales.Speeds.Inactive, elapsed);
         }
         else if (ant.state == BehaviourState.Reversing)
         {
-            MoveAtSpeed(tandemSpeed, elapsed);
+            MoveAtSpeed(AntScales.Speeds.TandemRunning, elapsed);
         }
         else if (ant.IsTransporting())
         {
-            MoveAtSpeed(carrySpeed, elapsed);
+            MoveAtSpeed(AntScales.Speeds.Carrying, elapsed);
         }
         else if (ant.IsTandemRunning())
         {
-            MoveAtSpeed(tandemSpeed, elapsed);
+            MoveAtSpeed(AntScales.Speeds.TandemRunning, elapsed);
         }
         else if (ant.state == BehaviourState.Assessing)
         {
-
             if (ant.nestAssessmentVisitNumber == 1)
             {
-                MoveAtSpeed(assessingSpeedFirstVisit, elapsed);
+                MoveAtSpeed(AntScales.Speeds.AssessingFirstVisit, elapsed);
             }
             else
             {
                 // if this.ant.nestAssessmentVisitNumber == 2 -> second visit
-                MoveAtSpeed(assessingSpeedSecondVisit, elapsed);
+                MoveAtSpeed(_isIntersectingAssessmentPheromones ? AntScales.Speeds.AssessingFirstVisitSecondVisitIntersecting : AntScales.Speeds.AssessingFirstVisitNonIntersecting, elapsed);
             }
-
         }
         else
         {
-            MoveAtSpeed(scoutSpeed, elapsed);
+            MoveAtSpeed(AntScales.Speeds.Scouting, elapsed);
         }
     }
 
@@ -405,7 +351,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
         speed /= 1000f / 30f;
         speed /= 40;
-        
+
         cont.transform.position += (transform.forward * speed * elapsed);
     }
 
@@ -526,7 +472,7 @@ public class AntMovement : MonoBehaviour, ITickable
         if (ant.assessmentStage == NestAssessmentStage.ReturningToHomeNestDoor)
         {
             WalkToGameObject(ant.oldNest.door);
-            if (Vector3.Distance(transform.position, ant.oldNest.door.transform.position) < 10f)
+            if (Vector3.Distance(transform.position, ant.oldNest.door.transform.position) < AntScales.Distances.AssessingDoor)
             {
                 ant.assessmentStage = NestAssessmentStage.ReturningToHomeNestMiddle;
             }
@@ -535,7 +481,7 @@ public class AntMovement : MonoBehaviour, ITickable
         else if (ant.assessmentStage == NestAssessmentStage.ReturningToPotentialNestDoor)
         {
             WalkToGameObject(ant.nestToAssess.door);
-            if (Vector3.Distance(transform.position, ant.nestToAssess.door.transform.position) < 10f)
+            if (Vector3.Distance(transform.position, ant.nestToAssess.door.transform.position) < AntScales.Distances.AssessingDoor)
             {
                 ant.assessmentStage = NestAssessmentStage.ReturningToPotentialNestMiddle;
             }
@@ -544,7 +490,7 @@ public class AntMovement : MonoBehaviour, ITickable
         else if (ant.assessmentStage == NestAssessmentStage.ReturningToHomeNestMiddle)
         {
             WalkToGameObject(ant.oldNest.gameObject);
-            if (Vector3.Distance(transform.position, ant.oldNest.transform.position) < 20f)
+            if (Vector3.Distance(transform.position, ant.oldNest.transform.position) < AntScales.Distances.AssessingNestMiddle)
             {
                 ant.assessmentStage = NestAssessmentStage.ReturningToPotentialNestDoor;
                 ant.SetPrimaryColour(AntColours.NestAssessment.ReturningToPotentialNest);
@@ -554,7 +500,7 @@ public class AntMovement : MonoBehaviour, ITickable
         else if (ant.assessmentStage == NestAssessmentStage.ReturningToPotentialNestMiddle)
         {
             WalkToGameObject(ant.nestToAssess.gameObject);
-            if (Vector3.Distance(transform.position, ant.nestToAssess.transform.position) < 40f)
+            if (Vector3.Distance(transform.position, ant.nestToAssess.transform.position) < AntScales.Distances.AssessingNestMiddle)
             {
                 if (ant.inNest)
                 {
@@ -758,7 +704,7 @@ public class AntMovement : MonoBehaviour, ITickable
     {
         foreach (GameObject door in simulation.doors)
         {
-            if (Vector3.Distance(door.transform.position, transform.position) < doorSenseRange)
+            if (Vector3.Distance(door.transform.position, transform.position) < AntScales.Distances.DoorSensing)
             {
                 if (transform.InverseTransformPoint(door.transform.position).z >= 0)
                 {
@@ -1033,7 +979,7 @@ public class AntMovement : MonoBehaviour, ITickable
         if (!simulation.Settings.AntsLayPheromones.Value)
             return;
 
-        if (!(ant.state == BehaviourState.Leading || ant.state == BehaviourState.Recruiting) || usePheromones == false || ant.inNest)
+        if (!(ant.state == BehaviourState.Leading || ant.state == BehaviourState.Recruiting) || !usePheromones || ant.inNest)
         {
             return;
         }
@@ -1051,7 +997,7 @@ public class AntMovement : MonoBehaviour, ITickable
         if (!simulation.Settings.AntsLayPheromones.Value)
             return;
 
-        if (!(ant.state == BehaviourState.Reversing) || usePheromones == false || ant.inNest)
+        if (!(ant.state == BehaviourState.Reversing) || !usePheromones || ant.inNest)
         {
             return;
         }
@@ -1068,7 +1014,7 @@ public class AntMovement : MonoBehaviour, ITickable
         if (!simulation.Settings.AntsLayPheromones.Value)
             return;
 
-        if (ant.state != BehaviourState.Assessing || usePheromones == false || !ant.inNest)
+        if (ant.state != BehaviourState.Assessing || !simulation.Settings.AntsLayPheromones.Value || !ant.inNest)
         {
             return;
         }
@@ -1089,7 +1035,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
     private ArrayList PheromonesInRange()
     {
-        Collider[] cols = Physics.OverlapSphere(transform.position, pheromoneRange);
+        Collider[] cols = Physics.OverlapSphere(transform.position, AntScales.Distances.PheromoneSensing);
         ArrayList pher = new ArrayList();
         for (int i = 0; i < cols.Length; i++)
         {
@@ -1101,7 +1047,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
     private ArrayList AssessmentPheromonesInRange()
     {
-        Collider[] cols = Physics.OverlapSphere(transform.position, assessmentPheromoneRange);
+        Collider[] cols = Physics.OverlapSphere(transform.position, AntScales.Distances.AssessmentPheromoneSensing);
         ArrayList pher = new ArrayList();
         for (int i = 0; i < cols.Length; i++)
         {

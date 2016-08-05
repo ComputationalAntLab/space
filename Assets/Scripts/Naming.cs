@@ -5,6 +5,12 @@
         public static class Resources
         {
             public const string AntPrefab = "Ant";
+
+            public const string WallPrefab = "Wall";
+
+            public const string NewNestPrefab = "NewNest";
+
+            public const string OldNestPrefab = "OldNest";
         }
 
         public static class World

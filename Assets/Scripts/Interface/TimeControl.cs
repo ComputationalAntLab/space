@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.Extensions;
-using System;
 
 public class TimeControl : MonoBehaviour
 {
@@ -40,13 +39,11 @@ public class TimeControl : MonoBehaviour
 
         btnPause = this.ButtonByName("btnPause");
         btnPause.onClick.AddListener(btnPause_Click);
-        UpdatePause(SimulationManager.Instance.TickManager.IsPaused);
     }
 
     private void btnPause_Click()
     {
         SimulationManager.Instance.TickManager.IsPaused = !SimulationManager.Instance.TickManager.IsPaused;
-        UpdatePause(SimulationManager.Instance.TickManager.IsPaused);
     }
 
     private void UpdatePause(bool paused)
@@ -90,12 +87,17 @@ public class TimeControl : MonoBehaviour
 
     void Update()
     {
-        UpdateFPS();
+        if (SimulationManager.Instance != null)
+        {
+            UpdateFPS();
+            UpdatePause(SimulationManager.Instance.TickManager.IsPaused);
+        }
     }
 
     void FixedUpdate()
     {
-        UpdateTime();
+        if (SimulationManager.Instance != null)
+            UpdateTime();
     }
 
     private void UpdateTime()

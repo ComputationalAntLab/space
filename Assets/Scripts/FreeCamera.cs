@@ -5,17 +5,14 @@ public class FreeCamera : MonoBehaviour
     private Camera _camera;
     private bool _readInput;
 
-    float flySpeed = 10;
+    float flySpeed = 1;
 
     bool _shift;
     bool _ctrl;
     float accelerationAmount = 30;
     float accelerationRatio = 3;
     float slowDownRatio = 0.2f;
-
-
-
-
+    
     // http://forum.unity3d.com/threads/a-free-simple-smooth-mouselook.73117/
     Vector2 _mouseAbsolute;
     Vector2 _smoothMouse;
@@ -36,7 +33,7 @@ public class FreeCamera : MonoBehaviour
     {
         _camera = GetComponent<Camera>();
 
-        targetDirection = transform.localRotation.eulerAngles;
+        ResetView();
 
 
         // Set target direction for the character body to its inital state.
@@ -144,5 +141,10 @@ public class FreeCamera : MonoBehaviour
         {
             transform.Translate(Vector3.down * flySpeed);
         }
+    }
+
+    public void ResetView()
+    {
+        targetDirection = transform.localRotation.eulerAngles;
     }
 }

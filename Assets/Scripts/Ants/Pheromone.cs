@@ -111,7 +111,7 @@ public class Pheromone : MonoBehaviour, ITickable
 
         if (assessingPheromoneCounted == true)
         {
-            if (Vector3.Distance(transform.position, owner.transform.position) > (owner.assessmentPheromoneRange * 1.1f))
+            if (Vector3.Distance(transform.position, owner.transform.position) > (AntScales.Distances.AssessmentPheromoneSensing * 1.1f))
             {
                 assessingPheromoneCounted = false;
             }

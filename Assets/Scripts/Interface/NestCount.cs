@@ -19,30 +19,42 @@ public class NestCount : MonoBehaviour
 
     private int? _highlightedNestIndex = null;
 
-    void Start()
+    private bool _instantiated = false;
+
+    private void InstantiateUI()
     {
         Simulation = GameObject.FindObjectOfType<SimulationManager>() as SimulationManager;
 
-        _nestCountControls = new Lazy<List<NestCountControl>>(() =>
+        if (Simulation != null)
         {
-            var nestCountControlPrefab = Resources.Load("NestNumbers") as GameObject;
-            var nestCountControls = new List<NestCountControl>();
+            _instantiated = true;
 
-            for (int i = 0; i < Simulation.NestInfo.Count; i++)
+            _nestCountControls = new Lazy<List<NestCountControl>>(() =>
             {
-                var ctl = GameObject.Instantiate(nestCountControlPrefab);
-                ctl.transform.SetParent(transform);
+                var nestCountControlPrefab = Resources.Load("NestNumbers") as GameObject;
+                var nestCountControls = new List<NestCountControl>();
 
-                ctl.GetComponent<RectTransform>().anchoredPosition = new Vector2(80 + (50 * i), -150);
-                nestCountControls.Add(ctl.GetComponent<NestCountControl>());
-            }
+                for (int i = 0; i < Simulation.NestInfo.Count; i++)
+                {
+                    var ctl = GameObject.Instantiate(nestCountControlPrefab);
+                    ctl.transform.SetParent(transform);
 
-            return nestCountControls;
-        });
+                    ctl.GetComponent<RectTransform>().anchoredPosition = new Vector2(80 + (50 * i), -150);
+                    nestCountControls.Add(ctl.GetComponent<NestCountControl>());
+                }
+
+                return nestCountControls;
+            });
+        }
     }
 
     void Update()
     {
+        if (!_instantiated)
+            InstantiateUI();
+        if (!_instantiated)
+            return;
+
         int? newHighlight = null;
         for (int i = 0; i < _nestCountControls.Value.Count; i++)
         {

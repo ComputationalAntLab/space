@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SimulationSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ArenaName>Equidistant</ArenaName>
+  <ArenaFilename>C:/Users/andos/git/space/Arenas/Equidistant.xml</ArenaFilename>
   <ExperimentName>
-	<Value>First</Value>
+    <Value>First</Value>
   </ExperimentName>
   <RandomSeed>
     <Value>13</Value>
@@ -16,8 +17,17 @@
   <ProportionActive>
     <Value>0.25</Value>
   </ProportionActive>
+  <StartingNestQuality>
+    <Value>0.1</Value>
+  </StartingNestQuality>
+  <FirstNewNestQuality>
+    <Value>0.3</Value>
+  </FirstNewNestQuality>
+  <SecondNewNestQuality>
+    <Value>0.6</Value>
+  </SecondNewNestQuality>
   <StartingTickRate>
-    <Value>5</Value>
+    <Value>1</Value>
   </StartingTickRate>
   <MaximumSimulationRunTime>
     <Value>1</Value>

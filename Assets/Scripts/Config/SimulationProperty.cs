@@ -23,7 +23,7 @@ namespace Assets.Scripts.Config
 
         public override string GetValue()
         {
-            return Value.ToString();
+            return Value == null ? string.Empty : Value.ToString();
         }
     }
 
