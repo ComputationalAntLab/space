@@ -1,10 +1,7 @@
 ﻿using Assets.Scripts.Config;
 using Assets.Scripts.Extensions;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.SceneManagement;

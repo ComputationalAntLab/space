@@ -47,6 +47,8 @@ public class AntMovement : MonoBehaviour, ITickable
 
     private bool _isIntersectingAssessmentPheromones;
 
+    public bool usePheromones;
+
     // Use this for initialization
     void Start()
     {
@@ -977,7 +979,7 @@ public class AntMovement : MonoBehaviour, ITickable
         if (!simulation.Settings.AntsLayPheromones.Value)
             return;
 
-        if (!(ant.state == BehaviourState.Leading || ant.state == BehaviourState.Recruiting) || !simulation.Settings.AntsLayPheromones.Value || ant.inNest)
+        if (!(ant.state == BehaviourState.Leading || ant.state == BehaviourState.Recruiting) || !usePheromones || ant.inNest)
         {
             return;
         }
@@ -995,7 +997,7 @@ public class AntMovement : MonoBehaviour, ITickable
         if (!simulation.Settings.AntsLayPheromones.Value)
             return;
 
-        if (!(ant.state == BehaviourState.Reversing) || !simulation.Settings.AntsLayPheromones.Value || ant.inNest)
+        if (!(ant.state == BehaviourState.Reversing) || !usePheromones || ant.inNest)
         {
             return;
         }

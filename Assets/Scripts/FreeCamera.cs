@@ -1,12 +1,11 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class FreeCamera : MonoBehaviour
 {
     private Camera _camera;
     private bool _readInput;
 
-    float flySpeed = 10;
+    float flySpeed = 1;
 
     bool _shift;
     bool _ctrl;

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Assets.Scripts.Ants
+﻿namespace Assets.Scripts.Ants
 {
     public static class AntScales
     {
