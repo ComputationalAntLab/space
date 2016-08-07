@@ -149,7 +149,6 @@ public class AntManager : MonoBehaviour, ITickable
             // Check if ant is giving up recruiting
             if (simulation.TickManager.TotalElapsedSimulatedSeconds - _recruitmentWaitStartSeconds >= AntScales.Times.RecruiterWaitSeconds)
             {
-                Debug.Log("I'm done waiting");
                 recruitmentStage = RecruitmentStage.GoingToOldNest;
             }
         }
@@ -470,7 +469,7 @@ public class AntManager : MonoBehaviour, ITickable
     {
         //turn the right way up 
         transform.rotation = Quaternion.identity;
-        transform.position = new Vector3(transform.position.x + 1, 1.08f, transform.position.z);
+        transform.position = new Vector3(transform.position.x + 1, 0.15f, transform.position.z);
         move.Enable();
 
         if (transform.parent.tag == Naming.Ants.CarryPosition)
@@ -523,14 +522,14 @@ public class AntManager : MonoBehaviour, ITickable
             if (nest == oldNest)
             {
                 recruitmentStage = RecruitmentStage.GoingToNewNest;
+                return;
             }
-            else if (nest == myNest)
+            else if (nest == myNest && !IsQuorumReached()) // don't wait if quorum reached
             {
                 recruitmentStage = RecruitmentStage.WaitingInNewNest;
                 _recruitmentWaitStartSeconds = simulation.TickManager.TotalElapsedSimulatedSeconds;
-                Debug.Log("Got in my nest, waiting");
+                return;
             }
-            return;
         }
 
         //ignore ants that have just been dropped here

@@ -775,10 +775,10 @@ public class AntMovement : MonoBehaviour, ITickable
 
         Turn(goalAngle);
 
-        if (ant.state == BehaviourState.Recruiting)
+        if (ant.state == BehaviourState.Inactive && ant.myNest != ant.oldNest)
         {
-            //Debug.DrawLine(transform.position, target.transform.position, Color.white, 1);
-            //Debug.DrawLine(transform.position, transform.position + (5 * transform.forward), Color.red, 1);
+            Debug.DrawLine(transform.position, target.transform.position, Color.white, 1);
+            Debug.DrawLine(transform.position, transform.position + (5 * transform.forward), Color.red, 1);
         }
     }
 
