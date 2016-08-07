@@ -144,9 +144,12 @@ public class AntManager : MonoBehaviour, ITickable
 
         if (state == BehaviourState.Recruiting && recruitmentStage == RecruitmentStage.WaitingInNewNest)
         {
+            CheckQuorum(myNest);
+
             // Check if ant is giving up recruiting
             if (simulation.TickManager.TotalElapsedSimulatedSeconds - _recruitmentWaitStartSeconds >= AntScales.Times.RecruiterWaitSeconds)
             {
+                Debug.Log("I'm done waiting");
                 recruitmentStage = RecruitmentStage.GoingToOldNest;
             }
         }
@@ -170,7 +173,7 @@ public class AntManager : MonoBehaviour, ITickable
         }
 
         //if an ant is carrying another and is within x distance of their nest's centre then drop the ant
-        if (carryPosition.childCount > 0 && Vector3.Distance(myNest.transform.position, transform.position) < myNest.transform.localScale.x / 4f)
+        if (carryPosition.childCount > 0 && Vector3.Distance(myNest.transform.position, transform.position) < AntScales.Distances.RecruitingNestMiddle)
         {
             var c0 = carryPosition.GetChild(0);
             var carriedAnt = carryPosition.Find(Naming.Ants.Tag);
@@ -525,6 +528,7 @@ public class AntManager : MonoBehaviour, ITickable
             {
                 recruitmentStage = RecruitmentStage.WaitingInNewNest;
                 _recruitmentWaitStartSeconds = simulation.TickManager.TotalElapsedSimulatedSeconds;
+                Debug.Log("Got in my nest, waiting");
             }
             return;
         }
@@ -866,6 +870,14 @@ public class AntManager : MonoBehaviour, ITickable
     {
         newToOld = true;
         myNest = nest;
+        CheckQuorum(nest);
+
+        recTime = recTryTime;
+        ChangeState(BehaviourState.Recruiting);
+    }
+
+    private void CheckQuorum(NestManager nest)
+    {
         //check the qourum of this nest until quorum is met once.
         if (IsQuorumReached())
         {
@@ -875,9 +887,6 @@ public class AntManager : MonoBehaviour, ITickable
         {
             percievedQourum = Mathf.Round(RandomGenerator.Instance.NormalRandom(nest.GetQuorum(), qourumAssessNoise));
         }
-
-        recTime = recTryTime;
-        ChangeState(BehaviourState.Recruiting);
     }
 
     private void Reverse(NestManager nest)

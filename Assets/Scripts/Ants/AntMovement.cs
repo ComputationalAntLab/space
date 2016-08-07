@@ -90,6 +90,12 @@ public class AntMovement : MonoBehaviour, ITickable
             return;
         }
 
+        if (ant.state == BehaviourState.Recruiting && ant.recruitmentStage == RecruitmentStage.WaitingInNewNest)
+        {
+            if (Vector3.Distance(ant.transform.position, ant.myNest.transform.position) <= AntScales.Distances.RecruitingNestMiddle)
+                return;
+        }
+
         // ensures that an assessor ant always keeps within the nest cavity 
         // if the assessor randomly leaves the nest it will turn back towards the nest centre 
         //This statements makes assessors in the nest change direction more frequently than those outside the nest.
@@ -452,7 +458,7 @@ public class AntMovement : MonoBehaviour, ITickable
             WalkToNest(ant.oldNest);
         else if (ant.recruitmentStage == RecruitmentStage.GoingToNewNest)
             WalkToNest(ant.myNest);
-        else // ant is in wait mode so just walk with variance to the center of the nest
+        else // ant is in wait mode so just walk to the center of the nest
             WalkToGameObject(ant.myNest.gameObject, true);
     }
 

@@ -49,6 +49,8 @@ namespace Assets.Scripts.Ants
             public const float AssessingDoor = 1.5f;
             public const float AssessingNestMiddle = 3f;
 
+            public const float RecruitingNestMiddle = 1.5f;
+
             public const float DoorEntry = 1.2f;
 
             public const float Spawning = 0.1f;
