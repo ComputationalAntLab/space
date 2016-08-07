@@ -25,7 +25,7 @@ namespace Assets.Scripts.Ants
 
         public static class Times
         {
-            public const int RecruiterGiveUpSeconds = 60;
+            public const int RecruiterWaitSeconds = 60;
         }
 
         public static class Distances

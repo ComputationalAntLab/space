@@ -12,6 +12,8 @@ public class AntMovement : MonoBehaviour, ITickable
     //CharacterController cont;
     BoxCollider cont;
 
+    public bool usePheromones;
+
     float dir;                              //current direction
     float nextDirChange_dist;               //max distance to be moved before next direction change
     float nextDirChange_time;               //max time before next direction change
@@ -22,6 +24,7 @@ public class AntMovement : MonoBehaviour, ITickable
     //Parameters
     public GameObject pheromonePrefab;      //the pheromone prefab
     public float maxVar = 22.5f;              //max amount this ant can turn at one time
+    public float baseMaxVar = 22.5f;
     public float maxDirChange_time = 3f;//5f;    //maximum time between direction changes
 
     public Vector3 lastPosition;
@@ -47,7 +50,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
     private bool _isIntersectingAssessmentPheromones;
 
-    public bool usePheromones;
+    private NestManager _targetNest;
 
     // Use this for initialization
     void Start()
@@ -362,32 +365,32 @@ public class AntMovement : MonoBehaviour, ITickable
         // Franks et al. Ant Search Strategy After Interrupted Tandem Runs
         if (ant.state == BehaviourState.Scouting)
         {
-            maxVar = 40f;
+            maxVar = baseMaxVar * 1.5f;
             ScoutingDirectionChange();
         }
         else if (ant.state == BehaviourState.Following)
         {
-            maxVar = 10f;
+            maxVar = baseMaxVar / 2;
             FollowingDirectionChange();
         }
         else if (ant.state == BehaviourState.Inactive)
         {
-            maxVar = 40f;
+            maxVar = baseMaxVar * 1.5f;
             InactiveDirectionChange();
         }
         else if (ant.state == BehaviourState.Recruiting)
         {
-            maxVar = 20f;
+            maxVar = baseMaxVar / 2;
             RecruitingDirectionChange();
         }
         else if (ant.state == BehaviourState.Reversing)
         {
-            maxVar = 20f;
+            maxVar = baseMaxVar;
             ReversingDirectionChange();
         }
         else
         {
-            maxVar = 20f;
+            maxVar = baseMaxVar;
             AssessingDirectionChange();
         }
         Turned();
@@ -399,7 +402,7 @@ public class AntMovement : MonoBehaviour, ITickable
         if (door == null)
             RandomWalk();
         else
-            WalkToGameObject(door);
+            WalkToGameObject(door, false);
     }
 
     private void FollowingDirectionChange()
@@ -439,66 +442,46 @@ public class AntMovement : MonoBehaviour, ITickable
     //inactive ants swarn around center of nest
     private void InactiveDirectionChange()
     {
-        WalkToGameObject(NextWaypoint());
+        WalkToGameObject(NextWaypoint(), true);
     }
 
     //recruiters go backwards and forwards between the nests they are recruiting from and too (with randomness)
     private void RecruitingDirectionChange()
     {
-        //if going back to old nest
-        if (ant.newToOld && ant.OldNestOccupied())
-            WalkToGameObject(NextWaypoint());
-        //if no ants in old nest then walk randomly
-        else if (ant.newToOld)
-            RandomWalk();
-        else
-            WalkToGameObject(NextWaypoint());
+        if (ant.recruitmentStage == RecruitmentStage.GoingToOldNest)
+            WalkToNest(ant.oldNest);
+        else if (ant.recruitmentStage == RecruitmentStage.GoingToNewNest)
+            WalkToNest(ant.myNest);
+        else // ant is in wait mode so just walk with variance to the center of the nest
+            WalkToGameObject(ant.myNest.gameObject, true);
     }
 
     private void ReversingDirectionChange()
     {
         if (ant.newToOld && ant.OldNestOccupied())
-            WalkToGameObject(NextWaypoint());
+            WalkToGameObject(NextWaypoint(), true);
         //if no ants in old nest then walk randomly
         else if (ant.newToOld)
             RandomWalk();
         else
-            WalkToGameObject(NextWaypoint());
+            WalkToGameObject(NextWaypoint(), true);
     }
 
     public void AssessingDirectionChange()
     {
-        if (ant.assessmentStage == NestAssessmentStage.ReturningToHomeNestDoor)
+        if (ant.assessmentStage == NestAssessmentStage.ReturningToHomeNest)
         {
-            WalkToGameObject(ant.oldNest.door);
-            if (Vector3.Distance(transform.position, ant.oldNest.door.transform.position) < AntScales.Distances.AssessingDoor)
-            {
-                ant.assessmentStage = NestAssessmentStage.ReturningToHomeNestMiddle;
-            }
-            return;
-        }
-        else if (ant.assessmentStage == NestAssessmentStage.ReturningToPotentialNestDoor)
-        {
-            WalkToGameObject(ant.nestToAssess.door);
-            if (Vector3.Distance(transform.position, ant.nestToAssess.door.transform.position) < AntScales.Distances.AssessingDoor)
-            {
-                ant.assessmentStage = NestAssessmentStage.ReturningToPotentialNestMiddle;
-            }
-            return;
-        }
-        else if (ant.assessmentStage == NestAssessmentStage.ReturningToHomeNestMiddle)
-        {
-            WalkToGameObject(ant.oldNest.gameObject);
+            WalkToNest(ant.oldNest);
             if (Vector3.Distance(transform.position, ant.oldNest.transform.position) < AntScales.Distances.AssessingNestMiddle)
             {
-                ant.assessmentStage = NestAssessmentStage.ReturningToPotentialNestDoor;
+                ant.assessmentStage = NestAssessmentStage.ReturningToPotentialNest;
                 ant.SetPrimaryColour(AntColours.NestAssessment.ReturningToPotentialNest);
             }
             return;
         }
-        else if (ant.assessmentStage == NestAssessmentStage.ReturningToPotentialNestMiddle)
+        else if (ant.assessmentStage == NestAssessmentStage.ReturningToPotentialNest)
         {
-            WalkToGameObject(ant.nestToAssess.gameObject);
+            WalkToNest(ant.nestToAssess);
             if (Vector3.Distance(transform.position, ant.nestToAssess.transform.position) < AntScales.Distances.AssessingNestMiddle)
             {
                 if (ant.inNest)
@@ -528,12 +511,12 @@ public class AntMovement : MonoBehaviour, ITickable
             }
             else
             {
-                WalkToGameObject(ant.nestToAssess.gameObject);
+                WalkToGameObject(ant.nestToAssess.gameObject, true);
             }
         }
         else
         {
-            WalkToGameObject(NextWaypoint());
+            WalkToGameObject(NextWaypoint(), true);
         }
     }
     //
@@ -750,9 +733,27 @@ public class AntMovement : MonoBehaviour, ITickable
         return _enabled;
     }
 
+    public void WalkToNest(NestManager nest)
+    {
+        if (Vector3.Distance(transform.position, nest.door.transform.position) < AntScales.Distances.AssessingDoor)
+        {
+            // If the ant is just going to a nest then let them walk right to it, they can see it
+            WalkToGameObject(nest.gameObject, false);
+        }
+        else if (Vector3.Distance(transform.position, nest.door.gameObject.transform.position) <= AntScales.Distances.AssessingDoor * 2)
+        {
+            // If they get close to the door then just walk in
+            WalkToGameObject(nest.door.gameObject, false);
+        }
+        else
+        {
+            WalkToGameObject(nest.door.gameObject, true);
+        }
+    }
+
     /*this finds mid point (angle wise) between current direction and direction of given object
 	then picks direction that is that mid point +/- an angle <= this.maxVar*/
-    public void WalkToGameObject(GameObject target)
+    public void WalkToGameObject(GameObject target, bool withVariance)
     {
         float goalAngle;
         float currentAngle = transform.eulerAngles.y;
@@ -763,29 +764,16 @@ public class AntMovement : MonoBehaviour, ITickable
         if (Mathf.Abs(goalAngle - currentAngle) > 180)
             currentAngle -= 360;
 
-        float newDir = RandomGenerator.Instance.NormalRandom(goalAngle, maxVar);
+        if (withVariance)
+            goalAngle = RandomGenerator.Instance.NormalRandom(goalAngle, maxVar);
 
-        if (ant.state == BehaviourState.Assessing)
+        Turn(goalAngle);
+
+        if (ant.state == BehaviourState.Recruiting)
         {
-            // If the ant is just going to a nest then let them walk right to it, they can see it
-            if (ant.inNest &&
-            ((ant.assessmentStage == NestAssessmentStage.ReturningToHomeNestMiddle && ant.currentNest == ant.oldNest)
-             || (ant.assessmentStage == NestAssessmentStage.ReturningToPotentialNestMiddle && ant.currentNest == ant.nestToAssess)))
-                newDir = goalAngle;
-            // If they get close to the door then just walk in
-            else if (ant.assessmentStage == NestAssessmentStage.ReturningToHomeNestDoor || ant.assessmentStage == NestAssessmentStage.ReturningToPotentialNestDoor)
-            {
-                if (Vector3.Distance(transform.position, target.transform.position) <= AntScales.Distances.AssessingDoor * 2)
-                    newDir = goalAngle;
-            }
+            //Debug.DrawLine(transform.position, target.transform.position, Color.white, 1);
+            //Debug.DrawLine(transform.position, transform.position + (5 * transform.forward), Color.red, 1);
         }
-        Turn(newDir);
-
-        //if (ant.state == BehaviourState.Assessing)
-        //{
-        //    Debug.DrawLine(transform.position, target.transform.position, Color.white, 1);
-        //    Debug.DrawLine(transform.position, transform.position + (5 * transform.forward), Color.red, 1);
-        //}
     }
 
     private void RandomWalk()

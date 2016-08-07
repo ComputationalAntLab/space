@@ -90,8 +90,9 @@ public class AntManager : MonoBehaviour, ITickable
     private Color _primaryColour;
 
     private float _elapsed;
-    private float _recruitingStartSeconds;
+    private float _recruitmentWaitStartSeconds;
     private bool _recruitingGivingUp;
+    public RecruitmentStage recruitmentStage;
 
     // Use this for initialization
     void Start()
@@ -141,16 +142,12 @@ public class AntManager : MonoBehaviour, ITickable
             DecrementCounters();
         }
 
-        if (false && state == BehaviourState.Recruiting)
+        if (state == BehaviourState.Recruiting && recruitmentStage == RecruitmentStage.WaitingInNewNest)
         {
             // Check if ant is giving up recruiting
-            if (_recruitingGivingUp)
+            if (simulation.TickManager.TotalElapsedSimulatedSeconds - _recruitmentWaitStartSeconds >= AntScales.Times.RecruiterWaitSeconds)
             {
-
-            }
-            else if (simulation.TickManager.TotalElapsedSimulatedSeconds - _recruitingStartSeconds >= AntScales.Times.RecruiterGiveUpSeconds)
-            {
-                _recruitingGivingUp = false;
+                recruitmentStage = RecruitmentStage.GoingToOldNest;
             }
         }
 
@@ -518,6 +515,20 @@ public class AntManager : MonoBehaviour, ITickable
         currentNest = nest;
         inNest = true;
 
+        if (state == BehaviourState.Recruiting)
+        {
+            if (nest == oldNest)
+            {
+                recruitmentStage = RecruitmentStage.GoingToNewNest;
+            }
+            else if (nest == myNest)
+            {
+                recruitmentStage = RecruitmentStage.WaitingInNewNest;
+                _recruitmentWaitStartSeconds = simulation.TickManager.TotalElapsedSimulatedSeconds;
+            }
+            return;
+        }
+
         //ignore ants that have just been dropped here
         if (nest == myNest && state == BehaviourState.Inactive)
             return;
@@ -641,7 +652,7 @@ public class AntManager : MonoBehaviour, ITickable
             // store lenght of first visit and reset length to zero
             assessmentFirstLengthHistory = move.assessingDistance;
             move.assessingDistance = 0f;
-            assessmentStage = NestAssessmentStage.ReturningToHomeNestDoor;
+            assessmentStage = NestAssessmentStage.ReturningToHomeNest;
             SetPrimaryColour(AntColours.NestAssessment.ReturningToHomeNest);
             return;
         }
@@ -798,8 +809,8 @@ public class AntManager : MonoBehaviour, ITickable
         this.state = newState;
         if (this.state == BehaviourState.Recruiting)
         {
-            _recruitingStartSeconds = simulation.TickManager.TotalElapsedSimulatedSeconds;
             _recruitingGivingUp = false;
+            recruitmentStage = RecruitmentStage.GoingToOldNest;
         }
 
         AssignParent();

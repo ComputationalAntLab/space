@@ -16,9 +16,14 @@
     public enum NestAssessmentStage
     {
         Assessing,
-        ReturningToHomeNestDoor,
-        ReturningToHomeNestMiddle,
-        ReturningToPotentialNestDoor,
-        ReturningToPotentialNestMiddle
+        ReturningToHomeNest,
+        ReturningToPotentialNest
+    }
+
+    public enum RecruitmentStage
+    {
+        GoingToOldNest,
+        GoingToNewNest,
+        WaitingInNewNest
     }
 }
