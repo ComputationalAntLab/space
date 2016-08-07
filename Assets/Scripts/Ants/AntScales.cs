@@ -23,6 +23,11 @@ namespace Assets.Scripts.Ants
             public const float PheromoneFrequencyBuffon = 0.0376f;        //the frequency that pheromones are laid for buffon needle
         }
 
+        public static class Times
+        {
+            public const int RecruiterGiveUpSeconds = 60;
+        }
+
         public static class Distances
         {
             public const float DoorSensing = 5f;

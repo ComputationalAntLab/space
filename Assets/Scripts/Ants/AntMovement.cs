@@ -781,11 +781,11 @@ public class AntMovement : MonoBehaviour, ITickable
         }
         Turn(newDir);
 
-        if (ant.state == BehaviourState.Assessing)
-        {
-            Debug.DrawLine(transform.position, target.transform.position, Color.white, 1);
-            Debug.DrawLine(transform.position, transform.position + (5 * transform.forward), Color.red, 1);
-        }
+        //if (ant.state == BehaviourState.Assessing)
+        //{
+        //    Debug.DrawLine(transform.position, target.transform.position, Color.white, 1);
+        //    Debug.DrawLine(transform.position, transform.position + (5 * transform.forward), Color.red, 1);
+        //}
     }
 
     private void RandomWalk()

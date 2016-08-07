@@ -89,6 +89,10 @@ public class AntManager : MonoBehaviour, ITickable
     private Color? _temporaryColour;
     private Color _primaryColour;
 
+    private float _elapsed;
+    private float _recruitingStartSeconds;
+    private bool _recruitingGivingUp;
+
     // Use this for initialization
     void Start()
     {
@@ -127,8 +131,6 @@ public class AntManager : MonoBehaviour, ITickable
         //}
     }
 
-    private float _elapsed;
-
     public void Tick(float elapsedSimulationMS)
     {
         PerceivedTicks++;
@@ -137,6 +139,19 @@ public class AntManager : MonoBehaviour, ITickable
         {
             WriteHistory();
             DecrementCounters();
+        }
+
+        if (false && state == BehaviourState.Recruiting)
+        {
+            // Check if ant is giving up recruiting
+            if (_recruitingGivingUp)
+            {
+
+            }
+            else if (simulation.TickManager.TotalElapsedSimulatedSeconds - _recruitingStartSeconds >= AntScales.Times.RecruiterGiveUpSeconds)
+            {
+                _recruitingGivingUp = false;
+            }
         }
 
         move.Tick(elapsedSimulationMS);
@@ -500,7 +515,7 @@ public class AntManager : MonoBehaviour, ITickable
             failedTandemLeader = false;
         }
 
-        currentNest= nest;
+        currentNest = nest;
         inNest = true;
 
         //ignore ants that have just been dropped here
@@ -613,7 +628,7 @@ public class AntManager : MonoBehaviour, ITickable
         }
 
         // Assessing ant has entered a nest, make sure it updates the assement bit
-        if(state == BehaviourState.Assessing)
+        if (state == BehaviourState.Assessing)
         {
             move.AssessingDirectionChange();
         }
@@ -680,7 +695,7 @@ public class AntManager : MonoBehaviour, ITickable
 
         //make assessment of this nest's quality
         int nestID = simulation.GetNestID(nest) - 1;
-        
+
         //reset current nest area
         currentNestArea = 0f;
 
@@ -770,9 +785,9 @@ public class AntManager : MonoBehaviour, ITickable
     }
 
     //changes state of ant and assigns the correct parent in gameobject heirachy
-    public void ChangeState(BehaviourState state)
+    public void ChangeState(BehaviourState newState)
     {
-        if (state == BehaviourState.Assessing)
+        if (newState == BehaviourState.Assessing)
         {
             ChangeToAssessingState();
         }
@@ -780,7 +795,13 @@ public class AntManager : MonoBehaviour, ITickable
         {
             previousState = this.state;
         }
-        this.state = state;
+        this.state = newState;
+        if (this.state == BehaviourState.Recruiting)
+        {
+            _recruitingStartSeconds = simulation.TickManager.TotalElapsedSimulatedSeconds;
+            _recruitingGivingUp = false;
+        }
+
         AssignParent();
     }
 
