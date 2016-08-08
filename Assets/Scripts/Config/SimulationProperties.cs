@@ -166,6 +166,18 @@
         }
     }
 
+    public class AntsReverseTandemRun : SimulationBoolProperty
+    {
+        public override string Name { get { return "Ants Reverse Tandem Run"; } }
+
+        public override string Description { get { return "Whether ants will reverse tandem run after a social carry."; } }
+
+        public AntsReverseTandemRun()
+        {
+            Value = true;
+        }
+    }
+
     public class OutputTickRate : SimulationIntProperty
     {
         public override int? MaxValue { get { return null; } }

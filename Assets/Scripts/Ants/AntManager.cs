@@ -195,7 +195,8 @@ public class AntManager : MonoBehaviour, ITickable
             {
                 socialCarrying = false;
             }
-            Reverse(myNest);
+            if (simulation.Settings.AntsReverseTandemRun.Value)
+                Reverse(myNest);
         }
 
         //BUGFIX: Sometimes new to old is incorrectly set for recruiters - unclear why as of yet.

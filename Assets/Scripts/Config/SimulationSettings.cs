@@ -47,6 +47,9 @@ namespace Assets.Scripts.Config
         public AntsLayPheromones AntsLayPheromones { get; set; }
 
         [SerializeField]
+        public AntsReverseTandemRun AntsReverseTandemRun { get; set; }
+
+        [SerializeField]
         public OutputTickRate OutputTickRate { get; set; }
 
         [SerializeField]
@@ -83,12 +86,15 @@ namespace Assets.Scripts.Config
             ExperimentName = new ExperimentName();
 
             RandomSeed = new RandomSeed();
+            StartingTickRate = new StartingTickRate();
+            MaximumSimulationRunTime = new MaximumSimulationRunTime();
+
             ColonySize = new ColonySize();
             QuorumThreshold = new QuorumThreshold();
             ProportionActive = new ProportionActive();
-            StartingTickRate = new StartingTickRate();
+
             AntsLayPheromones = new AntsLayPheromones();
-            MaximumSimulationRunTime = new MaximumSimulationRunTime();
+            AntsReverseTandemRun = new AntsReverseTandemRun();
 
             StartingNestQuality = new StartingNestQuality();
             FirstNewNestQuality = new FirstNewNestQuality();
@@ -121,6 +127,7 @@ namespace Assets.Scripts.Config
                     SecondNewNestQuality,
 
                     AntsLayPheromones,
+                    AntsReverseTandemRun,
 
                     OutputTickRate,
                     OutputEmigrationData,
