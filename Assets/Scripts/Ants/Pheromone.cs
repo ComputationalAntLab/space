@@ -109,7 +109,7 @@ public class Pheromone : MonoBehaviour, ITickable
             DestroyPheromone();
         }
 
-        if (assessingPheromoneCounted == true)
+        if (assessingPheromoneCounted)
         {
             if (Vector3.Distance(transform.position, owner.transform.position) > (AntScales.Distances.AssessmentPheromoneSensing * 1.1f))
             {

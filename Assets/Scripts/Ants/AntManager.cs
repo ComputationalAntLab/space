@@ -181,7 +181,7 @@ public class AntManager : MonoBehaviour, ITickable
             carriedAntBehaviour.Dropped(myNest);
 
             // drop social carry "follower" calculate total timesteps for social carry
-            if (socialCarrying == true)
+            if (socialCarrying)
             {
                 carryingTimeSteps = -1 * (carryingTimeSteps - timeStep);
             }
@@ -191,7 +191,7 @@ public class AntManager : MonoBehaviour, ITickable
             float TRDistance = Vector3.Distance(endPos, startPos);
             float TRSpeed = TRDistance / carryingTimeSteps;
             // update history with social carry and social carry speed
-            if (socialCarrying == true)
+            if (socialCarrying)
             {
                 socialCarrying = false;
             }
@@ -316,7 +316,7 @@ public class AntManager : MonoBehaviour, ITickable
     //tell this ant to lead 'follower' to preffered nest
     public void Lead(AntManager follower)
     {
-        if (failedTandemLeader == true && state == BehaviourState.Recruiting)
+        if (failedTandemLeader && state == BehaviourState.Recruiting)
         {
             failedTandemLeader = false;
         }
@@ -510,7 +510,7 @@ public class AntManager : MonoBehaviour, ITickable
     //this is called whenever an ant enters a nest
     public void EnteredNest(NestManager nest)
     {
-        if (failedTandemLeader == true && state == BehaviourState.Recruiting && nest != oldNest)
+        if (failedTandemLeader && state == BehaviourState.Recruiting && nest != oldNest)
         {
             failedTandemLeader = false;
         }
@@ -574,7 +574,7 @@ public class AntManager : MonoBehaviour, ITickable
         if (state == BehaviourState.Recruiting && nest == myNest)
         {
 
-            if (finishedRecruiting == true)
+            if (finishedRecruiting)
             {
                 ChangeState(BehaviourState.Inactive);
                 finishedRecruiting = false;
@@ -961,11 +961,11 @@ public class AntManager : MonoBehaviour, ITickable
         startTandemRunSeconds = 0;
 
         // log failed tandem run in history
-        if (forwardTandemRun == true)
+        if (forwardTandemRun)
         {
             forwardTandemRun = false;
         }
-        else if (reverseTandemRun == true)
+        else if (reverseTandemRun)
         {
             reverseTandemRun = false;
         }
