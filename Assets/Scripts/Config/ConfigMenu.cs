@@ -71,6 +71,9 @@ public class ConfigMenu : MonoBehaviour, IDisposable
         var loadExperiment = GameObject.Find("pnlSaveLoad").ButtonByName("Load");
         loadExperiment.onClick.AddListener(LoadExperiment_Clicked);
 
+        var batch = GameObject.Find("pnlSaveLoad").ButtonByName("Batch");
+        batch.onClick.AddListener(Batch_Clicked);
+
         var loadArena = GameObject.Find("pnlArena").ButtonByName("Load");
         loadArena.onClick.AddListener(LoadArena_Clicked);
 
@@ -124,6 +127,14 @@ public class ConfigMenu : MonoBehaviour, IDisposable
     {
         var file = EditorUtility.OpenFilePanel("Load File", string.Empty, "xml");
         LoadExperimentFromFile(file);
+    }
+
+    private void Batch_Clicked()
+    {
+        var file = EditorUtility.OpenFilePanel("Load File", string.Empty, string.Empty);
+        if (!Directory.Exists(file))
+            file = Path.GetDirectoryName(file);
+        RunInBatchMode(file);
     }
 
     private void LoadExperimentFromFile(string file)
@@ -279,8 +290,10 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
                         settings.ExperimentName.Value = Path.Combine(batchPath, settings.ExperimentName.Value);
 
-                        Settings = settings;
-                        SceneManager.LoadScene(Settings.ArenaName);
+                        var go = new GameObject("Arena Loader");
+                        GameObject.DontDestroyOnLoad(go);
+                        go.AddComponent<ArenaLoader>();
+                        go.GetComponent<ArenaLoader>().Load(settings);
                     }
                 }
             }

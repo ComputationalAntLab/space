@@ -196,7 +196,7 @@ public class AntMovement : MonoBehaviour, ITickable
     private bool HasFollowerTouchedLeader()
     {
         // if follower is waiting for leader to move -> return true (follower waits)
-        if (ant.followerWait == true)
+        if (ant.followerWait)
         {
             // if follower has lost tactile contact with leader -> begin to move (wait == false) 
             if (Vector3.Distance(transform.position, ant.leader.transform.position) > (AntScales.Distances.AverageAntenna))
@@ -775,7 +775,7 @@ public class AntMovement : MonoBehaviour, ITickable
 
         Turn(goalAngle);
 
-        if (ant.state == BehaviourState.Inactive && ant.myNest != ant.oldNest)
+        if (false && ant.state == BehaviourState.Inactive && ant.myNest != ant.oldNest)
         {
             Debug.DrawLine(transform.position, target.transform.position, Color.white, 1);
             Debug.DrawLine(transform.position, transform.position + (5 * transform.forward), Color.red, 1);
