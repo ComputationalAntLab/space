@@ -27,10 +27,10 @@
     <Value>0.6</Value>
   </SecondNewNestQuality>
   <StartingTickRate>
-    <Value>1</Value>
+    <Value>5</Value>
   </StartingTickRate>
   <MaximumSimulationRunTime>
-    <Value>0</Value>
+    <Value>1</Value>
   </MaximumSimulationRunTime>
   <AntsLayPheromones>
     <Value>true</Value>

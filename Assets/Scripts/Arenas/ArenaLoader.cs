@@ -10,10 +10,17 @@ namespace Assets.Scripts.Arenas
 {
     public class ArenaLoader : MonoBehaviour
     {
+        public static bool Loading { get; private set; }
+
         private bool _instantiated;
         private SimulationSettings _settings;
         private Arena _arena;
         private Vector3 _worldSize;
+
+        public ArenaLoader()
+        {
+            Loading = true;
+        }
 
         public void Load(SimulationSettings settings)
         {
@@ -40,11 +47,13 @@ namespace Assets.Scripts.Arenas
 
         private void InstantiateArena()
         {
+            Loading = true;
             CreateTerrain();
             CreateWalls();
             CreateNests();
             MoveCameras();
             StartSimulation();
+            Loading = false;
         }
 
         private void CreateTerrain()
@@ -107,7 +116,7 @@ namespace Assets.Scripts.Arenas
             if (_arena.StartingNest != null)
             {
                 var oldNestPrefab = Resources.Load(Naming.Resources.OldNestPrefab) as GameObject;
-                CreateNest(oldNestPrefab, _arena.StartingNest,Naming.World.InitialNest);
+                CreateNest(oldNestPrefab, _arena.StartingNest, Naming.World.InitialNest);
             }
             if (_arena.NewNests != null)
             {

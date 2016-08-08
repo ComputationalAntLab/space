@@ -245,6 +245,9 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
     void Update()
     {
+        if (ArenaLoader.Loading)
+            return;
+
         if (_batchExperimentPaths != null)
         {
             if (_batchExperimentPaths.Count == 0)
@@ -290,7 +293,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
                         settings.ExperimentName.Value = Path.Combine(batchPath, settings.ExperimentName.Value);
 
-                        var go = new GameObject("Arena Loader");
+                        var go = new GameObject("Arena Loader - " + Path.GetFileName(settings.ExperimentName.Value));
                         GameObject.DontDestroyOnLoad(go);
                         go.AddComponent<ArenaLoader>();
                         go.GetComponent<ArenaLoader>().Load(settings);
