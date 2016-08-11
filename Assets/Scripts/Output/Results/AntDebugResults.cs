@@ -11,14 +11,14 @@ namespace Assets.Scripts.Output
         public AntDebugResults(SimulationManager simulation, string basePath)
             : base(simulation, Path.Combine(basePath, "ants_debug"))
         {
-            Write("Step,AntId,PerceivedTicks");
+            WriteLine("Step,AntId,PerceivedTicks");
         }
 
         protected override void OutputData(long step)
         {
             foreach (var ant in Simulation.Ants)
             {
-                Write(string.Format("{0},{1},{2}", step, ant.AntId, ant.PerceivedTicks));
+                WriteLine(string.Format("{0},{1},{2}", step, ant.AntId, ant.PerceivedTicks));
             }
         }
     }

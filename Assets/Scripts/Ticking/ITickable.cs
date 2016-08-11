@@ -5,5 +5,9 @@
         void Tick(float elapsedSimulationMS);
 
         bool ShouldBeRemoved { get; }
+
+        void SimulationStarted();
+
+        void SimulationStopped();
     }
 }

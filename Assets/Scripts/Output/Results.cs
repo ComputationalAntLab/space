@@ -21,6 +21,11 @@ namespace Assets.Scripts.Output
 
         protected void Write(string message)
         {
+            _writer.Write(message);
+        }
+
+        protected void WriteLine(string message = "")
+        {
             _writer.WriteLine(message);
         }
 
@@ -34,6 +39,16 @@ namespace Assets.Scripts.Output
 
         protected virtual void BeforeDispose()
         {
+        }
+
+        public virtual void SimulationStarted()
+        {
+
+        }
+
+        public virtual void SimulationStopped()
+        {
+
         }
     }
 }

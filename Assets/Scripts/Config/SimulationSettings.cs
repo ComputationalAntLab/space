@@ -68,6 +68,9 @@ namespace Assets.Scripts.Config
         public OutputAntDetail OutputAntDetail { get; set; }
 
         [SerializeField]
+        public OutputLegacyData OutputLegacyData { get; set; }
+
+        [SerializeField]
         public OutputAntDebug OutputAntDebug { get; set; }
 
         [XmlIgnore]
@@ -106,6 +109,7 @@ namespace Assets.Scripts.Config
             OutputAntStateDistribution = new OutputAntStateDistribution();
             OutputAntDelta = new OutputAntDelta();
             OutputAntDetail = new OutputAntDetail();
+            OutputLegacyData = new OutputLegacyData();
             OutputAntDebug = new OutputAntDebug();
 
             _allProperties = new Lazy<List<SimulationPropertyBase>>(() =>
@@ -135,6 +139,7 @@ namespace Assets.Scripts.Config
                     OutputAntDelta,
                     OutputAntStateDistribution,
                     OutputAntDetail,
+                    OutputLegacyData,
                     OutputAntDebug
                };
              });

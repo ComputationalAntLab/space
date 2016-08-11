@@ -3,6 +3,7 @@ using Assets.Scripts;
 using Assets.Scripts.Extensions;
 using Assets.Scripts.Ticking;
 using Assets.Scripts.Ants;
+using System;
 
 public class AntManager : MonoBehaviour, ITickable
 {
@@ -1026,6 +1027,14 @@ public class AntManager : MonoBehaviour, ITickable
         _wasColourOn = false;
         _colourFlashTime = 0;
         this.ChangeColour(_temporaryColour.Value);
+    }
+
+    public void SimulationStarted()
+    {
+    }
+
+    public void SimulationStopped()
+    {
     }
 }
 

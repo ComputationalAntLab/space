@@ -28,12 +28,13 @@
             public const string BatchRunner = "BatchRunner";
             public const string Output = "Output";
             public const string AntData = "SimData";
+            public const string NewNestHolder = "NewNests";
         }
 
         public static class Ants
         {
             public const string Controller = "AntManager";
-            public const string Movement= "AntMovement";
+            public const string Movement = "AntMovement";
             public const string SensesArea = "Senses";
             public const string SensesScript = "AntSenses";
 

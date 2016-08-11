@@ -1,3 +1,4 @@
+using System;
 using Assets.Scripts.Ants;
 using Assets.Scripts.Ticking;
 using UnityEngine;
@@ -122,6 +123,14 @@ public class Pheromone : MonoBehaviour, ITickable
     {
         Destroy(gameObject);
         ShouldBeRemoved = true;
+    }
+
+    public void SimulationStarted()
+    {
+    }
+
+    public void SimulationStopped()
+    {
     }
 }
 

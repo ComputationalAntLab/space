@@ -2,6 +2,7 @@
 using Assets.Scripts.Ticking;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace Assets.Scripts.Ants
 {
@@ -57,6 +58,14 @@ namespace Assets.Scripts.Ants
         public void Tick(float elapsedSimulationMS)
         {
             _data.ReloadValue = true;
+        }
+
+        public void SimulationStarted()
+        {
+        }
+
+        public void SimulationStopped()
+        {
         }
 
         public class EmigrationData

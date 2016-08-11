@@ -14,7 +14,7 @@ namespace Assets
 
         public bool ShouldBeRemoved { get { return false; } }
 
-        private List<Results> results;
+        private List<Results> _results;
 
         public ResultsManager(SimulationManager simulation)
         {
@@ -54,34 +54,48 @@ namespace Assets
                 xml.Serialize(sw, Simulation.Settings);
             }
 
-            results = new List<Results>();
+            _results = new List<Results>();
 
-            results.Add(new ExecutionResults(Simulation, experimentPath));
+            _results.Add(new ExecutionResults(Simulation, experimentPath));
 
             if (Simulation.Settings.OutputEmigrationData.Value)
-                results.Add(new EmigrationResults(Simulation, experimentPath));
+                _results.Add(new EmigrationResults(Simulation, experimentPath));
             if (Simulation.Settings.OutputColonyData.Value)
-                results.Add(new ColonyResults(Simulation, experimentPath));
+                _results.Add(new ColonyResults(Simulation, experimentPath));
             if (Simulation.Settings.OutputAntDelta.Value)
-                results.Add(new AntDeltaResults(Simulation, experimentPath));
+                _results.Add(new AntDeltaResults(Simulation, experimentPath));
             if (Simulation.Settings.OutputAntDetail.Value)
-                results.Add(new AntDetailedResults(Simulation, experimentPath));
+                _results.Add(new AntDetailedResults(Simulation, experimentPath));
+            if (Simulation.Settings.OutputLegacyData.Value)
+                _results.Add(new LegacyResults(Simulation, experimentPath));
             if (Simulation.Settings.OutputAntDebug.Value)
-                results.Add(new AntDebugResults(Simulation, experimentPath));
+                _results.Add(new AntDebugResults(Simulation, experimentPath));
             if (Simulation.Settings.OutputAntStateDistribution.Value)
-                results.Add(new AntStateDistributionResults(Simulation, experimentPath));
+                _results.Add(new AntStateDistributionResults(Simulation, experimentPath));
         }
 
         public void Dispose()
         {
-            foreach (var res in results)
+            foreach (var res in _results)
                 res.Dispose();
         }
 
         public void Tick(float elapsedSimulationMS)
         {
-            foreach (var res in results)
+            foreach (var res in _results)
                 res.Step(Simulation.TickManager.CurrentTick);
+        }
+
+        public void SimulationStarted()
+        {
+            foreach (var res in _results)
+                res.SimulationStarted();
+        }
+
+        public void SimulationStopped()
+        {
+            foreach (var res in _results)
+                res.SimulationStopped();
         }
     }
 }

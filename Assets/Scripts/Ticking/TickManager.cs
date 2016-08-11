@@ -83,5 +83,21 @@ namespace Assets.Scripts.Ticking
             TotalElapsedSimulatedMilliseconds += elapsed;
             CurrentTick++;
         }
+
+        public virtual void SimulationStarted()
+        {
+            for (int i = 0; i < _entities.Count; i++)
+            {
+                _entities[i].SimulationStarted();
+            }
+        }
+
+        public virtual void SimulationStopped()
+        {
+            for (int i = 0; i < _entities.Count; i++)
+            {
+                _entities[i].SimulationStopped();
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using Assets.Scripts;
 using Assets.Scripts.Ticking;
 using Assets.Scripts.Ants;
+using System;
 
 public class AntMovement : MonoBehaviour, ITickable
 {
@@ -1069,5 +1070,13 @@ public class AntMovement : MonoBehaviour, ITickable
                 pher.Add(cols[i].transform.GetComponent(Naming.Ants.Pheromone));
         }
         return pher;
+    }
+
+    public void SimulationStarted()
+    {
+    }
+
+    public void SimulationStopped()
+    {
     }
 }

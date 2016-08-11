@@ -29,6 +29,8 @@ public class SimulationManager : MonoBehaviour
 
     public EmigrationInformation EmigrationInformation { get; private set; }
 
+    int _sinceEmigrationCheck = 5;
+
     //Parameters
     private GameObject initialNest;
 
@@ -91,14 +93,6 @@ public class SimulationManager : MonoBehaviour
                 ));
         }
 
-        BatchRunner batchObj = null;// (BatchRunner)arena.GetComponent(Naming.Simulation.BatchRunner);
-        //if this is batch running then write output
-        if (batchObj != null)
-        {
-            gameObject.AddComponent<Output>();
-            ((Output)transform.GetComponent(Naming.Simulation.Output)).SetUp();
-        }
-
         ResultsManager = new ResultsManager(this);
         EmigrationInformation = new EmigrationInformation(this);
 
@@ -106,6 +100,8 @@ public class SimulationManager : MonoBehaviour
         TickManager.AddEntities(Ants.Cast<ITickable>());
         TickManager.AddEntity(EmigrationInformation);
         TickManager.AddEntity(ResultsManager);
+
+        TickManager.SimulationStarted();
 
         SimulationRunning = true;
     }
@@ -196,7 +192,6 @@ public class SimulationManager : MonoBehaviour
         //return string.Format("{0}{1}", Naming.Entities.AntPrefix, antNumber);
     }
 
-    int _sinceEmigrationCheck = 5;
     void FixedUpdate()
     {
         if (SimulationRunning)
@@ -217,6 +212,10 @@ public class SimulationManager : MonoBehaviour
             if (EmigrationInformation.Data.PassivesInOldNest == 0)
                 SimulationRunning = false;
         }
+
+        // If we are no longer running this update then notify the simulation has stopped
+        if (!SimulationRunning)
+            TickManager.SimulationStopped();
     }
 
     private GameObject MakeObject(string name, Transform parent)

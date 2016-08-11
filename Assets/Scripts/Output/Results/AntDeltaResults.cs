@@ -11,7 +11,7 @@ namespace Assets.Scripts.Output
         public AntDeltaResults(SimulationManager simulation, string basePath)
             : base(simulation, Path.Combine(basePath, "ants_delta"))
         {
-            Write("Step,AntId,State,Position");
+            WriteLine("Step,AntId,State,Position");
         }
 
         public override void Step(long step)
@@ -19,7 +19,7 @@ namespace Assets.Scripts.Output
             foreach (var ant in Simulation.Ants)
             {
                 if (StateChanged(ant))
-                    Write(string.Format("{0},{1},{2},({3},{4},{5})", step, ant.AntId, ant.state, ant.transform.position.x, ant.transform.position.y, ant.transform.position.z));
+                    WriteLine(string.Format("{0},{1},{2},({3},{4},{5})", step, ant.AntId, ant.state, ant.transform.position.x, ant.transform.position.y, ant.transform.position.z));
             }
         }
 

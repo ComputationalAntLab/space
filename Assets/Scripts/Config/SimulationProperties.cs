@@ -255,6 +255,18 @@
         }
     }
 
+    public class OutputLegacyData : SimulationBoolProperty
+    {
+        public override string Name { get { return "Output Legacy Data"; } }
+
+        public override string Description { get { return "Whether to output emigration data in the legacy format."; } }
+
+        public OutputLegacyData()
+        {
+            Value = true;
+        }
+    }
+
 
     public class OutputAntDebug : SimulationBoolProperty
     {
