@@ -11,7 +11,7 @@ namespace Assets.Scripts.Output
         public AntDebugResults(SimulationManager simulation, string basePath)
             : base(simulation, Path.Combine(basePath, "ants_debug"))
         {
-            WriteLine("Step,AntId,PerceivedTicks");
+            WriteLine("Tick,AntId,PerceivedTicks");
         }
 
         protected override void OutputData(long step)

@@ -11,7 +11,7 @@ namespace Assets.Scripts.Output
         public AntDeltaResults(SimulationManager simulation, string basePath)
             : base(simulation, Path.Combine(basePath, "ants_delta"))
         {
-            WriteLine("Step,AntId,State,Position");
+            WriteLine("Tick,AntId,State,Position");
         }
 
         public override void Step(long step)

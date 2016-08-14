@@ -2,8 +2,6 @@
 {
     public abstract class FixedTickResults : Results
     {
-        public override bool IsDelta { get { return false; } }
-
         private int _tickRate;
         private int _untilTick = 0;
 

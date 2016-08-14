@@ -7,7 +7,7 @@ namespace Assets.Scripts.Output
         public AntDetailedResults(SimulationManager simulation, string basePath)
             : base(simulation, Path.Combine(basePath, "ants_detail"))
         {
-            WriteLine("Step,AntId,State,Position");
+            WriteLine("Tick,AntId,State,Position");
         }
 
         protected override void OutputData(long step)

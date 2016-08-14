@@ -7,7 +7,7 @@ namespace Assets.Scripts.Output
         public EmigrationResults(SimulationManager simulation, string basePath)
             : base(simulation, Path.Combine(basePath, "emigration"))
         {
-            WriteLine("Step,Property,Value");
+            WriteLine("Tick,Property,Value");
         }
 
         protected override void OutputData(long step)

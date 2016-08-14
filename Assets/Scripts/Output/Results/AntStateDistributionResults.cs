@@ -8,7 +8,7 @@ namespace Assets.Scripts.Output
         public AntStateDistributionResults(SimulationManager simulation, string basePath)
             : base(simulation, Path.Combine(basePath, "ant_state"))
         {
-            WriteLine("Step,State,Ants");
+            WriteLine("Tick,State,Ants");
         }
 
         protected override void OutputData(long step)

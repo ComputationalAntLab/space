@@ -76,7 +76,7 @@
     {
         public override int? MaxValue { get { return null; } }
 
-        public override int? MinValue { get { return null; } }
+        public override int? MinValue { get { return 0; } }
 
         public override string Name { get { return "Maximum Simulation Run Time (minutes)"; } }
 

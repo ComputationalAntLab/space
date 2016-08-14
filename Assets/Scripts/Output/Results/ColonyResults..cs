@@ -7,7 +7,7 @@ namespace Assets.Scripts.Output
         public ColonyResults(SimulationManager simulation, string basePath)
             : base(simulation, Path.Combine(basePath, "colony"))
         {
-            WriteLine("Step,NestId,Inactive,Assessing,Recruiting,Reversing");
+            WriteLine("Tick,NestId,Inactive,Assessing,Recruiting,Reversing");
         }
 
         protected override void OutputData(long step)

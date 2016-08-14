@@ -7,8 +7,6 @@ namespace Assets.Scripts.Output
     {
         public SimulationManager Simulation { get; private set; }
         
-        public abstract bool IsDelta { get; }
-
         private StreamWriter _writer;
 
         public Results(SimulationManager simulation, string fileNameWithoutExtension)
