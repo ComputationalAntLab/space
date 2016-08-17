@@ -40,8 +40,8 @@ public class AntSenses : MonoBehaviour
         }
 
 
-        //only continue if this ant is recruiting, the collision was with an ant and this ant isn't currently leading or carrying
-        if (ant.state != BehaviourState.Recruiting || ant.IsTransporting() || ant.IsTandemRunning())
+        //only continue if this ant is recruiting or reversing, the collision was with an ant and this ant isn't currently leading or carrying
+        if (!(ant.state == BehaviourState.Recruiting || ant.state == BehaviourState.Reversing || ant.state == BehaviourState.ReversingLeading) || ant.IsTransporting() || ant.IsTandemRunning())
             return;
 
         //assessing and following ants can't be recruited

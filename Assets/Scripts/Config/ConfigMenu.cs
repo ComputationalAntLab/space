@@ -59,9 +59,13 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
         if (!string.IsNullOrEmpty(file))
         {
-            LoadExperimentFromFile(file);
+            try
+            {
+                LoadExperimentFromFile(file);
+            }
+            catch { }
         }
-        else
+        if (Settings == null)
         {
             LoadSimulationSettings(new SimulationSettings());
         }

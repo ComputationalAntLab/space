@@ -8,7 +8,7 @@ namespace Assets.Scripts.Ants
         {
             public const float Scouting = 5;                //speed of an active ant while not tandem running or carrying
             public const float TandemRunning = 5;               //speed of an ant while tandem running
-            public const float Carrying = 37.5f;                //speed of an ant while carrying another ant
+            public const float Carrying = 3.75f;                //speed of an ant while carrying another ant
             public const float Inactive = .5f;             //speed of an ant in the inactive state
             public const float AssessingFirstVisit = 2.6595f;  //speed of an ant in the assessing state (first visit)
 
