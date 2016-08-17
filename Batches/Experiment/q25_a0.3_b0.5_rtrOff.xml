@@ -27,7 +27,7 @@
     <Value>0.5</Value>
   </SecondNewNestQuality>
   <StartingTickRate>
-    <Value>10</Value>
+    <Value>5</Value>
   </StartingTickRate>
   <MaximumSimulationRunTime>
     <Value>180</Value>
