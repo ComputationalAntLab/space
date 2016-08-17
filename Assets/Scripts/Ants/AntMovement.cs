@@ -465,6 +465,12 @@ public class AntMovement : MonoBehaviour, ITickable
 
     private void ReversingDirectionChange()
     {
+        if (ant.socialCarrying)
+        {
+            WalkToGameObject(ant.myNest.gameObject, true);
+            return;
+        }
+
         if (ant.newToOld && ant.OldNestOccupied())
             WalkToGameObject(NextWaypoint(), true);
         //if no ants in old nest then walk randomly
