@@ -256,7 +256,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
         {
             if (_batchExperimentPaths.Count == 0)
             {
-                _batchLog.WriteLine("Finished batch");
+                WriteLine("Finished batch");
                 Application.Quit();
             }
             else
@@ -265,7 +265,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
                 if (SimulationManager.Instance == null || !SimulationManager.Instance.SimulationRunning)
                 {
                     if (SimulationManager.Instance != null)
-                        _batchLog.WriteLine("Done");
+                        WriteLine("Done");
 
                     var experiment = _batchExperimentPaths[0];
                     _batchExperimentPaths.RemoveAt(0);
@@ -282,29 +282,43 @@ public class ConfigMenu : MonoBehaviour, IDisposable
                     }
                     catch (Exception ex)
                     {
-                        _batchLog.WriteLine("Error loading " + experiment + " - " + ex.Message);
+                        WriteLine("Error loading " + experiment + " - " + ex.Message);
                     }
 
                     if (settings == null)
                     {
-                        _batchLog.WriteLine("Unable to load " + experiment + " - skipping");
+                        WriteLine("Unable to load " + experiment + " - skipping");
                     }
                     else
                     {
-                        _batchLog.WriteLine("Running " + experiment);
-
                         var batchPath = Path.GetFileName(Path.GetDirectoryName(experiment));
 
                         settings.ExperimentName.Value = Path.Combine(batchPath, settings.ExperimentName.Value);
 
-                        var go = new GameObject("Arena Loader - " + Path.GetFileName(settings.ExperimentName.Value));
-                        GameObject.DontDestroyOnLoad(go);
-                        go.AddComponent<ArenaLoader>();
-                        go.GetComponent<ArenaLoader>().Load(settings);
+                        if (Directory.Exists(Path.Combine("Results", settings.ExperimentName.Value)))
+                        {
+                            WriteLine("Skipping" + experiment);
+                        }
+                        else
+                        {
+                            WriteLine("Running " + experiment);
+
+                            var go = new GameObject("Arena Loader - " + Path.GetFileName(settings.ExperimentName.Value));
+                            GameObject.DontDestroyOnLoad(go);
+                            go.AddComponent<ArenaLoader>();
+                            go.GetComponent<ArenaLoader>().Load(settings);
+                        }
                     }
                 }
             }
         }
+    }
+
+    private void WriteLine(string v)
+    {
+        if (_batchLog != null)
+            _batchLog.WriteLine(v);
+        Debug.Log(v);
     }
 
     public void Dispose()
