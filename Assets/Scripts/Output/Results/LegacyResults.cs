@@ -2,9 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Assets.Scripts;
 using Assets.Scripts.Ants;
-using System;
 
 namespace Assets.Scripts.Output
 {

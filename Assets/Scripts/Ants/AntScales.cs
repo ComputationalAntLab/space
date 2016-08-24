@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Assets.Scripts.Ants
+﻿namespace Assets.Scripts.Ants
 {
     public static class AntScales
     {

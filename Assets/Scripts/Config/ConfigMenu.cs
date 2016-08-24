@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEditor;
+#endif
+using UnityEngine;
 using Assets.Scripts.Config;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using UnityEditor;
 using System.IO;
 using System.Xml.Serialization;
 using System;
@@ -16,6 +17,9 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
     private List<string> _batchExperimentPaths;
     private StreamWriter _batchLog;
+
+    private InputField _experimentFileInput;
+    private InputField _arenaFileInput;
 
     private Button _btnStart;
 
@@ -55,6 +59,13 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
     private void RunInRegularMode()
     {
+#if !UNITY_WEBGL
+        _experimentFileInput = GameObject.Find("pnlSaveLoad").gameObject.InputByName("txtFile");
+        _arenaFileInput = GameObject.Find("pnlArena").gameObject.InputByName("txtFile");
+
+        _experimentFileInput.onValueChanged.AddListener(s => ValidateFile(s, _experimentFileInput));
+        _arenaFileInput.onValueChanged.AddListener(s => ValidateFile(s, _arenaFileInput));
+
         var file = PlayerPrefs.GetString("ExperimentFile");
 
         if (!string.IsNullOrEmpty(file))
@@ -82,6 +93,20 @@ public class ConfigMenu : MonoBehaviour, IDisposable
         loadArena.onClick.AddListener(LoadArena_Clicked);
 
         ValidateArena();
+
+#else
+        GameObject.Find("pnlSaveLoad").transform.parent = null;
+        GameObject.Find("pnlArena").transform.parent = null;
+#endif
+    }
+
+    private void ValidateFile(string s, InputField input)
+    {
+#if !UNITY_WEBGL
+        input.SetColour(File.Exists(s) ? Color.black : Color.red);
+
+        _btnStart.interactable = File.Exists(_experimentFileInput.text) && File.Exists(_experimentFileInput.text);
+#endif
     }
 
     private void LoadSimulationSettings(SimulationSettings settings)
@@ -98,6 +123,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
         catch { }
 
         num = 0;
+        max = Settings.AllProperties.Count;
         GetPropertiesContentArea().DetachChildren();
         foreach (var v in Settings.AllProperties)
             CreateInput(v);
@@ -110,44 +136,55 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
     private void ValidateArena()
     {
-        var fileName = string.IsNullOrEmpty(Settings.ArenaFilename) ? "<None Loaded>" : Settings.ArenaFilename;
+#if !UNITY_WEBGL
+        var fileName = string.IsNullOrEmpty(Settings.ArenaFilename) ? string.Empty : Settings.ArenaFilename;
 
-        var txt = GameObject.Find("pnlArena").gameObject.TextByName("txtFile");
-        txt.text = fileName;
+        _arenaFileInput.text = fileName;
 
-        if (File.Exists(fileName))
+        if (File.Exists(_arenaFileInput.text))
         {
             _btnStart.interactable = true;
-            txt.color = Color.black;
+            _arenaFileInput.SetColour(Color.black);
         }
         else
         {
             _btnStart.interactable = false;
-            txt.color = Color.red;
+            _arenaFileInput.SetColour(Color.red);
         }
+#endif
     }
 
     private void LoadExperiment_Clicked()
     {
+#if UNITY_EDITOR
         var file = EditorUtility.OpenFilePanel("Load File", string.Empty, "xml");
-        LoadExperimentFromFile(file);
+        _experimentFileInput.text = file;
+#endif
+
+        LoadExperimentFromFile(_experimentFileInput.text);
     }
 
     private void Batch_Clicked()
     {
+#if UNITY_EDITOR
         var file = EditorUtility.OpenFilePanel("Load File", string.Empty, string.Empty);
-        if (!Directory.Exists(file))
-            file = Path.GetDirectoryName(file);
-        RunInBatchMode(file);
+        _experimentFileInput.text = file;
+#endif
+
+        var fileToRun = _experimentFileInput.text;
+        if (!Directory.Exists(_experimentFileInput.text))
+            fileToRun = Path.GetDirectoryName(_experimentFileInput.text);
+        RunInBatchMode(fileToRun);
     }
 
     private void LoadExperimentFromFile(string file)
     {
+#if !UNITY_WEBGL
         PlayerPrefs.SetString("ExperimentFile", file);
 
-        GameObject.Find("pnlSaveLoad").gameObject.TextByName("txtFile").text = Path.GetFileName(file);
+        _experimentFileInput.text = file;
 
-        using (var sr = new StreamReader(file))
+        using (var sr = new StreamReader(_experimentFileInput.text))
         {
             var xml = new XmlSerializer(typeof(SimulationSettings));
 
@@ -158,25 +195,34 @@ public class ConfigMenu : MonoBehaviour, IDisposable
                 LoadSimulationSettings(settings);
             }
         }
+#endif
     }
 
     private void SaveExperiment_Clicked()
     {
+#if UNITY_EDITOR
         var file = EditorUtility.SaveFilePanel("Save File", string.Empty, "space.xml", "xml");
+        _experimentFileInput.text = file;
+#endif
 
-        using (var sr = new StreamWriter(file))
+#if !UNITY_WEBGL
+        using (var sr = new StreamWriter(_experimentFileInput.text))
         {
             var xml = new XmlSerializer(typeof(SimulationSettings));
 
             xml.Serialize(sr, Settings);
         }
+#endif
     }
 
     private void LoadArena_Clicked()
     {
+#if UNITY_EDITOR
         var file = EditorUtility.OpenFilePanel("Load File", string.Empty, "xml");
+        _arenaFileInput.text = file;
+#endif
 
-        Settings.ArenaFilename = file;
+        Settings.ArenaFilename = _arenaFileInput.text;
         ValidateArena();
     }
 
@@ -188,7 +234,9 @@ public class ConfigMenu : MonoBehaviour, IDisposable
         go.GetComponent<ArenaLoader>().Load(Settings);
     }
 
+    int max;
     int num = 0;
+
     private void CreateInput(SimulationPropertyBase property)
     {
         Transform content = GetPropertiesContentArea();
@@ -201,7 +249,8 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
         //a.transform.position = new Vector3(-240, 45 + -(0 + (num * 35)), 0);
         //a.transform.position = new Vector3(-240, 45 + (0 + (num * 35)), 0);
-        a.GetComponent<RectTransform>().anchoredPosition = new Vector2(165, -((num * 35) + 13));
+        a.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -((num+1) * 35) + 13);
+        a.GetComponent<RectTransform>().pivot = new Vector2(0, .5f);
 
         a.transform.Find("Label").GetComponent<Text>().text = property.Name;
 

@@ -8,7 +8,6 @@ using Assets;
 using Assets.Scripts.Ticking;
 using Assets.Scripts.Nests;
 using Assets.Scripts.Ants;
-using System;
 
 public class SimulationManager : MonoBehaviour
 {

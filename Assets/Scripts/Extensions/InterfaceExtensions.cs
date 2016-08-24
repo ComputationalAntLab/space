@@ -15,6 +15,16 @@ namespace Assets.Scripts.Extensions
             return gameObject.transform.ComponentFromChild<Text>(name);
         }
 
+        public static InputField InputByName(this GameObject gameObject, string name)
+        {
+            return gameObject.transform.ComponentFromChild<InputField>(name);
+        }
+
+        public static void SetColour(this InputField input, Color colour)
+        {
+            input.transform.ComponentFromChild<Text>("Text").color = colour;
+        }
+
         public static Button ButtonByName(this GameObject gameObject, string name)
         {
             return gameObject.transform.ComponentFromChild<Button>(name);

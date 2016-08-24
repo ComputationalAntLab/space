@@ -4,7 +4,6 @@ using System.Linq;
 using Assets.Scripts;
 using Assets.Scripts.Ticking;
 using Assets.Scripts.Ants;
-using System;
 
 public class AntMovement : MonoBehaviour, ITickable
 {
