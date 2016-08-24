@@ -131,6 +131,8 @@ public class ConfigMenu : MonoBehaviour, IDisposable
         var rect = GetPropertiesContentArea().GetComponent<RectTransform>();
         rect.sizeDelta = new Vector2(rect.rect.width, 35 * Settings.AllProperties.Count);
 
+        Screen.SetResolution(Screen.width + 1, Screen.height, Screen.fullScreen, Screen.currentResolution.refreshRate);
+
         ValidateArena();
     }
 
@@ -249,7 +251,7 @@ public class ConfigMenu : MonoBehaviour, IDisposable
 
         //a.transform.position = new Vector3(-240, 45 + -(0 + (num * 35)), 0);
         //a.transform.position = new Vector3(-240, 45 + (0 + (num * 35)), 0);
-        a.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -((num+1) * 35) + 13);
+        a.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -((num + 1) * 35) + 13);
         a.GetComponent<RectTransform>().pivot = new Vector2(0, .5f);
 
         a.transform.Find("Label").GetComponent<Text>().text = property.Name;
