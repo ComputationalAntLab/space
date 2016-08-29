@@ -26,13 +26,47 @@ namespace Assets.Scripts.Arenas
         {
             _settings = settings;
 
+#if !UNITY_WEBGL
             using (var sr = new StreamReader(_settings.ArenaFilename))
             {
                 var xml = new XmlSerializer(typeof(Arena));
 
                 _arena = xml.Deserialize(sr) as Arena;
             }
-
+#else
+            _arena = new Arena
+            {
+                Depth = 50,
+                Width = 50,
+                StartingNest = new Nest
+                {
+                    Width = 5,
+                    Depth = 7.5f,
+                    PositionX = 40,
+                    PositionZ = 25,
+                    Quality = 0.25f
+                },
+                NewNests = new System.Collections.Generic.List<Nest>
+                {
+                    new Nest
+                    {
+                        Width =5,
+                        Depth = 7.5f,
+                        PositionX = 10,
+                        PositionZ = 10,
+                        Quality = 0.3f
+                    },
+                    new Nest
+                    {
+                        Width =5,
+                        Depth = 7.5f,
+                        PositionX = 10,
+                        PositionZ = 40,
+                        Quality = 0.6f
+                    }
+                }
+            };
+#endif
             SceneManager.LoadScene("FromFile");
         }
 
