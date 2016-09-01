@@ -3,16 +3,16 @@
   <ArenaName>Equidistant</ArenaName>
   <ArenaFilename>C:/Users/andos/git/space/Arenas/Equidistant.xml</ArenaFilename>
   <ExperimentName>
-    <Value>q2_t5x</Value>
+    <Value>r3_q0_t10x</Value>
   </ExperimentName>
   <RandomSeed>
-    <Value>13</Value>
+    <Value>3</Value>
   </RandomSeed>
   <ColonySize>
     <Value>200</Value>
   </ColonySize>
   <QuorumThreshold>
-    <Value>2</Value>
+    <Value>0</Value>
   </QuorumThreshold>
   <ProportionActive>
     <Value>0.25</Value>
@@ -27,7 +27,7 @@
     <Value>0.3</Value>
   </SecondNewNestQuality>
   <StartingTickRate>
-    <Value>5</Value>
+    <Value>10</Value>
   </StartingTickRate>
   <MaximumSimulationRunTime>
     <Value>180</Value>
