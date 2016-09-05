@@ -21,10 +21,10 @@
     <Value>0.2</Value>
   </StartingNestQuality>
   <FirstNewNestQuality>
-    <Value>0.3</Value>
+    <Value>0.2</Value>
   </FirstNewNestQuality>
   <SecondNewNestQuality>
-    <Value>0.3</Value>
+    <Value>0.8</Value>
   </SecondNewNestQuality>
   <StartingTickRate>
     <Value>5</Value>

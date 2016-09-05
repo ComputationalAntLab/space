@@ -6,7 +6,7 @@ namespace Assets.Scripts.Extensions
     {
         public static string ToOutputString(this TimeSpan time)
         {
-            return string.Format("{0:00}:{1:00}.{2:00}", time.TotalHours, time.Minutes, time.Seconds);
+            return string.Format("{0:HH:mm:ss}", new DateTime(time.Ticks));
         }
     }
 }
